@@ -14,363 +14,167 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --success: #22c55e;
-      --warning: #eab308;
       --danger: #ef4444;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 20px; direction: rtl; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-    h1 { font-size: 1.5rem; color: var(--accent); display: flex; align-items: center; gap: 10px; }
-    
-    .header-btns { display: flex; gap: 10px; }
-    .btn { background: var(--accent); color: #0f172a; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-    .btn:hover { background: var(--accent-hover); }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-outline:hover { background: var(--card-bg); }
+    /* Login Screen */
+    #login-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
+    }
+    .login-box {
+      background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border);
+      text-align: center; max-width: 350px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .login-box h2 { margin-bottom: 15px; color: var(--accent); }
+    .login-box input {
+      width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid var(--border);
+      border-radius: 8px; color: #fff; text-align: center; font-size: 1.2rem; outline: none;
+    }
+    .login-box button {
+      width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none;
+      border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
+    }
 
-    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; white-space: nowrap; font-size: 0.95rem; }
-    .tab-btn.active { background: var(--accent); color: #0f172a; font-weight: bold; border-color: var(--accent); }
+    /* Main Content (Hidden until login) */
+    #main-app { display: none; }
+
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    h1 { font-size: 1.5rem; color: var(--accent); }
+    
+    .btn { background: var(--accent); color: #0f172a; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+    .tab-btn.active { background: var(--accent); color: #0f172a; font-weight: bold; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Kanban Board */
-    .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; align-items: start; }
+    .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
     .kanban-col { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); min-height: 400px; }
-    .col-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; color: var(--accent); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .col-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     .col-count { background: #0f172a; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; color: var(--text-muted); }
     
-    .card { background: #0f172a; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--accent); cursor: grab; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .card h4 { font-size: 0.95rem; margin-bottom: 6px; color: var(--text); }
+    .card { background: #0f172a; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--accent); cursor: grab; }
+    .card h4 { font-size: 0.95rem; margin-bottom: 6px; }
     .card p { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px; }
-    .card .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.75rem; color: var(--accent); }
+    .card .meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem; color: var(--accent); }
 
-    /* Tables */
     .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    th { background: #111827; color: var(--accent); font-weight: 600; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
+    th { background: #111827; color: var(--accent); }
     
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; display: inline-block; }
-    .badge-yellow { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); }
-    .badge-green { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.3); }
-    .badge-blue { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
-
-    /* Modal */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 500px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-    .modal-header h3 { color: var(--accent); }
-    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-    
+    .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; width: 90%; max-width: 500px; padding: 25px; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.9rem; outline: none; }
-    .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-
-    /* Drag & Drop Styles */
-    .kanban-col.drag-over { background: rgba(56, 189, 248, 0.05); border-color: var(--accent); }
-    .card.dragging { opacity: 0.5; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>⚙️ نظام إدارة الورشة والمخزون الداخلي</h1>
-    <div class="header-btns">
-      <button class="btn" onclick="openModal()">+ إضافة طلب / حركة جديدة</button>
+  <!-- شاشة الدخول والتشفير -->
+  <div id="login-overlay">
+    <div class="login-box">
+      <h2>🔒 دخول آمن للورشة</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">أدخل الرقم السري للوصول للبيانات</p>
+      <input type="password" id="pin-input" placeholder="****" maxlength="8">
+      <button onclick="checkPin()">دخول النظام</button>
+      <p id="login-error" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">الرمز السري خاطئ!</p>
     </div>
-  </header>
-
-  <!-- Navigation Tabs -->
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('kanban', this)">🪚 تتبع حركات الورشة (Kanban)</button>
-    <button class="tab-btn" onclick="switchTab('inventory', this)">📦 سجل المخزون والعينات</button>
-    <button class="tab-btn" onclick="switchTab('kits', this)">🎁 مجموعات الـ Welcome Kits</button>
   </div>
 
-  <!-- 1. Kanban View -->
-  <div id="kanban" class="tab-content active">
-    <div class="kanban-board">
-      
-      <div class="kanban-col" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'مستودع (خام)')">
-        <div class="col-title">📥 مستودع (خام) <span class="col-count" id="count-0">2</span></div>
-        <div id="col-0">
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-1">
+  <!-- تطبيق الورشة المعتاد -->
+  <div id="main-app">
+    <header>
+      <h1>⚙️ نظام إدارة الورشة والمخزون الداخلي</h1>
+      <button class="btn" onclick="openModal()">+ إضافة طلب / حركة جديدة</button>
+    </header>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('kanban', this)">🪚 تتبع حركات الورشة</button>
+      <button class="tab-btn" onclick="switchTab('inventory', this)">📦 سجل المخزون والعينات</button>
+    </div>
+
+    <!-- Kanban View -->
+    <div id="kanban" class="tab-content active">
+      <div class="kanban-board">
+        <div class="kanban-col">
+          <div class="col-title">📥 مستودع (خام) <span class="col-count">2</span></div>
+          <div class="card">
             <h4>ألواح خشب إم دي إف (3مم)</h4>
             <p><strong>المشروع:</strong> بوكسات إهداء فخمة</p>
             <p><strong>الكمية:</strong> 50 لوح</p>
-            <div class="meta"><span>مستلم حديثاً</span> <span>طلب #101</span></div>
-          </div>
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-2">
-            <h4>رول جلد طبيعي أسود</h4>
-            <p><strong>المشروع:</strong> حافظة أوراق ودفاتر</p>
-            <p><strong>الكمية:</strong> 15 رول</p>
-            <div class="meta"><span>جاهز للقص</span> <span>طلب #102</span></div>
           </div>
         </div>
-      </div>
-
-      <div class="kanban-col" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'قص وسنفرة')">
-        <div class="col-title">🪚 ورشة النجارة والقص <span class="col-count" id="count-1">1</span></div>
-        <div id="col-1">
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-3">
+        <div class="kanban-col">
+          <div class="col-title">🪚 ورشة النجارة والقص <span class="col-count">1</span></div>
+          <div class="card">
             <h4>قواعد الخشب السفلية</h4>
             <p><strong>المشروع:</strong> دروع أكريليك</p>
             <p><strong>الكمية:</strong> 100 قطعة</p>
-            <div class="meta"><span>تحت القص</span> <span>طلب #103</span></div>
           </div>
         </div>
-      </div>
-
-      <div class="kanban-col" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'دهان وبوية')">
-        <div class="col-title">🎨 ورشة الدهان والبوية <span class="col-count" id="count-2">1</span></div>
-        <div id="col-2">
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-4">
-            <h4>هياكل بوكسات خشبية</h4>
-            <p><strong>اللون:</strong> أسود مطفي (Matte)</p>
-            <p><strong>الكمية:</strong> 40 بوكس</p>
-            <div class="meta"><span>وجه أول</span> <span>طلب #104</span></div>
-          </div>
+        <div class="kanban-col">
+          <div class="col-title">🎨 ورشة الدهان والبوية <span class="col-count">1</span></div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">⚡ حفر ليزر وطباعة <span class="col-count">0</span></div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">✅ منطقة التجميع والتسليم <span class="col-count">1</span></div>
         </div>
       </div>
-
-      <div class="kanban-col" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'حفر وطباعة')">
-        <div class="col-title">⚡ حفر ليزر وطباعة <span class="col-count" id="count-3">1</span></div>
-        <div id="col-3">
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-5">
-            <h4>أقلام معدنية سوداء</h4>
-            <p><strong>المشروع:</strong> حفر شعار هيئة السياحة</p>
-            <p><strong>الكمية:</strong> 200 قلم</p>
-            <div class="meta"><span>جاري الحفر</span> <span>طلب #105</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kanban-col" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'جاهز للتسليم')">
-        <div class="col-title">✅ منطقة التجميع والتسليم <span class="col-count" id="count-4">1</span></div>
-        <div id="col-4">
-          <div class="card" draggable="true" ondragstart="drag(event)" id="card-6" style="border-right-color: var(--success);">
-            <h4>حقائب جلدية للرحلات</h4>
-            <p><strong>المشروع:</strong> هدايا كبار الشخصيات</p>
-            <p><strong>الكمية:</strong> 25 حقيبة</p>
-            <div class="meta" style="color: var(--success);"><span>مكتمل ومغلف</span> <span>طلب #98</span></div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-  <!-- 2. Inventory View -->
-  <div id="inventory" class="tab-content">
-    <div class="table-container">
-      <table id="inventory-table">
-        <thead>
-          <tr>
-            <th>الصنف / المادة</th>
-            <th>نوع الحيازة والتصنيف</th>
-            <th>الكمية المتاحة</th>
-            <th>موقع التخزين / الرف</th>
-            <th>حالة المادة</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>أقلام معدنية (سادة)</td>
-            <td><span class="badge badge-blue">🏷️ عينة عامة (بدون لوقو)</span></td>
-            <td>150 حبة</td>
-            <td>الرف A-12</td>
-            <td>متوفرة للعروض</td>
-          </tr>
-          <tr>
-            <td>شنط قماشية فاخرة (تعديل قديم)</td>
-            <td><span class="badge badge-yellow">🔄 عينة مشروع معدل</span></td>
-            <td>35 حبة</td>
-            <td>الرف B-04</td>
-            <td>متاحة لإعادة الاستخدام</td>
-          </tr>
-          <tr>
-            <td>مقات حافظة الحرارة (استيل)</td>
-            <td><span class="badge badge-green">🎯 مادة مشروع معتمد</span></td>
-            <td>300 حبة</td>
-            <td>المستودع الرئيسي - A</td>
-            <td>محجوزة لمشروع أ</td>
-          </tr>
-          <tr>
-            <td>أكواب سراميك خضراء</td>
-            <td><span class="badge badge-blue">🏷️ عينة عامة (بدون لوقو)</span></td>
-            <td>12 حبة</td>
-            <td>معرض العينات</td>
-            <td>للعرض فقط</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- 3. Kits View -->
-  <div id="kits" class="tab-content">
-    <div class="table-container">
-      <table id="kits-table">
-        <thead>
-          <tr>
-            <th>اسم مجموعة الـ Kit</th>
-            <th>المكونات المتوفرة بالمستودع</th>
-            <th>العناصر الناقصة / تحت التنفيذ</th>
-            <th>نسبة الجاهزية والحالة</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Welcome Kit - شركة المدى</td>
-            <td>قلم حفر، مق استيل، مفكرة جلدية</td>
-            <td>البوكس الخارجي (تحت البوية)</td>
-            <td><span class="badge badge-yellow">🟡 تجميع جزئي (75%)</span></td>
-          </tr>
-          <tr>
-            <td>Welcome Kit - هيئة التطوير</td>
-            <td>بوكس فاخر، كيس، قلم، علاقة</td>
-            <td>لا يوجد - كامل</td>
-            <td><span class="badge badge-green">🟢 مكتمل وجاهز للتعبئة</span></td>
-          </tr>
-          <tr>
-            <td>Kit العينات الجديد</td>
-            <td>قلم بدون لوقو، كوب سراميك</td>
-            <td>المفكرة والأكياس</td>
-            <td><span class="badge badge-yellow">🟡 تجميع جزئي (50%)</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Modal for Adding New Record -->
-  <div class="modal" id="addModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>إضافة حركة / طلب جديد</h3>
-        <button class="close-btn" onclick="closeModal()">&times;</button>
+    <!-- Inventory View -->
+    <div id="inventory" class="tab-content">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>الصنف / المادة</th>
+              <th>التصنيف</th>
+              <th>الكمية المتاحة</th>
+              <th>موقع التخزين</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>أقلام معدنية (سادة)</td>
+              <td>عينة عامة</td>
+              <td>150 حبة</td>
+              <td>الرف A-12</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <form onsubmit="addNewRecord(event)">
-        <div class="form-group">
-          <label>اسم المادة / القطعة</label>
-          <input type="text" id="itemName" required placeholder="مثال: بوكسات خشب، أقلام، قماش...">
-        </div>
-        <div class="form-group">
-          <label>المشروع / العميل</label>
-          <input type="text" id="projName" required placeholder="مثال: مشروع هدايا المدى / عينات سادة">
-        </div>
-        <div class="form-group">
-          <label>الكمية</label>
-          <input type="text" id="itemQty" required placeholder="مثال: 50 حبة / 100 متر">
-        </div>
-        <div class="form-group">
-          <label>المرحلة / القسم الحالي</label>
-          <select id="itemStage">
-            <option value="col-0">📥 مستودع (خام)</option>
-            <option value="col-1">🪚 ورشة النجارة والقص</option>
-            <option value="col-2">🎨 ورشة الدهان والبوية</option>
-            <option value="col-3">⚡ حفر ليزر وطباعة</option>
-            <option value="col-4">✅ منطقة التجميع والتسليم</option>
-          </select>
-        </div>
-        <button type="submit" class="btn" style="width: 100%;">حفظ وإضافة للنظام</button>
-      </form>
     </div>
   </div>
 
   <script>
-    // Tab Switching
+    // الرقم السري للتطبيق (تقدر تغيره هنا)
+    const SECRET_PIN = "$Ark0820$";
+
+    function checkPin() {
+      const input = document.getElementById('pin-input').value;
+      if (input === SECRET_PIN) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      
       document.getElementById(tabId).classList.add('active');
       btn.classList.add('active');
-    }
-
-    // Modal Control
-    function openModal() { document.getElementById('addModal').classList.add('active'); }
-    function closeModal() { document.getElementById('addModal').classList.remove('active'); }
-
-    // Drag and Drop Functionality
-    function allowDrop(ev) {
-      ev.preventDefault();
-      ev.currentTarget.classList.add('drag-over');
-    }
-
-    function dragLeave(ev) {
-      ev.currentTarget.classList.remove('drag-over');
-    }
-
-    function drag(ev) {
-      ev.dataTransfer.setData("text", ev.target.id);
-      ev.target.classList.add('dragging');
-    }
-
-    function drop(ev, stageName) {
-      ev.preventDefault();
-      ev.currentTarget.classList.remove('drag-over');
-      var data = ev.dataTransfer.getData("text");
-      var draggedElement = document.getElementById(data);
-      draggedElement.classList.remove('dragging');
-      
-      // Append to column container
-      var targetCol = ev.currentTarget.querySelector('div[id^="col-"]');
-      if (targetCol) {
-        targetCol.appendChild(draggedElement);
-        updateCounts();
-      }
-    }
-
-    function updateCounts() {
-      for(let i=0; i<5; i++) {
-        let col = document.getElementById('col-' + i);
-        if(col) {
-          let count = col.children.length;
-          let badge = document.getElementById('count-' + i);
-          if(badge) badge.innerText = count;
-        }
-      }
-    }
-
-    // Add New Record
-    function addNewRecord(e) {
-      e.preventDefault();
-      var name = document.getElementById('itemName').value;
-      var proj = document.getElementById('projName').value;
-      var qty = document.getElementById('itemQty').value;
-      var stage = document.getElementById('itemStage').value;
-
-      var newCard = document.createElement('div');
-      var cardId = 'card-' + Date.now();
-      newCard.className = 'card';
-      newCard.draggable = true;
-      newCard.id = cardId;
-      newCard.ondragstart = drag;
-
-      newCard.innerHTML = `
-        <h4>${name}</h4>
-        <p><strong>المشروع:</strong> ${proj}</p>
-        <p><strong>الكمية:</strong> ${qty}</p>
-        <div class="meta"><span>مُدخل جديداً</span> <span>الآن</span></div>
-      `;
-
-      document.getElementById(stage).appendChild(newCard);
-      updateCounts();
-      closeModal();
-      
-      // Reset form
-      document.getElementById('itemName').value = '';
-      document.getElementById('projName').value = '';
-      document.getElementById('itemQty').value = '';
     }
   </script>
 </body>
