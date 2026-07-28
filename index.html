@@ -60,15 +60,13 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Warehouse Cards Grid - نفس تصميم الصورة بالضبط */
+    /* Warehouse Cards Grid */
     .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
     .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .warehouse-card:hover { transform: translateY(-4px); }
     .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
     .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
-
-    /* ألوان كروت الخشب الـ 6 بنفس النمط */
     .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
 
     /* Sub-warehouse details */
@@ -153,7 +151,7 @@
         </div>
       </div>
 
-      <!-- المستوى الثاني: أقسام مصنع الخشب بنفس شكل كروت الصورة بالضبط -->
+      <!-- المستوى الثاني: أقسام مصنع الخشب -->
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
           <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات الرئيسية</button>
@@ -164,12 +162,12 @@
         <div class="warehouse-grid">
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي')">
             <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي</h3>
-            <p>الأنواع، الأطوال، السماكات، الحساب بالمتر المكعب (m³)</p>
+            <p>الأنواع والمقاس بالحساب بالمتر المكعب (m³)</p>
           </div>
 
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح')">
             <h3 style="color: var(--wood-color);">📐 المسطحات والألواح</h3>
-            <p>MDF، أبلكاش، ميلامين، المقاسات (سم) والسماكات</p>
+            <p>MDF، أبلكاش، مقاس جامبو أو ستاندر والسماكة مم</p>
           </div>
 
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'adhesives', '🧪 المواد اللاصقة والغراء')">
@@ -325,7 +323,6 @@
       btn.classList.add('active');
     }
 
-    /* التنقل عبر البطاقات */
     function openWoodCategories() {
       document.getElementById('warehouse-selection-menu').style.display = 'none';
       document.getElementById('wood-categories-menu').style.display = 'block';
@@ -367,23 +364,25 @@
       await fetchMaterialsFromDatabase(category);
     }
 
+    /* تهيئة رؤوس الجداول بالضبط حسب طلبك */
     function setupTableHeaders(category) {
       const tr = document.getElementById('table-headers');
       if (category === 'wood') {
         if (currentWoodUnit === 'natural_wood') {
+          // الخشب الطبيعي: نوع الخشب | المقاس بالمتر المكعب | موقع التخزين | الحالة | إجراءات
           tr.innerHTML = `
-            <th>اسم الصنف</th>
             <th>نوع الخشب</th>
-            <th>الحجم الإجمالي (m³)</th>
+            <th>المقاس بالمتر المكعب (m³)</th>
             <th>موقع التخزين</th>
             <th>الحالة تلقائياً</th>
             <th>إجراءات</th>
           `;
         } else if (currentWoodUnit === 'panels') {
+          // المسطحات والألواح: اسم الصنف | المقاس (جامبو/ستاندر) | السماكة بال مم | الكمية المتوفرة | موقع التخزين | الحالة | إجراءات
           tr.innerHTML = `
             <th>اسم الصنف</th>
+            <th>المقاس</th>
             <th>السماكة (مم)</th>
-            <th>الأبعاد (سم)</th>
             <th>الكمية المتوفرة</th>
             <th>موقع التخزين</th>
             <th>الحالة تلقائياً</th>
@@ -463,20 +462,21 @@
 
         if (category === 'wood') {
           if (currentWoodUnit === 'natural_wood') {
+            // عرض الخشب الطبيعي بدون عمود اسم الصنف
             tr.innerHTML = `
-              <td><strong>${item.title || '-'}</strong></td>
-              <td>${item.wood_type || '-'}</td>
-              <td><strong style="color: var(--wood-color);">${item.dimensions || '0'} m³</strong></td>
+              <td><strong>${item.wood_type || '-'}</strong></td>
+              <td><strong style="color: var(--wood-color); font-size: 1.05rem;">${item.dimensions || '0'} m³</strong></td>
               <td>${item.location || '-'}</td>
               <td>${badgeHtml}</td>
               <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل ✏️</button></td>
             `;
           } else if (currentWoodUnit === 'panels') {
+            // عرض المسطحات والألواح بالترتيب الجديد
             tr.innerHTML = `
               <td><strong>${item.title || '-'}</strong></td>
-              <td>${item.thickness || '-'}</td>
-              <td>${item.dimensions || '-'} سم</td>
-              <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+              <td><span style="color: var(--accent); font-weight: bold;">${item.dimensions || '-'}</span></td>
+              <td>${item.thickness || '-'} مم</td>
+              <td><strong style="color: #fff; font-size: 1.05rem;">${qty}</strong></td>
               <td>${item.location || '-'}</td>
               <td>${badgeHtml}</td>
               <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل ✏️</button></td>
@@ -529,15 +529,54 @@
       }
     }
 
+    /* معالج الإضافة حسب القسم والمقاس المختار */
     async function addNewItemPrompt() {
-      const title = prompt("اسم الصنف / المادة:");
-      if (!title) return;
+      let title = "";
+      let wood_type = "";
+      let thickness = "";
+      let dimensions = "";
+      let qtyStr = "10";
+      let location = "";
 
-      const wood_type = prompt("النوع / التصنيف (مثال: MDF / طبيعي / جالان):") || "";
-      const thickness = prompt("السماكة / الكود (مثال: 3 مم / Ral 9010):") || "";
-      const dimensions = prompt("الأبعاد / المقاس / العبوة (مثال: 122x244 سم أو 1.5 m³):") || "";
-      const qtyStr = prompt("الكمية المتوفرة حالياً (رقم):", "10");
-      const location = prompt("موقع التخزين / الرف:", "المستودع الرئيسي - رف A1") || "";
+      if (currentCategory === 'wood' && currentWoodUnit === 'natural_wood') {
+        // الخشب الطبيعي (بدون اسم صنف)
+        wood_type = prompt("نوع الخشب (مثال: زان، سويدي، ميرنتي، أرو):");
+        if (!wood_type) return;
+
+        dimensions = prompt("المقاس بالمتر المكعب (m³) (مثال: 1.5):", "1.0") || "0";
+        location = prompt("موقع التخزين / الرف:", "مستودع الخشب الطبيعي - رف 1") || "";
+        qtyStr = "10"; // افتراضي لحالة المخزون المتوفر
+
+      } else if (currentCategory === 'wood' && currentWoodUnit === 'panels') {
+        // المسطحات والألواح
+        title = prompt("اسم الصنف (مثال: MDF إسباني، أبلكاش):");
+        if (!title) return;
+
+        // اختيار المقاس بين جامبو أو ستاندر
+        const sizeChoice = prompt("اختر المقاس المطلوب:\n1 - جامبو\n2 - ستاندر", "1");
+        if (sizeChoice === "1") {
+          dimensions = "جامبو";
+        } else if (sizeChoice === "2") {
+          dimensions = "ستاندر";
+        } else {
+          dimensions = sizeChoice || "ستاندر";
+        }
+
+        thickness = prompt("السماكة بالـ (مم) (مثال: 18، 12، 3):", "18") || "";
+        qtyStr = prompt("الكمية المتوفرة (عدد الألواح):", "10") || "0";
+        location = prompt("موقع التخزين / الرف:", "مستودع الألواح - رف B2") || "";
+
+      } else {
+        // باقي الأقسام العادية
+        title = prompt("اسم الصنف / المادة:");
+        if (!title) return;
+
+        wood_type = prompt("النوع / التصنيف:") || "";
+        thickness = prompt("السماكة / الكود:") || "";
+        dimensions = prompt("المقاس / الأبعاد:") || "";
+        qtyStr = prompt("الكمية المتوفرة حالياً:", "10");
+        location = prompt("موقع التخزين:", "المستودع الرئيسي") || "";
+      }
 
       const quantity = parseInt(qtyStr) || 0;
 
@@ -557,7 +596,7 @@
       if (error) {
         alert("حدث خطأ أثناء إضافة الصنف: " + error.message);
       } else {
-        alert("تم إضافة الصنف بنجاح في قاعدة البيانات السحابية! 🎉");
+        alert("تم إضافة الصنف بنجاح! 🎉");
         fetchMaterialsFromDatabase(currentCategory);
       }
     }
