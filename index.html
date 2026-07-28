@@ -3,265 +3,286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tajalla Agency | نظام إدارة الورش والمخازن</title>
+  <title>تجلى | Tajalla Agency - نظام المخازن</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Fonts - Tajawal -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-main: #0b0d10;
-      --bg-card: #141820;
-      --bg-card-hover: #1c222d;
-      --tajalla-gold: #c99a4e;
-      --tajalla-gold-light: #e0b874;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --border-color: #262d3d;
-      --success: #10b981;
-      --warning: #f59e0b;
+      --bg-dark: #0a0c10;
+      --panel-bg: #12161f;
+      --panel-border: #1e2532;
+      --gold-primary: #d4af37;
+      --gold-glow: rgba(212, 175, 55, 0.15);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
       --danger: #ef4444;
+      --success: #10b981;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', system-ui, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); padding: 24px; direction: rtl; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; direction: rtl; }
 
     /* Login Overlay */
     #login-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--bg-main); display: flex; justify-content: center; align-items: center; z-index: 9999;
+      background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 9999;
     }
-    .login-box {
-      background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--tajalla-gold);
-      text-align: center; max-width: 400px; width: 90%; box-shadow: 0 12px 35px rgba(201, 154, 78, 0.12);
+    .login-card {
+      background: var(--panel-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--gold-primary);
+      text-align: center; max-width: 420px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
-    .login-logo { font-size: 1.8rem; font-weight: 800; color: var(--tajalla-gold); letter-spacing: 1px; margin-bottom: 5px; }
-    .login-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
+    
+    .brand-logo-svg { width: 65px; height: 65px; fill: var(--gold-primary); margin-bottom: 15px; }
 
-    .password-wrapper { position: relative; width: 100%; margin-bottom: 18px; }
+    .login-title { font-size: 1.8rem; font-weight: 800; color: var(--gold-primary); margin-bottom: 4px; }
+    .login-sub { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 25px; }
+
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
     .password-wrapper input {
-      width: 100%; padding: 12px 40px 12px 12px; background: #08090b; border: 1px solid var(--border-color);
-      border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
+      width: 100%; padding: 14px 42px 14px 14px; background: #060709; border: 1px solid var(--panel-border);
+      border-radius: 10px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
     }
-    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; opacity: 0.7; }
-    .login-box button {
-      width: 100%; padding: 12px; background: linear-gradient(135deg, var(--tajalla-gold), #a87932);
-      color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem;
+    .toggle-password { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; opacity: 0.7; }
+    
+    .login-card button {
+      width: 100%; padding: 14px; background: var(--gold-primary); color: #000; border: none;
+      border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1rem; transition: 0.3s;
     }
+    .login-card button:hover { background: #e5be3e; }
 
     #main-app { display: none; }
 
-    /* Header */
+    /* Top Header Bar */
     header {
       display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+      padding: 15px 20px; background: var(--panel-bg); border-radius: 16px; border: 1px solid var(--panel-border); margin-bottom: 25px;
     }
-    .brand-title { display: flex; align-items: center; gap: 12px; }
-    .brand-title h1 { font-size: 1.5rem; color: var(--tajalla-gold); font-weight: 800; }
-    .brand-title span { background: rgba(201, 154, 78, 0.15); color: var(--tajalla-gold-light); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: 1px solid var(--tajalla-gold); }
+    .header-brand { display: flex; align-items: center; gap: 15px; }
+    .header-logo { width: 40px; height: 40px; fill: var(--gold-primary); }
+    .header-title h1 { font-size: 1.4rem; color: var(--gold-primary); font-weight: 800; }
+    .header-title p { font-size: 0.75rem; color: var(--text-sub); }
 
-    .logout-btn { background: #1f2430; color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .logout-btn { background: #1a202c; color: var(--text-sub); border: 1px solid var(--panel-border); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; }
     .logout-btn:hover { background: var(--danger); color: #fff; }
 
-    /* Main Navigation Lists */
-    .main-nav-list { display: flex; gap: 12px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; overflow-x: auto; }
-    .nav-item-btn {
-      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
-      padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.95rem; white-space: nowrap; transition: 0.2s;
+    /* Top Navigation (قوائم رئيسية) */
+    .top-menu-bar { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+    .top-menu-btn {
+      background: var(--panel-bg); border: 1px solid var(--panel-border); color: var(--text-sub);
+      padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.95rem; white-space: nowrap; transition: 0.3s; display: flex; align-items: center; gap: 8px;
     }
-    .nav-item-btn.active { background: var(--tajalla-gold); color: #000; border-color: var(--tajalla-gold); }
+    .top-menu-btn.active { background: var(--gold-primary); color: #000; border-color: var(--gold-primary); }
+
+    /* Layout for Sub-Lists (القوائم المستقلة المباشرة) */
+    .sub-lists-navigation { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: var(--panel-bg); padding: 15px; border-radius: 14px; border: 1px solid var(--panel-border); }
+    .sub-list-btn {
+      background: #090c10; border: 1px solid var(--panel-border); color: var(--text-sub);
+      padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem; transition: 0.2s;
+    }
+    .sub-list-btn.active { background: var(--gold-glow); color: var(--gold-primary); border-color: var(--gold-primary); }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Factory Cards */
-    .factory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
-    .factory-card {
-      background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border-color); padding: 24px;
-      cursor: pointer; transition: all 0.25s ease; position: relative; overflow: hidden;
-    }
-    .factory-card::before { content: ''; position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: var(--tajalla-gold); }
-    .factory-card:hover { transform: translateY(-4px); border-color: var(--tajalla-gold); background: var(--bg-card-hover); }
-    .factory-card h3 { color: var(--tajalla-gold); font-size: 1.2rem; margin-bottom: 8px; }
-    .factory-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
-
-    /* Sub Lists (مصنع الخشب - القوائم الـ 6) */
-    .lists-vertical-menu { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-    .list-tab-item {
-      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-      padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 700; white-space: nowrap; transition: 0.2s;
-    }
-    .list-tab-item.active { background: rgba(201, 154, 78, 0.2); color: var(--tajalla-gold); border-color: var(--tajalla-gold); }
-
-    /* Layout View */
-    .sub-factory-view { display: none; }
-    .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    .back-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--tajalla-gold); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-    .add-btn { background: var(--tajalla-gold); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+    /* Section Control Header */
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .section-title { font-size: 1.2rem; color: var(--gold-primary); font-weight: 800; }
+    .add-item-btn { background: var(--gold-primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; }
 
     /* Tables */
-    .table-container { overflow-x: auto; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); }
+    .table-responsive { overflow-x: auto; background: var(--panel-bg); border-radius: 14px; border: 1px solid var(--panel-border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
-    th { background: #0e1117; color: var(--tajalla-gold); font-weight: 700; }
-    
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    th, td { padding: 15px 18px; border-bottom: 1px solid var(--panel-border); font-size: 0.9rem; white-space: nowrap; }
+    th { background: #080a0e; color: var(--gold-primary); font-weight: 800; }
 
-    .action-btn { background: rgba(201, 154, 78, 0.15); color: var(--tajalla-gold); border: 1px solid var(--tajalla-gold); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; margin-left: 5px; }
-    .delete-btn { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; }
+    .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    .status-ok { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .status-low { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .status-empty { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+    .btn-edit { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border: 1px solid var(--gold-primary); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; }
+    .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; margin-right: 4px; }
 
     /* Modal Form */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 10000;
+      background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000;
     }
-    .modal-box { background: var(--bg-card); width: 90%; max-width: 480px; padding: 30px; border-radius: 16px; border: 1px solid var(--tajalla-gold); }
-    .modal-box h3 { margin-bottom: 20px; color: var(--tajalla-gold); text-align: center; font-size: 1.2rem; }
+    .modal-card { background: var(--panel-bg); width: 90%; max-width: 480px; padding: 30px; border-radius: 18px; border: 1px solid var(--gold-primary); }
+    .modal-card h3 { margin-bottom: 20px; color: var(--gold-primary); text-align: center; font-size: 1.2rem; }
     .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; }
     .form-group input {
-      width: 100%; padding: 10px; background: #08090b; border: 1px solid var(--border-color); border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem;
+      width: 100%; padding: 11px; background: #060709; border: 1px solid var(--panel-border); border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem;
     }
     .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
-    .modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
-    .save-btn { background: var(--tajalla-gold); color: #000; }
-    .cancel-btn { background: var(--border-color); color: var(--text-main); }
+    .modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; }
+    .save-btn { background: var(--gold-primary); color: #000; }
+    .cancel-btn { background: var(--panel-border); color: var(--text-main); }
   </style>
 </head>
 <body>
 
   <!-- شاشة الدخول -->
   <div id="login-overlay">
-    <div class="login-box">
-      <div class="login-logo">Tajalla Agency</div>
-      <div class="login-sub">مؤسسة تجلى للإنتاج والإبداع | بوابة المخازن</div>
+    <div class="login-card">
+      <svg class="brand-logo-svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="login-title">تجلى | Tajalla Agency</div>
+      <div class="login-sub">نظام المخازن والإنتاج السحابي</div>
       
       <div class="password-wrapper">
         <input type="password" id="pin-input" placeholder="رمز الدخول السري" onkeydown="if(event.key==='Enter') checkPin()">
         <span class="toggle-password" onclick="togglePasswordVisibility()" id="toggle-icon">👁️</span>
       </div>
 
-      <button onclick="checkPin()">دخول النظام</button>
+      <button onclick="checkPin()">دخول للنظام</button>
       <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">الرمز السري غير صحيح!</p>
     </div>
   </div>
 
   <!-- التطبيق الرئيسي -->
   <div id="main-app">
+    
+    <!-- الشريط العلوي -->
     <header>
-      <div class="brand-title">
-        <h1>تتجلى | Tajalla Agency</h1>
-        <span>إدارة المصانع والمستودعات</span>
+      <div class="header-brand">
+        <svg class="header-logo" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div class="header-title">
+          <h1>تجلى | Tajalla Agency</h1>
+          <p>إدارة قوائم المصانع والمواد الخام</p>
+        </div>
       </div>
       <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
     </header>
 
-    <!-- القوائم الرئيسية -->
-    <div class="main-nav-list">
-      <button class="nav-item-btn active" onclick="switchMainTab('raw-materials', this)">📦 خامات ومواد المصانع</button>
-      <button class="nav-item-btn" onclick="switchMainTab('general-inventory', this)">🏷️ قائمة عينات المنتجات</button>
-      <button class="nav-item-btn" onclick="switchMainTab('daily-operations', this)">📋 سجل العمليات</button>
+    <!-- شريط القوائم الرئيسي المباشر -->
+    <div class="top-menu-bar">
+      <button class="top-menu-btn active" onclick="switchMainList('wood-factory', this)">🪵 قوائم مصنع الخشب</button>
+      <button class="top-menu-btn" onclick="switchMainList('leather-factory', this)">🥾 قائمة مصنع الجلد</button>
+      <button class="top-menu-btn" onclick="switchMainList('paint-factory', this)">🎨 قائمة مصنع البوية والدهانات</button>
+      <button class="top-menu-btn" onclick="switchMainList('samples-list', this)">🏷️ قائمة عينات المنتجات</button>
     </div>
 
-    <!-- 1. مواد وخامات المصانع -->
-    <div id="raw-materials" class="tab-content active">
+    <!-- 1. قسم مصنع الخشب (تحته القوائم الـ 6 المباشرة) -->
+    <div id="wood-factory" class="tab-content active">
       
-      <div id="factory-selection-menu">
-        <h2 style="margin-bottom: 18px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع لعرض القوائم الخاصة به:</h2>
-        
-        <div class="factory-grid">
-          <div class="factory-card" onclick="openSubFactory('wood')">
-            <h3>🪵 مصنع الخشب</h3>
-            <p>يحتوي على 6 قوائم رئيسية: الخشب الطبيعي، المسطحات، المواد اللاصقة، الحدايد، المعدات، ومعدات التشغيل.</p>
-          </div>
-
-          <div class="factory-card" onclick="openSubFactory('leather')">
-            <h3>🥾 مصنع الجلد</h3>
-            <p>قائمة خامات النجارة بالخشب، أرقام الجلد، الكميات، ومواقع التخزين.</p>
-          </div>
-
-          <div class="factory-card" onclick="openSubFactory('paint')">
-            <h3>🎨 مصنع الدهانات والبوية</h3>
-            <p>قائمة خامات النجارة بالخشب، أكواد الألوان، الماركات، وسعات العبوات.</p>
-          </div>
-        </div>
+      <!-- شريط القوائم الـ 6 المباشرة بضغط زرة واحدة -->
+      <div class="sub-lists-navigation">
+        <button class="sub-list-btn active" onclick="loadWoodList('natural_wood', this)">🪵 1. قائمة الخشب الطبيعي (m³)</button>
+        <button class="sub-list-btn" onclick="loadWoodList('panels', this)">📐 2. قائمة المسطحات (سم)</button>
+        <button class="sub-list-btn" onclick="loadWoodList('adhesives', this)">🧪 3. قائمة المواد اللاصقة</button>
+        <button class="sub-list-btn" onclick="loadWoodList('hardware', this)">🔩 4. قائمة الحدايد والإكسسوارات</button>
+        <button class="sub-list-btn" onclick="loadWoodList('tools', this)">🛠️ 5. قائمة المعدات والأدوات</button>
+        <button class="sub-list-btn" onclick="loadWoodList('machinery', this)">⚙️ 6. قائمة معدات التشغيل</button>
       </div>
 
-      <!-- عرض القوائم الفرعية للمصنع المحدد -->
-      <div id="sub-factory-container" class="sub-factory-view">
-        <div class="view-header">
-          <button class="back-btn" onclick="closeSubFactory()">⬅️ العودة للرئيسية</button>
-          <h2 id="current-factory-title" style="color: var(--tajalla-gold);">المصنع</h2>
-          <button class="add-btn" onclick="openItemModal()">+ إضافة صنف جديد</button>
-        </div>
-
-        <!-- القوائم الـ 6 المخصصة لمصنع الخشب -->
-        <div id="wood-lists-tabs" class="lists-vertical-menu" style="display: none;">
-          <button class="list-tab-item active" onclick="switchWoodSubCategory('natural_wood', this)">🪵 1. قائمة الخشب الطبيعي (m³)</button>
-          <button class="list-tab-item" onclick="switchWoodSubCategory('panels', this)">📐 2. قائمة المسطحات (سم)</button>
-          <button class="list-tab-item" onclick="switchWoodSubCategory('adhesives', this)">🧪 3. قائمة المواد اللاصقة</button>
-          <button class="list-tab-item" onclick="switchWoodSubCategory('hardware', this)">🔩 4. قائمة الحدايد والإكسسوارات</button>
-          <button class="list-tab-item" onclick="switchWoodSubCategory('tools', this)">🛠️ 5. قائمة المعدات والأدوات</button>
-          <button class="list-tab-item" onclick="switchWoodSubCategory('machinery', this)">⚙️ 6. قائمة معدات التشغيل</button>
-        </div>
-
-        <!-- الجدول -->
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr id="table-headers">
-                <!-- تحميل الهيدر حسب القائمة المختارة -->
-              </tr>
-            </thead>
-            <tbody id="materials-table-body">
-              <!-- تحميل البيانات من supabase -->
-            </tbody>
-          </table>
-        </div>
+      <div class="section-header">
+        <div class="section-title" id="wood-list-title">قائمة الخشب الطبيعي</div>
+        <button class="add-item-btn" onclick="openModal()">+ إضافة صنف جديد لهذه القائمة</button>
       </div>
 
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr id="wood-table-headers">
+              <!-- الهيدر يتحمل هنا -->
+            </tr>
+          </thead>
+          <tbody id="wood-table-body">
+            <!-- البيانات تتحمل هنا -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- 2. عينات المنتجات -->
-    <div id="general-inventory" class="tab-content">
-      <h2 style="margin-bottom: 18px; font-size: 1.1rem; color: var(--text-muted);">قائمة عينات المنتجات الجاهزة - Tajalla:</h2>
-      <div class="table-container">
+    <!-- 2. مصنع الجلد -->
+    <div id="leather-factory" class="tab-content">
+      <div class="section-header">
+        <div class="section-title">قائمة خامات ومستلزمات مصنع الجلد</div>
+        <button class="add-item-btn" onclick="openModal('leather')">+ إضافة صنف جديد</button>
+      </div>
+      <div class="table-responsive">
         <table>
           <thead>
             <tr>
               <th>خامات النجارة بالخشب</th>
-              <th>نوع العينة</th>
+              <th>رقم / كود الجلد</th>
+              <th>الكمية المتوفرة</th>
+              <th>الوحدة</th>
+              <th>موقع التخزين</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="leather-table-body">
+            <!-- تحميل بيانات الجلد -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. مصنع البوية -->
+    <div id="paint-factory" class="tab-content">
+      <div class="section-header">
+        <div class="section-title">قائمة دهانات ومواد مصنع البوية</div>
+        <button class="add-item-btn" onclick="openModal('paint')">+ إضافة صنف جديد</button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>خامات النجارة بالخشب</th>
+              <th>الماركة / النوع</th>
+              <th>كود اللون</th>
+              <th>الكمية المتوفرة</th>
+              <th>سعة العبوة</th>
+              <th>موقع التخزين</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="paint-table-body">
+            <!-- تحميل بيانات البوية -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. عينات المنتجات -->
+    <div id="samples-list" class="tab-content">
+      <div class="section-header">
+        <div class="section-title">قائمة عينات المنتجات والمجسمات - تجلى</div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>خامات النجارة بالخشب</th>
+              <th>تصنيف العينة</th>
               <th>الكمية المتوفرة</th>
               <th>موقع العرض</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>درع أكريليك فاخر مقصوص ليزر مع قاعدة زان</td>
-              <td>دروع ومجسمات</td>
-              <td>12 قطعة</td>
-              <td>المعرض الرئيسي - صالة العرض</td>
+              <td>درع أكريليك فاخر مع قاعدة زان طبيعي</td>
+              <td>دروع ومجسمات تكريم</td>
+              <td>10 قطع</td>
+              <td>المعرض الرئيسي</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- 3. العمليات -->
-    <div id="daily-operations" class="tab-content">
-      <h2 style="margin-bottom: 18px; font-size: 1.1rem; color: var(--text-muted);">سجل متابعة حركات الصرف والاستلام اليومية</h2>
-    </div>
-
   </div>
 
   <!-- Modal Form -->
   <div id="item-modal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-card">
       <h3 id="modal-title">إضافة صنف جديد</h3>
       <input type="hidden" id="item-id">
       
@@ -270,29 +291,24 @@
         <input type="text" id="modal-title-input" placeholder="أدخل اسم الصنف">
       </div>
 
-      <div class="form-group" id="field-wood-type">
-        <label id="label-wood-type">النوع / التحديد / الماركة:</label>
-        <input type="text" id="modal-wood-type-input" placeholder="أدخل التفاصيل">
+      <div class="form-group" id="field-type">
+        <label id="label-type">النوع / التحديد:</label>
+        <input type="text" id="modal-type-input" placeholder="أدخل التفاصيل">
       </div>
 
       <div class="form-group" id="field-thickness">
-        <label id="label-thickness">السماكة / كود اللون / المواصفة:</label>
+        <label id="label-thickness">السماكة / المواصفات:</label>
         <input type="text" id="modal-thickness-input" placeholder="مثال: 18 مم">
       </div>
 
       <div class="form-group" id="field-dimensions">
-        <label id="label-dimensions">الأبعاد (سم) / الحجم (m³):</label>
+        <label id="label-dimensions">الأبعاد / الحجم (m³ أو سم):</label>
         <input type="text" id="modal-dimensions-input" placeholder="مثال: 122x244 سم أو 1.5 m³">
       </div>
 
       <div class="form-group">
-        <label id="label-quantity">الكمية المتوفرة:</label>
+        <label>الكمية المتوفرة:</label>
         <input type="number" id="modal-quantity-input" value="10">
-      </div>
-
-      <div class="form-group" id="field-unit">
-        <label>الوحدة:</label>
-        <input type="text" id="modal-unit-input" placeholder="مثال: متر مكعب / سم / حبة / كرتون" value="حبة">
       </div>
 
       <div class="form-group">
@@ -301,8 +317,8 @@
       </div>
 
       <div class="modal-actions">
-        <button class="save-btn" onclick="saveItemFromModal()">حفظ البيانات أونلاين 💾</button>
-        <button class="cancel-btn" onclick="closeItemModal()">إلغاء ✖️</button>
+        <button class="save-btn" onclick="saveItem()">حفظ أونلاين 💾</button>
+        <button class="cancel-btn" onclick="closeModal()">إلغاء ✖️</button>
       </div>
     </div>
   </div>
@@ -310,44 +326,40 @@
   <script>
     const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
-    
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const SECRET_PIN = "$Ark0820$";
-    const SESSION_KEY = "tajalla_session";
-    const SESSION_DURATION_MS = 30 * 60 * 1000;
+    const SESSION_KEY = "tajalla_session_val";
 
-    let currentCategory = 'wood';
-    let currentWoodSubCategory = 'natural_wood';
-    let materialsData = [];
+    let activeMainCategory = 'wood';
+    let activeWoodSubList = 'natural_wood';
+    let currentFetchedData = [];
 
-    window.onload = function() { checkExistingSession(); };
+    window.onload = function() { checkSession(); };
 
     function checkPin() {
-      const input = document.getElementById('pin-input').value;
-      if (input === SECRET_PIN) {
-        localStorage.setItem(SESSION_KEY, Date.now().toString());
+      const pin = document.getElementById('pin-input').value;
+      if (pin === SECRET_PIN) {
+        localStorage.setItem(SESSION_KEY, Date.now());
         grantAccess();
       } else {
         document.getElementById('login-error').style.display = 'block';
       }
     }
 
-    function checkExistingSession() {
-      const savedTime = localStorage.getItem(SESSION_KEY);
-      if (savedTime && (Date.now() - parseInt(savedTime) < SESSION_DURATION_MS)) {
-        grantAccess();
-      } else {
-        logout(false);
-      }
+    function checkSession() {
+      const session = localStorage.getItem(SESSION_KEY);
+      if (session) grantAccess();
+      else logout();
     }
 
     function grantAccess() {
       document.getElementById('login-overlay').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
+      loadWoodList('natural_wood', document.querySelector('.sub-list-btn'));
     }
 
-    function logout(alertUser = true) {
+    function logout() {
       localStorage.removeItem(SESSION_KEY);
       document.getElementById('login-overlay').style.display = 'flex';
       document.getElementById('main-app').style.display = 'none';
@@ -355,298 +367,149 @@
 
     function togglePasswordVisibility() {
       const input = document.getElementById('pin-input');
-      const icon = document.getElementById('toggle-icon');
-      if (input.type === "password") { input.type = "text"; icon.textContent = "🙈"; } 
-      else { input.type = "password"; icon.textContent = "👁️"; }
+      input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function switchMainTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.main-nav-list .nav-item-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-    }
-
-    async function openSubFactory(category) {
-      currentCategory = category;
-      document.getElementById('factory-selection-menu').style.display = 'none';
-      document.getElementById('sub-factory-container').style.display = 'block';
-
-      if (category === 'wood') {
-        document.getElementById('wood-lists-tabs').style.display = 'flex';
-        document.getElementById('current-factory-title').innerText = '🪵 قوائم مصنع الخشب الرئيسية';
-        switchWoodSubCategory('natural_wood', document.querySelector('.list-tab-item'));
-      } else {
-        document.getElementById('wood-lists-tabs').style.display = 'none';
-        const titleMap = {
-          'leather': '🥾 قائمة مصنع الجلد',
-          'paint': '🎨 قائمة مصنع البوية والدهانات'
-        };
-        document.getElementById('current-factory-title').innerText = titleMap[category];
-        setupTableHeaders(category);
-        await fetchMaterialsFromDatabase(category);
-      }
-    }
-
-    function switchWoodSubCategory(subCat, btn) {
-      currentWoodSubCategory = subCat;
-      document.querySelectorAll('.list-tab-item').forEach(b => b.classList.remove('active'));
-      if(btn) btn.classList.add('active');
-      setupTableHeaders('wood', subCat);
-      fetchMaterialsFromDatabase('wood', subCat);
-    }
-
-    function closeSubFactory() {
-      document.getElementById('sub-factory-container').style.display = 'none';
-      document.getElementById('factory-selection-menu').style.display = 'block';
-    }
-
-    function setupTableHeaders(category, subCat = '') {
-      const tr = document.getElementById('table-headers');
+    function switchMainList(listId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.top-menu-btn').forEach(b => b.classList.remove('active'));
       
-      if (category === 'wood') {
-        if (subCat === 'natural_wood') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>نوع الخشب الطبيعي</th>
-            <th>الحجم (متر مكعب m³)</th>
-            <th>موقع التخزين</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        } else if (subCat === 'panels') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>السماكة ( مم )</th>
-            <th>الأبعاد (سم)</th>
-            <th>الكمية المتوفرة (ألواح)</th>
-            <th>موقع التخزين</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        } else if (subCat === 'adhesives') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>الماركة / النوع</th>
-            <th>الكمية المتوفرة</th>
-            <th>سعة العبوة</th>
-            <th>موقع التخزين</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        } else if (subCat === 'hardware') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>المقاس / المواصفات</th>
-            <th>الكمية المتوفرة</th>
-            <th>الوحدة</th>
-            <th>موقع التخزين</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        } else if (subCat === 'tools') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>الماركة / الموديل</th>
-            <th>العدد المتوفر</th>
-            <th>موقع التخزين / العهدة</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        } else if (subCat === 'machinery') {
-          tr.innerHTML = `
-            <th>خامات النجارة بالخشب</th>
-            <th>المقاس / المواصفة</th>
-            <th>الكمية المتوفرة</th>
-            <th>موقع التخزين</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
-          `;
-        }
-      } else if (category === 'leather') {
-        tr.innerHTML = `
-          <th>خامات النجارة بالخشب</th>
-          <th>رقم الجلد</th>
-          <th>الكمية المتوفرة</th>
-          <th>الوحدة</th>
-          <th>موقع التخزين</th>
-          <th>الحالة</th>
-          <th>إجراءات</th>
-        `;
-      } else {
-        tr.innerHTML = `
-          <th>خامات النجارة بالخشب</th>
-          <th>الماركة / التصنيف</th>
-          <th>كود اللون</th>
-          <th>الكمية المتوفرة</th>
-          <th>حجم العبوة</th>
-          <th>موقع التخزين</th>
-          <th>الحالة</th>
-          <th>إجراءات</th>
-        `;
+      document.getElementById(listId).classList.add('active');
+      btn.classList.add('active');
+
+      if (listId === 'wood-factory') {
+        activeMainCategory = 'wood';
+        loadWoodList(activeWoodSubList);
+      } else if (listId === 'leather-factory') {
+        activeMainCategory = 'leather';
+        fetchOtherFactoryData('leather');
+      } else if (listId === 'paint-factory') {
+        activeMainCategory = 'paint';
+        fetchOtherFactoryData('paint');
       }
     }
 
-    async function fetchMaterialsFromDatabase(category, subCat = '') {
-      const tbody = document.getElementById('materials-table-body');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب القائمة من السيرفر أونلاين...</td></tr>';
-
-      let query = supabaseClient.from('materials').select('*').eq('category', category);
-      if (category === 'wood') {
-        query = query.eq('unit', subCat);
+    function loadWoodList(subCat, btn) {
+      activeWoodSubList = subCat;
+      if (btn) {
+        document.querySelectorAll('.sub-list-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
       }
 
-      const { data, error } = await query;
+      const titleMap = {
+        'natural_wood': 'قائمة الخشب الطبيعي (قياس m³)',
+        'panels': 'قائمة المسطحات (قياس سم)',
+        'adhesives': 'قائمة المواد اللاصقة',
+        'hardware': 'قائمة الحدايد والإكسسوارات',
+        'tools': 'قائمة المعدات والأدوات',
+        'machinery': 'قائمة معدات التشغيل'
+      };
+      document.getElementById('wood-list-title').innerText = titleMap[subCat];
 
-      if (error) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--danger);">حدث خطأ أثناء تحميل البيانات!</td></tr>';
+      const tr = document.getElementById('wood-table-headers');
+      if (subCat === 'natural_wood') {
+        tr.innerHTML = `<th>خامات النجارة بالخشب</th><th>نوع الخشب الطبيعي</th><th>الحجم (m³)</th><th>موقع التخزين</th><th>الحالة</th><th>إجراءات</th>`;
+      } else if (subCat === 'panels') {
+        tr.innerHTML = `<th>خامات النجارة بالخشب</th><th>السماكة (مم)</th><th>الأبعاد (سم)</th><th>الكمية (ألواح)</th><th>موقع التخزين</th><th>الحالة</th><th>إجراءات</th>`;
+      } else {
+        tr.innerHTML = `<th>خامات النجارة بالخشب</th><th>التفاصيل / المواصفات</th><th>الكمية المتوفرة</th><th>الموقع / العهدة</th><th>الحالة</th><th>إجراءات</th>`;
+      }
+
+      fetchWoodData();
+    }
+
+    async function fetchWoodData() {
+      const tbody = document.getElementById('wood-table-body');
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ جاري جلب القائمة...</td></tr>';
+
+      const { data, error } = await supabaseClient.from('materials').select('*').eq('category', 'wood').eq('unit', activeWoodSubList);
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد أصناف مسجلة في هذه القائمة بعد.</td></tr>';
         return;
       }
 
-      materialsData = data || [];
-
-      if (materialsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد أصناف في هذه القائمة حتى الآن. اضغط "+ إضافة صنف جديد" للإضافة!</td></tr>';
-        return;
-      }
-
+      currentFetchedData = data;
       tbody.innerHTML = '';
-      materialsData.forEach(item => {
+      data.forEach(item => {
         const qty = parseInt(item.quantity) || 0;
-        let badgeHtml = '';
-
-        if (qty > 5) {
-          badgeHtml = '<span class="badge badge-success">🟢 متوفر</span>';
-        } else if (qty >= 1 && qty <= 5) {
-          badgeHtml = '<span class="badge badge-warning">🟡 وشك النفاذ</span>';
-        } else {
-          badgeHtml = '<span class="badge badge-danger">🔴 غير متوفر</span>';
-        }
+        let badge = qty > 5 ? '<span class="status-badge status-ok">🟢 متوفر</span>' : '<span class="status-badge status-empty">🔴 منخفض</span>';
 
         const tr = document.createElement('tr');
-
-        if (category === 'wood') {
-          if (subCat === 'natural_wood') {
-            tr.innerHTML = `
-              <td><strong>${item.title || '-'}</strong></td>
-              <td>${item.wood_type || '-'}</td>
-              <td><strong style="color: var(--tajalla-gold); font-size: 1.05rem;">${item.dimensions || '0'} m³</strong></td>
-              <td>${item.location || '-'}</td>
-              <td>${badgeHtml}</td>
-              <td>
-                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-              </td>
-            `;
-          } else if (subCat === 'panels') {
-            tr.innerHTML = `
-              <td><strong>${item.title || '-'}</strong></td>
-              <td>${item.thickness || '-'}</td>
-              <td>${item.dimensions || '-'} سم</td>
-              <td><strong style="color: var(--tajalla-gold); font-size: 1.05rem;">${qty}</strong></td>
-              <td>${item.location || '-'}</td>
-              <td>${badgeHtml}</td>
-              <td>
-                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-              </td>
-            `;
-          } else {
-            tr.innerHTML = `
-              <td><strong>${item.title || '-'}</strong></td>
-              <td>${item.wood_type || item.thickness || '-'}</td>
-              <td><strong style="color: var(--tajalla-gold); font-size: 1.05rem;">${qty}</strong></td>
-              <td>${item.dimensions || item.location || '-'}</td>
-              <td>${badgeHtml}</td>
-              <td>
-                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-              </td>
-            `;
-          }
+        if (activeWoodSubList === 'natural_wood') {
+          tr.innerHTML = `<td><strong>${item.title}</strong></td><td>${item.wood_type || '-'}</td><td><strong style="color:var(--gold-primary)">${item.dimensions || '0'} m³</strong></td><td>${item.location || '-'}</td><td>${badge}</td><td><button class="btn-edit" onclick="openModal('wood', ${item.id})">تعديل</button><button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button></td>`;
+        } else if (activeWoodSubList === 'panels') {
+          tr.innerHTML = `<td><strong>${item.title}</strong></td><td>${item.thickness || '-'}</td><td>${item.dimensions || '-'} سم</td><td><strong style="color:var(--gold-primary)">${qty}</strong></td><td>${item.location || '-'}</td><td>${badge}</td><td><button class="btn-edit" onclick="openModal('wood', ${item.id})">تعديل</button><button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button></td>`;
         } else {
-          tr.innerHTML = `
-            <td><strong>${item.title || '-'}</strong></td>
-            <td>${item.wood_type || '-'}</td>
-            <td><strong style="color: var(--tajalla-gold); font-size: 1.05rem;">${qty}</strong></td>
-            <td>${item.thickness || 'متر'}</td>
-            <td>${item.location || '-'}</td>
-            <td>${badgeHtml}</td>
-            <td>
-              <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-              <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-            </td>
-          `;
+          tr.innerHTML = `<td><strong>${item.title}</strong></td><td>${item.wood_type || item.thickness || '-'}</td><td><strong style="color:var(--gold-primary)">${qty}</strong></td><td>${item.location || '-'}</td><td>${badge}</td><td><button class="btn-edit" onclick="openModal('wood', ${item.id})">تعديل</button><button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button></td>`;
         }
-
         tbody.appendChild(tr);
       });
     }
 
-    function openItemModal(id = null) {
-      document.getElementById('item-id').value = id || '';
-      
-      if (currentCategory === 'wood') {
-        if (currentWoodSubCategory === 'natural_wood') {
-          document.getElementById('label-wood-type').innerText = 'نوع الخشب الطبيعي:';
-          document.getElementById('field-thickness').style.display = 'none';
-          document.getElementById('label-dimensions').innerText = 'الحجم بالمتر المكعب (m³):';
-          document.getElementById('field-unit').style.display = 'none';
-        } else if (currentWoodSubCategory === 'panels') {
-          document.getElementById('label-wood-type').innerText = 'نوع المسطح (MDF / أبلكاش):';
-          document.getElementById('field-thickness').style.display = 'block';
-          document.getElementById('label-thickness').innerText = 'السماكة (مم):';
-          document.getElementById('label-dimensions').innerText = 'الأبعاد (سم):';
-          document.getElementById('field-unit').style.display = 'none';
-        } else {
-          document.getElementById('label-wood-type').innerText = 'التفاصيل / الماركة / المقاس:';
-          document.getElementById('field-thickness').style.display = 'block';
-          document.getElementById('label-dimensions').innerText = 'الحجم / العبوة:';
-          document.getElementById('field-unit').style.display = 'block';
-        }
+    async function fetchOtherFactoryData(cat) {
+      const tbody = document.getElementById(`${cat}-table-body`);
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري تحميل البيانات...</td></tr>';
+
+      const { data } = await supabaseClient.from('materials').select('*').eq('category', cat);
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد أصناف مسجلة هنا.</td></tr>';
+        return;
       }
 
+      currentFetchedData = data;
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const qty = parseInt(item.quantity) || 0;
+        let badge = qty > 5 ? '<span class="status-badge status-ok">🟢 متوفر</span>' : '<span class="status-badge status-empty">🔴 منخفض</span>';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${item.title}</strong></td><td>${item.wood_type || '-'}</td><td><strong style="color:var(--gold-primary)">${qty}</strong></td><td>${item.thickness || 'حبة'}</td><td>${item.location || '-'}</td><td>${badge}</td><td><button class="btn-edit" onclick="openModal('${cat}', ${item.id})">تعديل</button><button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(cat = activeMainCategory, id = null) {
+      document.getElementById('item-id').value = id || '';
+      
       if (id) {
-        document.getElementById('modal-title').innerText = 'تعديل بيانات الصنف';
-        const item = materialsData.find(i => i.id === id);
+        const item = currentFetchedData.find(i => i.id === id);
         if (item) {
           document.getElementById('modal-title-input').value = item.title || '';
-          document.getElementById('modal-wood-type-input').value = item.wood_type || '';
+          document.getElementById('modal-type-input').value = item.wood_type || '';
           document.getElementById('modal-thickness-input').value = item.thickness || '';
           document.getElementById('modal-dimensions-input').value = item.dimensions || '';
           document.getElementById('modal-quantity-input').value = item.quantity || 0;
           document.getElementById('modal-location-input').value = item.location || '';
         }
       } else {
-        document.getElementById('modal-title').innerText = 'إضافة صنف جديد';
         document.getElementById('modal-title-input').value = '';
-        document.getElementById('modal-wood-type-input').value = '';
+        document.getElementById('modal-type-input').value = '';
         document.getElementById('modal-thickness-input').value = '';
         document.getElementById('modal-dimensions-input').value = '';
         document.getElementById('modal-quantity-input').value = 10;
-        document.getElementById('modal-location-input').value = 'مستودع الخشب الرئيسي';
+        document.getElementById('modal-location-input').value = 'المستودع الرئيسي';
       }
 
       document.getElementById('item-modal').style.display = 'flex';
     }
 
-    function closeItemModal() {
+    function closeModal() {
       document.getElementById('item-modal').style.display = 'none';
     }
 
-    async function saveItemFromModal() {
+    async function saveItem() {
       const id = document.getElementById('item-id').value;
       const title = document.getElementById('modal-title-input').value.trim();
       if (!title) return;
 
       const payload = {
         title: title,
-        category: currentCategory,
-        wood_type: document.getElementById('modal-wood-type-input').value,
+        category: activeMainCategory,
+        wood_type: document.getElementById('modal-type-input').value,
         thickness: document.getElementById('modal-thickness-input').value,
         dimensions: document.getElementById('modal-dimensions-input').value,
         quantity: parseInt(document.getElementById('modal-quantity-input').value) || 0,
-        unit: currentCategory === 'wood' ? currentWoodSubCategory : document.getElementById('modal-unit-input').value,
+        unit: activeMainCategory === 'wood' ? activeWoodSubList : 'unit',
         location: document.getElementById('modal-location-input').value
       };
 
@@ -656,14 +519,16 @@
         await supabaseClient.from('materials').insert([payload]);
       }
 
-      closeItemModal();
-      fetchMaterialsFromDatabase(currentCategory, currentWoodSubCategory);
+      closeModal();
+      if (activeMainCategory === 'wood') loadWoodList(activeWoodSubList);
+      else fetchOtherFactoryData(activeMainCategory);
     }
 
     async function deleteItem(id) {
-      if (confirm("هل أنت تأكد من حذف هذا الصنف من قاعدة البيانات أونلاين؟")) {
+      if (confirm("هل أنت تأكد من الحذف؟")) {
         await supabaseClient.from('materials').delete().eq('id', id);
-        fetchMaterialsFromDatabase(currentCategory, currentWoodSubCategory);
+        if (activeMainCategory === 'wood') loadWoodList(activeWoodSubList);
+        else fetchOtherFactoryData(activeMainCategory);
       }
     }
   </script>
