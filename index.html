@@ -75,18 +75,38 @@
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .add-btn { background: var(--success); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* Tables */
+    /* Inline Add Form Container */
+    .inline-form-card {
+      background: #111827; border: 1px solid var(--accent); border-radius: 10px; padding: 18px; margin-bottom: 20px; display: none;
+    }
+    .inline-form-card h3 { margin-bottom: 12px; color: var(--accent); font-size: 1rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 0.8rem; color: var(--text-muted); }
+    .form-group input, .form-group select {
+      background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 0.9rem;
+    }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .save-btn { background: var(--success); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .cancel-btn { background: #334155; color: var(--text-muted); border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; }
+
+    /* Tables & Inputs Inside Table */
     .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
     th { background: #111827; color: var(--accent); }
     
+    .table-qty-input {
+      width: 70px; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 4px 6px; border-radius: 6px; text-align: center; font-weight: bold; outline: none;
+    }
+    .table-qty-input:focus { border-color: var(--accent); }
+
     .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
     .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-    .edit-qty-btn { background: var(--accent); color: #0f172a; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-right: 5px; }
+    .save-row-btn { background: var(--accent); color: #0f172a; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-right: 5px; }
 
     /* Operations Kanban */
     .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
@@ -162,7 +182,7 @@
         <div class="warehouse-grid">
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي')">
             <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي</h3>
-            <p>الأنواع والمقاس بالحساب بالمتر المكعب (m³)</p>
+            <p>الأنواع، المقاس (m³)، وعدد الألواح</p>
           </div>
 
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح')">
@@ -197,7 +217,19 @@
         <div class="sub-header">
           <button class="back-btn" onclick="backFromTable()">⬅️ العودة للورا</button>
           <h2 id="current-warehouse-title">المستودع</h2>
-          <button class="add-btn" onclick="addNewItemPrompt()">+ إضافة صنف جديد</button>
+          <button class="add-btn" onclick="toggleAddForm(true)">+ إضافة صنف جديد</button>
+        </div>
+
+        <!-- نموذج الإضافة السريع المدمج بدلاً من النوافذ المنبثقة -->
+        <div id="inline-add-form" class="inline-form-card">
+          <h3>➕ إضافة صنف جديد</h3>
+          <div id="form-fields-grid" class="form-grid">
+            <!-- يتم توليد الخانات بناءً على القسم -->
+          </div>
+          <div class="form-actions">
+            <button class="cancel-btn" onclick="toggleAddForm(false)">إلغاء</button>
+            <button class="save-btn" onclick="submitNewItem()">حفظ الصنف 💾</button>
+          </div>
         </div>
 
         <div class="table-container">
@@ -334,6 +366,7 @@
     }
 
     function backFromTable() {
+      toggleAddForm(false);
       document.getElementById('sub-warehouse-container').style.display = 'none';
       if (currentCategory === 'wood') {
         document.getElementById('wood-categories-menu').style.display = 'block';
@@ -346,6 +379,7 @@
       currentCategory = category;
       currentWoodUnit = subUnit;
 
+      toggleAddForm(false);
       document.getElementById('warehouse-selection-menu').style.display = 'none';
       document.getElementById('wood-categories-menu').style.display = 'none';
       document.getElementById('sub-warehouse-container').style.display = 'block';
@@ -369,16 +403,16 @@
       const tr = document.getElementById('table-headers');
       if (category === 'wood') {
         if (currentWoodUnit === 'natural_wood') {
-          // الخشب الطبيعي: نوع الخشب | المقاس بالمتر المكعب | موقع التخزين | الحالة | إجراءات
+          // الخشب الطبيعي: نوع الخشب | المقاس (m³) | عدد الألواح | موقع التخزين | الحالة | إجراءات
           tr.innerHTML = `
             <th>نوع الخشب</th>
             <th>المقاس بالمتر المكعب (m³)</th>
+            <th>عدد الألواح</th>
             <th>موقع التخزين</th>
             <th>الحالة تلقائياً</th>
             <th>إجراءات</th>
           `;
         } else if (currentWoodUnit === 'panels') {
-          // المسطحات والألواح: اسم الصنف | المقاس (جامبو/ستاندر) | السماكة بال مم | الكمية المتوفرة | موقع التخزين | الحالة | إجراءات
           tr.innerHTML = `
             <th>اسم الصنف</th>
             <th>المقاس</th>
@@ -462,33 +496,40 @@
 
         if (category === 'wood') {
           if (currentWoodUnit === 'natural_wood') {
-            // عرض الخشب الطبيعي بدون عمود اسم الصنف
+            // الخشب الطبيعي
             tr.innerHTML = `
               <td><strong>${item.wood_type || '-'}</strong></td>
               <td><strong style="color: var(--wood-color); font-size: 1.05rem;">${item.dimensions || '0'} m³</strong></td>
+              <td>
+                <input type="number" id="input-qty-${item.id}" class="table-qty-input" value="${qty}">
+              </td>
               <td>${item.location || '-'}</td>
               <td>${badgeHtml}</td>
-              <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل ✏️</button></td>
+              <td><button class="save-row-btn" onclick="saveDirectQuantity(${item.id})">حفظ 💾</button></td>
             `;
           } else if (currentWoodUnit === 'panels') {
-            // عرض المسطحات والألواح بالترتيب الجديد
+            // المسطحات والألواح
             tr.innerHTML = `
               <td><strong>${item.title || '-'}</strong></td>
               <td><span style="color: var(--accent); font-weight: bold;">${item.dimensions || '-'}</span></td>
               <td>${item.thickness || '-'} مم</td>
-              <td><strong style="color: #fff; font-size: 1.05rem;">${qty}</strong></td>
+              <td>
+                <input type="number" id="input-qty-${item.id}" class="table-qty-input" value="${qty}">
+              </td>
               <td>${item.location || '-'}</td>
               <td>${badgeHtml}</td>
-              <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل ✏️</button></td>
+              <td><button class="save-row-btn" onclick="saveDirectQuantity(${item.id})">حفظ 💾</button></td>
             `;
           } else {
             tr.innerHTML = `
               <td><strong>${item.title || '-'}</strong></td>
               <td>${item.wood_type || item.thickness || '-'}</td>
-              <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+              <td>
+                <input type="number" id="input-qty-${item.id}" class="table-qty-input" value="${qty}">
+              </td>
               <td>${item.location || '-'}</td>
               <td>${badgeHtml}</td>
-              <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل ✏️</button></td>
+              <td><button class="save-row-btn" onclick="saveDirectQuantity(${item.id})">حفظ 💾</button></td>
             `;
           }
         } else {
@@ -496,22 +537,25 @@
             <td><strong>${item.title || '-'}</strong></td>
             <td>${item.wood_type || '-'}</td>
             <td>${item.thickness || '-'}</td>
-            <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+            <td>
+              <input type="number" id="input-qty-${item.id}" class="table-qty-input" value="${qty}">
+            </td>
             <td>${item.dimensions || item.unit || '-'}</td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td><button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل الكمية ✏️</button></td>
+            <td><button class="save-row-btn" onclick="saveDirectQuantity(${item.id})">حفظ 💾</button></td>
           `;
         }
         tbody.appendChild(tr);
       });
     }
 
-    async function updateQuantityPrompt(id, currentQty) {
-      const newQtyStr = prompt("أدخل الكمية الجديدة المعدلة:", currentQty);
-      if (newQtyStr === null) return;
+    /* تعديل الكمية مباشرة من الجدول دون نوافذ */
+    async function saveDirectQuantity(id) {
+      const inputEl = document.getElementById(`input-qty-${id}`);
+      if (!inputEl) return;
 
-      const newQty = parseInt(newQtyStr);
+      const newQty = parseInt(inputEl.value);
       if (isNaN(newQty) || newQty < 0) {
         alert("يرجى إدخال رقم صحيح للكمية!");
         return;
@@ -523,60 +567,111 @@
         .eq('id', id);
 
       if (error) {
-        alert("حدث خطأ أثناء حفظ الكمية: " + error.message);
+        alert("حدث خطأ أثناء التحديث: " + error.message);
       } else {
         fetchMaterialsFromDatabase(currentCategory);
       }
     }
 
-    /* معالج الإضافة حسب القسم والمقاس المختار */
-    async function addNewItemPrompt() {
-      let title = "";
-      let wood_type = "";
-      let thickness = "";
-      let dimensions = "";
-      let qtyStr = "10";
-      let location = "";
+    /* التحكم بظهور كارت إضافة صنف جديد بدون Popups */
+    function toggleAddForm(show) {
+      const formCard = document.getElementById('inline-add-form');
+      const fieldsGrid = document.getElementById('form-fields-grid');
+
+      if (!show) {
+        formCard.style.display = 'none';
+        return;
+      }
+
+      fieldsGrid.innerHTML = '';
 
       if (currentCategory === 'wood' && currentWoodUnit === 'natural_wood') {
-        // الخشب الطبيعي (بدون اسم صنف)
-        wood_type = prompt("نوع الخشب (مثال: زان، سويدي، ميرنتي، أرو):");
-        if (!wood_type) return;
-
-        dimensions = prompt("المقاس بالمتر المكعب (m³) (مثال: 1.5):", "1.0") || "0";
-        location = prompt("موقع التخزين / الرف:", "مستودع الخشب الطبيعي - رف 1") || "";
-        qtyStr = "10"; // افتراضي لحالة المخزون المتوفر
-
+        fieldsGrid.innerHTML = `
+          <div class="form-group">
+            <label>نوع الخشب</label>
+            <input type="text" id="add-wood-type" placeholder="مثال: زان، سويدي">
+          </div>
+          <div class="form-group">
+            <label>المقاس (m³)</label>
+            <input type="text" id="add-dimensions" placeholder="مثال: 1.5">
+          </div>
+          <div class="form-group">
+            <label>عدد الألواح</label>
+            <input type="number" id="add-quantity" value="10">
+          </div>
+          <div class="form-group">
+            <label>موقع التخزين</label>
+            <input type="text" id="add-location" placeholder="مثال: رف 1">
+          </div>
+        `;
       } else if (currentCategory === 'wood' && currentWoodUnit === 'panels') {
-        // المسطحات والألواح
-        title = prompt("اسم الصنف (مثال: MDF إسباني، أبلكاش):");
-        if (!title) return;
-
-        // اختيار المقاس بين جامبو أو ستاندر
-        const sizeChoice = prompt("اختر المقاس المطلوب:\n1 - جامبو\n2 - ستاندر", "1");
-        if (sizeChoice === "1") {
-          dimensions = "جامبو";
-        } else if (sizeChoice === "2") {
-          dimensions = "ستاندر";
-        } else {
-          dimensions = sizeChoice || "ستاندر";
-        }
-
-        thickness = prompt("السماكة بالـ (مم) (مثال: 18، 12، 3):", "18") || "";
-        qtyStr = prompt("الكمية المتوفرة (عدد الألواح):", "10") || "0";
-        location = prompt("موقع التخزين / الرف:", "مستودع الألواح - رف B2") || "";
-
+        fieldsGrid.innerHTML = `
+          <div class="form-group">
+            <label>اسم الصنف</label>
+            <input type="text" id="add-title" placeholder="مثال: MDF إسباني">
+          </div>
+          <div class="form-group">
+            <label>المقاس</label>
+            <select id="add-dimensions">
+              <option value="جامبو">جامبو</option>
+              <option value="ستاندر">ستاندر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>السماكة (مم)</label>
+            <input type="text" id="add-thickness" placeholder="مثال: 18">
+          </div>
+          <div class="form-group">
+            <label>الكمية المتوفرة</label>
+            <input type="number" id="add-quantity" value="10">
+          </div>
+          <div class="form-group">
+            <label>موقع التخزين</label>
+            <input type="text" id="add-location" placeholder="مثال: رف B2">
+          </div>
+        `;
       } else {
-        // باقي الأقسام العادية
-        title = prompt("اسم الصنف / المادة:");
-        if (!title) return;
-
-        wood_type = prompt("النوع / التصنيف:") || "";
-        thickness = prompt("السماكة / الكود:") || "";
-        dimensions = prompt("المقاس / الأبعاد:") || "";
-        qtyStr = prompt("الكمية المتوفرة حالياً:", "10");
-        location = prompt("موقع التخزين:", "المستودع الرئيسي") || "";
+        fieldsGrid.innerHTML = `
+          <div class="form-group">
+            <label>اسم الصنف / المادة</label>
+            <input type="text" id="add-title" placeholder="اسم المادة">
+          </div>
+          <div class="form-group">
+            <label>النوع / التصنيف</label>
+            <input type="text" id="add-wood-type" placeholder="التصنيف">
+          </div>
+          <div class="form-group">
+            <label>السماكة / الكود</label>
+            <input type="text" id="add-thickness" placeholder="السماكة/الكود">
+          </div>
+          <div class="form-group">
+            <label>المقاس / الأبعاد</label>
+            <input type="text" id="add-dimensions" placeholder="الأبعاد">
+          </div>
+          <div class="form-group">
+            <label>الكمية المتوفرة</label>
+            <input type="number" id="add-quantity" value="10">
+          </div>
+          <div class="form-group">
+            <label>موقع التخزين</label>
+            <input type="text" id="add-location" placeholder="موقع الرف">
+          </div>
+        `;
       }
+
+      formCard.style.display = 'block';
+    }
+
+    /* حفظ البيانات المدخلة في الكارت */
+    async function submitNewItem() {
+      const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
+
+      const title = getVal('add-title');
+      const wood_type = getVal('add-wood-type');
+      const thickness = getVal('add-thickness');
+      const dimensions = getVal('add-dimensions');
+      const qtyStr = getVal('add-quantity');
+      const location = getVal('add-location');
 
       const quantity = parseInt(qtyStr) || 0;
 
@@ -596,7 +691,7 @@
       if (error) {
         alert("حدث خطأ أثناء إضافة الصنف: " + error.message);
       } else {
-        alert("تم إضافة الصنف بنجاح! 🎉");
+        toggleAddForm(false);
         fetchMaterialsFromDatabase(currentCategory);
       }
     }
