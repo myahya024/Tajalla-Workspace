@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام إدارة הورش والمستودعات الاحترافي</title>
+  <title>نظام إدارة الورش والمستودعات الاحترافي</title>
+  <!-- مكتبة Supabase للربط السحابي -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg: #0f172a;
@@ -34,22 +36,14 @@
     }
     .login-box h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.3rem; }
     
-    .password-wrapper {
-      position: relative; width: 100%; margin-bottom: 15px;
-    }
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
     .password-wrapper input {
       width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid var(--border);
       border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
     }
-    .toggle-password {
-      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7;
-    }
+    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7; }
 
-    .login-box button {
-      width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none;
-      border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
-    }
+    .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     #main-app { display: none; }
 
@@ -68,41 +62,40 @@
 
     /* Warehouse Cards Grid */
     .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
-    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s; }
     .warehouse-card:hover { transform: translateY(-4px); }
     .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
     .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
-    .warehouse-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
-    .warehouse-card p { font-size: 0.85rem; color: var(--text-muted); }
 
     /* Sub-warehouse details */
     .sub-warehouse-view { display: none; margin-top: 20px; }
-    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold; }
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .add-btn { background: var(--success); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
     /* Tables */
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-top: 15px; }
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
     th { background: #111827; color: var(--accent); }
     
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
     .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
+    .edit-qty-btn { background: var(--accent); color: #0f172a; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-right: 5px; }
+
     /* Operations Kanban */
     .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
     .kanban-col { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); min-height: 350px; }
-    .col-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-    .card { background: #0f172a; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--accent); }
-    .card h4 { font-size: 0.9rem; margin-bottom: 6px; }
-    .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .col-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
   </style>
 </head>
 <body>
 
-  <!-- شاشة الدخول والتشفير -->
+  <!-- شاشة الدخول -->
   <div id="login-overlay">
     <div class="login-box">
       <h2>🔒 دخول آمن للورشة</h2>
@@ -114,7 +107,7 @@
       </div>
 
       <button onclick="checkPin()">دخول النظام</button>
-      <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">الرمز السري خاطئ، يرجى المحاولة مرة أخرى!</p>
+      <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">الرمز السري خاطئ!</p>
     </div>
   </div>
 
@@ -125,7 +118,7 @@
       <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
     </header>
 
-    <!-- القوائم الرئيسية الخارجية -->
+    <!-- القوائم الرئيسية -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchMainTab('raw-materials', this)">📦 مواد خام المستودعات</button>
       <button class="tab-btn" onclick="switchMainTab('general-inventory', this)">🏷️ المخزون العام والعينات</button>
@@ -137,12 +130,12 @@
       
       <!-- اختيار المستودعات الفرعية -->
       <div id="warehouse-selection-menu">
-        <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لعرض الأصناف والمواصفات:</h2>
+        <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لإدارة الأصناف أونلاين:</h2>
         
         <div class="warehouse-grid">
           <div class="warehouse-card wood" onclick="openSubWarehouse('wood')">
             <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
-            <p>سجل الألواح، أنواع الخشب، السماكات، الأبعاد، ومواقع التخزين</p>
+            <p>سجل الألواح، أنواع الخشب، السماكات، الأبعاد، وتعديل الكميات فوراً</p>
           </div>
 
           <div class="warehouse-card leather" onclick="openSubWarehouse('leather')">
@@ -152,158 +145,28 @@
 
           <div class="warehouse-card paint" onclick="openSubWarehouse('paint')">
             <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان</h3>
-            <p>الدهانات، الأكواد، الماركات، درجات اللون، والمواد الكيميائية</p>
+            <p>الدهانات، الأكواد، الماركات، درجات اللون، والعبوات</p>
           </div>
         </div>
       </div>
 
-      <!-- عرض تفاصيل مصنع الخشب -->
-      <div id="wood-view" class="sub-warehouse-view">
-        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
-        <h2 style="color: var(--wood-color); margin-bottom: 10px;">🪵 مستودع مواد خام الخشب</h2>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>كود الصنف</th>
-                <th>اسم المادة / الخشب</th>
-                <th>نوع الخشب</th>
-                <th>السماكة (مم)</th>
-                <th>الأبعاد / المقاس (سم)</th>
-                <th>الكمية المتوفرة</th>
-                <th>وحدة القياس</th>
-                <th>موقع التخزين (الرف)</th>
-                <th>حالة المخزون</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>WD-101</td>
-                <td>ألوح إم دي إف عادي</td>
-                <td>MDF</td>
-                <td>3 مم</td>
-                <td>122 × 244 سم</td>
-                <td>180</td>
-                <td>لوح</td>
-                <td>مستودع A - رف 01</td>
-                <td><span class="badge badge-success">متوفر</span></td>
-              </tr>
-              <tr>
-                <td>WD-102</td>
-                <td>خشب زان ألماني أحمر</td>
-                <td>زان طبيعي</td>
-                <td>50 مم</td>
-                <td>30 × 300 سم</td>
-                <td>12</td>
-                <td>متر مكعب</td>
-                <td>مستودع A - رف 04</td>
-                <td><span class="badge badge-warning">وشك النفاذ</span></td>
-              </tr>
-              <tr>
-                <td>WD-103</td>
-                <td>خشب سويدي (مغلف)</td>
-                <td>سويدي</td>
-                <td>18 مم</td>
-                <td>120 × 240 سم</td>
-                <td>85</td>
-                <td>لوح</td>
-                <td>مستودع A - رف 02</td>
-                <td><span class="badge badge-success">متوفر</span></td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- عرض تفاصيل المستودع الفرعي -->
+      <div id="sub-warehouse-container" class="sub-warehouse-view">
+        <div class="sub-header">
+          <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة للرئيسية</button>
+          <h2 id="current-warehouse-title">المستودع</h2>
+          <button class="add-btn" onclick="addNewItemPrompt()">+ إضافة صنف جديد</button>
         </div>
-      </div>
 
-      <!-- عرض تفاصيل مصنع الجلد -->
-      <div id="leather-view" class="sub-warehouse-view">
-        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
-        <h2 style="color: var(--leather-color); margin-bottom: 10px;">🥾 مستودع مواد خام الجلد</h2>
         <div class="table-container">
           <table>
             <thead>
-              <tr>
-                <th>كود الصنف</th>
-                <th>اسم الجِلد / الصنف</th>
-                <th>النوع</th>
-                <th>اللون / الدرجة</th>
-                <th>السُّمك / الملمس</th>
-                <th>الكمية المتاحة</th>
-                <th>وحدة القياس</th>
-                <th>موقع التخزين</th>
-                <th>حالة المخزون</th>
+              <tr id="table-headers">
+                <!-- تحميل الهيدر ديناميكياً -->
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>LTH-201</td>
-                <td>جلد إيطالي فاخر</td>
-                <td>طبيعي (Natural)</td>
-                <td>بني غامق (#04)</td>
-                <td>1.4 مم - ملمس ناعم</td>
-                <td>65</td>
-                <td>متر مربع</td>
-                <td>مستودع الجلد - A2</td>
-                <td><span class="badge badge-success">متوفر</span></td>
-              </tr>
-              <tr>
-                <td>LTH-202</td>
-                <td>جلد صناعي مقاوم للماء</td>
-                <td>صناعي (PU)</td>
-                <td>أسود مطفي</td>
-                <td>0.9 مم</td>
-                <td>8</td>
-                <td>لفة (Roll)</td>
-                <td>مستودع الجلد - B1</td>
-                <td><span class="badge badge-danger">منخفض جداً</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- عرض تفاصيل مصنع البوية -->
-      <div id="paint-view" class="sub-warehouse-view">
-        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
-        <h2 style="color: var(--paint-color); margin-bottom: 10px;">🎨 مستودع مواد خام البوية والدهانات</h2>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>كود الصنف</th>
-                <th>اسم المادة / الدهان</th>
-                <th>التصنيف / الماركة</th>
-                <th>كود درجة اللون (Code)</th>
-                <th>الكمية المتوفرة</th>
-                <th>حجم العبوة</th>
-                <th>تاريخ الانتهاء</th>
-                <th>موقع التخزين</th>
-                <th>الحالة</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>PNT-301</td>
-                <td>دهان ناري دوكو</td>
-                <td>أصيل / الجوزيرة</td>
-                <td>White Ral 9010</td>
-                <td>24</td>
-                <td>جالان (Gallon)</td>
-                <td>2027/05</td>
-                <td>مستودع المواد الخطرة - C1</td>
-                <td><span class="badge badge-success">سليم</span></td>
-              </tr>
-              <tr>
-                <td>PNT-302</td>
-                <td>أساس (أساس ناري)</td>
-                <td>جوتون (Jotun)</td>
-                <td>Grey Primer</td>
-                <td>5</td>
-                <td>جالان (Gallon)</td>
-                <td>2026/11</td>
-                <td>مستودع المواد الخطرة - C2</td>
-                <td><span class="badge badge-warning">يحتاج إعادة طلب</span></td>
-              </tr>
+            <tbody id="materials-table-body">
+              <!-- تحميل البيانات أونلاين هنا -->
             </tbody>
           </table>
         </div>
@@ -311,82 +174,58 @@
 
     </div>
 
-    <!-- 2. قائمة المخزون العام والعينات -->
+    <!-- 2. المخزون العام -->
     <div id="general-inventory" class="tab-content">
       <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">سجل عينات المنتجات والمخزون المكتمل:</h2>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>كود العينة</th>
               <th>اسم الصنف / العينة</th>
               <th>الفئة والتصنيف</th>
               <th>الكمية الجاهزة</th>
-              <th>موقع العرض / التخزين</th>
-              <th>ملاحظات</th>
+              <th>موقع العرض</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>SMP-01</td>
               <td>درع أكريليك مع قاعدة خشب زان</td>
               <td>عينات دروع وتكريم</td>
               <td>15 حبة</td>
               <td>صالة العرض - الرف 01</td>
-              <td>جاهز للعرض للعملاء</td>
-            </tr>
-            <tr>
-              <td>SMP-02</td>
-              <td>بوكس إهداء جلدي محفور بالليزر</td>
-              <td>عينات التغليف</td>
-              <td>5 حبات</td>
-              <td>صالة العرض - الرف 03</td>
-              <td>مطعم بنحاس ذهبي</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- 3. قائمة العمليات والحركات اليومية -->
+    <!-- 3. العمليات اليومية -->
     <div id="daily-operations" class="tab-content">
-      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">متابعة وتتبع حركات الورش والمصانع اليومية:</h2>
+      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">متابعة وتتبع حركات الورش اليومية:</h2>
       <div class="kanban-board">
-        <div class="kanban-col">
-          <div class="col-title">📥 طلبات تجهيز الخامات</div>
-          <div class="card">
-            <h4>طلب صرف 20 لوح MDF</h4>
-            <p><strong>المشروع:</strong> بوكسات الملكية</p>
-            <p><strong>التاريخ:</strong> اليوم 10:30 صباحاً</p>
-          </div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">🪚 مرحلة القص والنجارة</div>
-          <div class="card">
-            <h4>قص 50 قاعدة خشبية</h4>
-            <p><strong>المشروع:</strong> دروع شركة الأمل</p>
-          </div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">🎨 مرحلة البوية والتنشيف</div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">⚡ حفر ليزر وتجميع</div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">✅ جاهز للتسليم</div>
-        </div>
+        <div class="kanban-col"><div class="col-title">📥 طلبات تجهيز الخامات</div></div>
+        <div class="kanban-col"><div class="col-title">🪚 مرحلة القص والنجارة</div></div>
+        <div class="kanban-col"><div class="col-title">🎨 مرحلة البوية والتنشيف</div></div>
+        <div class="kanban-col"><div class="col-title">⚡ حفر ليزر وتجميع</div></div>
+        <div class="kanban-col"><div class="col-title">✅ جاهز للتسليم</div></div>
       </div>
     </div>
 
   </div>
 
   <script>
+    // ربط إعداداتك الخاصة بـ Supabase
+    const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
+    const SUPABASE_KEY = "sb_secret_iJpTo...publishable_G_rP3zltvsndCP2GrF5A0A_V1UVAS3f"; 
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     const SECRET_PIN = "$Ark0820$";
     const SESSION_KEY = "app_login_session";
     const SESSION_DURATION_MS = 30 * 60 * 1000; // 30 دقيقة
 
-    // فحص الجلسة فور فتح الصفحة
+    let currentCategory = 'wood';
+
     window.onload = function() {
       checkExistingSession();
     };
@@ -394,7 +233,6 @@
     function checkPin() {
       const input = document.getElementById('pin-input').value;
       if (input === SECRET_PIN) {
-        // حفظ وقت الدخول في ذاكرة المتصفح
         localStorage.setItem(SESSION_KEY, Date.now().toString());
         grantAccess();
       } else {
@@ -404,15 +242,11 @@
 
     function checkExistingSession() {
       const savedTime = localStorage.getItem(SESSION_KEY);
-      if (savedTime) {
-        const currentTime = Date.now();
-        if (currentTime - parseInt(savedTime) < SESSION_DURATION_MS) {
-          grantAccess();
-          return;
-        }
+      if (savedTime && (Date.now() - parseInt(savedTime) < SESSION_DURATION_MS)) {
+        grantAccess();
+      } else {
+        logout(false);
       }
-      // إذا انتهت الـ 30 دقيقة أو لا توجد جلسة
-      logout(false);
     }
 
     function grantAccess() {
@@ -420,12 +254,11 @@
       document.getElementById('main-app').style.display = 'block';
     }
 
-    function logout(clearAlert = true) {
+    function logout(alertUser = true) {
       localStorage.removeItem(SESSION_KEY);
       document.getElementById('login-overlay').style.display = 'flex';
       document.getElementById('main-app').style.display = 'none';
-      document.getElementById('pin-input').value = '';
-      if(clearAlert) alert('تم تسجيل الخروج وقفل النظام.');
+      if (alertUser) alert('تم تسجيل الخروج وقفل النظام.');
     }
 
     function togglePasswordVisibility() {
@@ -440,7 +273,6 @@
       }
     }
 
-    // التنقل بين القوائم الرئيسية الخارجية
     function switchMainTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
@@ -448,16 +280,168 @@
       btn.classList.add('active');
     }
 
-    // فتح المستودعات الفرعية للمواد الخام
-    function openSubWarehouse(type) {
+    async function openSubWarehouse(category) {
+      currentCategory = category;
       document.getElementById('warehouse-selection-menu').style.display = 'none';
-      document.querySelectorAll('.sub-warehouse-view').forEach(v => v.style.display = 'none');
-      document.getElementById(type + '-view').style.display = 'block';
+      document.getElementById('sub-warehouse-container').style.display = 'block';
+
+      const titleMap = {
+        'wood': '🪵 مستودع مواد خام الخشب',
+        'leather': '🥾 مستودع مواد خام الجلد',
+        'paint': '🎨 مستودع مواد خام البوية والدهانات'
+      };
+      document.getElementById('current-warehouse-title').innerText = titleMap[category];
+
+      setupTableHeaders(category);
+      await fetchMaterialsFromDatabase(category);
     }
 
     function closeSubWarehouse() {
-      document.querySelectorAll('.sub-warehouse-view').forEach(v => v.style.display = 'none');
+      document.getElementById('sub-warehouse-container').style.display = 'none';
       document.getElementById('warehouse-selection-menu').style.display = 'block';
+    }
+
+    function setupTableHeaders(category) {
+      const tr = document.getElementById('table-headers');
+      if (category === 'wood') {
+        tr.innerHTML = `
+          <th>اسم الصنف</th>
+          <th>نوع الخشب</th>
+          <th>السماكة</th>
+          <th>الأبعاد</th>
+          <th>الكمية المتوفرة</th>
+          <th>موقع التخزين</th>
+          <th>الحالة تلقائياً</th>
+          <th>إجراءات</th>
+        `;
+      } else if (category === 'leather') {
+        tr.innerHTML = `
+          <th>اسم الصنف</th>
+          <th>نوع الجلد</th>
+          <th>اللون/السُّمك</th>
+          <th>الكمية المتوفرة</th>
+          <th>الوحدة</th>
+          <th>موقع التخزين</th>
+          <th>الحالة تلقائياً</th>
+          <th>إجراءات</th>
+        `;
+      } else {
+        tr.innerHTML = `
+          <th>اسم الدهان/المادة</th>
+          <th>الماركة/التصنيف</th>
+          <th>كود اللون</th>
+          <th>الكمية المتوفرة</th>
+          <th>حجم العبوة</th>
+          <th>موقع التخزين</th>
+          <th>الحالة تلقائياً</th>
+          <th>إجراءات</th>
+        `;
+      }
+    }
+
+    async function fetchMaterialsFromDatabase(category) {
+      const tbody = document.getElementById('materials-table-body');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري تحميل البيانات أونلاين...</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('materials')
+        .select('*')
+        .eq('category', category);
+
+      if (error) {
+        console.error(error);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--danger);">حدث خطأ أثناء تحميل البيانات!</td></tr>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد مواد مسجلة حتى الآن. اضغط "+ إضافة صنف جديد" لإضافة أول صنف!</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const qty = parseInt(item.quantity) || 0;
+        let badgeHtml = '';
+
+        if (qty > 5) {
+          badgeHtml = '<span class="badge badge-success">🟢 متوفر</span>';
+        } else if (qty >= 1 && qty <= 5) {
+          badgeHtml = '<span class="badge badge-warning">🟡 وشك النفاذ</span>';
+        } else {
+          badgeHtml = '<span class="badge badge-danger">🔴 غير متوفر</span>';
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.title || '-'}</strong></td>
+          <td>${item.wood_type || '-'}</td>
+          <td>${item.thickness || '-'}</td>
+          <td>${item.dimensions || item.unit || '-'}</td>
+          <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+          <td>${item.location || '-'}</td>
+          <td>${badgeHtml}</td>
+          <td>
+            <button class="edit-qty-btn" onclick="updateQuantityPrompt(${item.id}, ${qty})">تعديل الكمية ✏️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function updateQuantityPrompt(id, currentQty) {
+      const newQtyStr = prompt("أدخل الكمية الجديدة المعدلة:", currentQty);
+      if (newQtyStr === null) return;
+
+      const newQty = parseInt(newQtyStr);
+      if (isNaN(newQty) || newQty < 0) {
+        alert("يرجى إدخال رقم صحيح للكمية!");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('materials')
+        .update({ quantity: newQty })
+        .eq('id', id);
+
+      if (error) {
+        alert("حدث خطأ أثناء حفظ الكمية: " + error.message);
+      } else {
+        fetchMaterialsFromDatabase(currentCategory);
+      }
+    }
+
+    async function addNewItemPrompt() {
+      const title = prompt("اسم الصنف / المادة:");
+      if (!title) return;
+
+      const wood_type = prompt("النوع / التصنيف (مثال: MDF / طبيعي / جالان):") || "";
+      const thickness = prompt("السماكة / الكود (مثال: 3 مم / Ral 9010):") || "";
+      const dimensions = prompt("الأبعاد / المقاس / العبوة (مثال: 122x244 سم):") || "";
+      const qtyStr = prompt("الكمية المتوفرة حالياً (رقم):", "10");
+      const location = prompt("موقع التخزين / الرف:", "المستودع الرئيسي - رف A1") || "";
+
+      const quantity = parseInt(qtyStr) || 0;
+
+      const { error } = await supabaseClient
+        .from('materials')
+        .insert([{
+          title: title,
+          category: currentCategory,
+          wood_type: wood_type,
+          thickness: thickness,
+          dimensions: dimensions,
+          quantity: quantity,
+          unit: 'وحدة',
+          location: location
+        }]);
+
+      if (error) {
+        alert("حدث خطأ أثناء إضافة الصنف: " + error.message);
+      } else {
+        alert("تم إضافة الصنف بنجاح في قاعدة البيانات السحابية! 🎉");
+        fetchMaterialsFromDatabase(currentCategory);
+      }
     }
   </script>
 </body>
