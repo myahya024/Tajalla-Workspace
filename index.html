@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام إدارة الورش والمستودعات الكبرى</title>
-  <!-- مكتبة Supabase للربط السحابي -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
       --accent: #38bdf8;
-      --accent-hover: #0284c7;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
@@ -25,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 20px; direction: rtl; }
     
-    /* Login Screen */
+    /* Login */
     #login-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
@@ -52,7 +50,7 @@
     .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
     .logout-btn:hover { background: var(--danger); color: #fff; }
 
-    /* Navigation Tabs */
+    /* Tabs */
     .nav-tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
     .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 12px 24px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: bold; font-size: 0.95rem; }
     .tab-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
@@ -60,7 +58,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Warehouse Cards Grid */
+    /* Warehouse Cards */
     .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
     .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s; }
     .warehouse-card:hover { transform: translateY(-4px); }
@@ -68,7 +66,12 @@
     .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
 
-    /* Sub-warehouse details */
+    /* Sub-tabs inside Wood Warehouse */
+    .sub-tabs-container { display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 8px; }
+    .sub-tab-btn { background: #0f172a; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; font-weight: bold; }
+    .sub-tab-btn.active { background: var(--wood-color); color: #0f172a; border-color: var(--wood-color); }
+
+    /* View */
     .sub-warehouse-view { display: none; margin-top: 20px; }
     .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -99,18 +102,13 @@
     .modal-box h3 { margin-bottom: 15px; color: var(--accent); text-align: center; font-size: 1.1rem; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
-    .form-group input, .form-group select {
+    .form-group input {
       width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; outline: none; font-size: 0.9rem;
     }
     .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
     .modal-actions button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .save-btn { background: var(--success); color: #fff; }
     .cancel-btn { background: var(--border); color: var(--text); }
-
-    /* Operations Kanban */
-    .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
-    .kanban-col { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); min-height: 350px; }
-    .col-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -148,23 +146,22 @@
     <!-- 1. قائمة مواد خام المستودعات -->
     <div id="raw-materials" class="tab-content active">
       
-      <!-- اختيار المستودعات الفرعية -->
       <div id="warehouse-selection-menu">
         <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لإدارة الأصناف أونلاين:</h2>
         
         <div class="warehouse-grid">
           <div class="warehouse-card wood" onclick="openSubWarehouse('wood')">
-            <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
-            <p>سجل الألواح، أنواع الخشب، السماكات، الأبعاد، وتعديل الكميات فوراً</p>
+            <h3 style="color: var(--wood-color);">🪵 مصنع الخشب</h3>
+            <p>خشب طبيعي (m³)، مسطحات (سم)، مواد لاصقة، حدايد وإكسسوارات، ومعدات التشغيل</p>
           </div>
 
           <div class="warehouse-card leather" onclick="openSubWarehouse('leather')">
-            <h3 style="color: var(--leather-color);">🥾 مواد خام مصنع الجلد</h3>
-            <p>سجل اسم الصنف، رقم الجلد، الكمية المتوفرة، الوحدة، وموقع التخزين</p>
+            <h3 style="color: var(--leather-color);">🥾 مصنع الجلد</h3>
+            <p>خامات النجارة، رقم الجلد، الكمية المتوفرة، الوحدة، وموقع التخزين</p>
           </div>
 
           <div class="warehouse-card paint" onclick="openSubWarehouse('paint')">
-            <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان</h3>
+            <h3 style="color: var(--paint-color);">🎨 مصنع البوية والدهانات</h3>
             <p>الدهانات، الأكواد، الماركات، درجات اللون، والعبوات</p>
           </div>
         </div>
@@ -178,6 +175,16 @@
           <button class="add-btn" onclick="openItemModal()">+ إضافة صنف جديد</button>
         </div>
 
+        <!-- أزرار القوائم الفرعية المخصصة لمصنع الخشب -->
+        <div id="wood-sub-tabs" class="sub-tabs-container" style="display: none;">
+          <button class="sub-tab-btn active" onclick="switchWoodSubCategory('natural_wood', this)">🪵 خشب طبيعي (m³)</button>
+          <button class="sub-tab-btn" onclick="switchWoodSubCategory('panels', this)">📐 المسطحات (سم)</button>
+          <button class="sub-tab-btn" onclick="switchWoodSubCategory('adhesives', this)">🧪 المواد اللاصقة</button>
+          <button class="sub-tab-btn" onclick="switchWoodSubCategory('hardware', this)">🔩 حدايد وإكسسوارات</button>
+          <button class="sub-tab-btn" onclick="switchWoodSubCategory('tools', this)">🛠️ المعدات والأدوات</button>
+          <button class="sub-tab-btn" onclick="switchWoodSubCategory('machinery', this)">⚙️ معدات التشغيل</button>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
@@ -186,7 +193,7 @@
               </tr>
             </thead>
             <tbody id="materials-table-body">
-              <!-- تحميل البيانات أونلاين هنا -->
+              <!-- تحميل البيانات أونلاين -->
             </tbody>
           </table>
         </div>
@@ -201,7 +208,7 @@
         <table>
           <thead>
             <tr>
-              <th>اسم الصنف / العينة</th>
+              <th>خامات النجارة بالخشب</th>
               <th>الفئة والتصنيف</th>
               <th>الكمية الجاهزة</th>
               <th>موقع العرض</th>
@@ -221,57 +228,50 @@
 
     <!-- 3. العمليات اليومية -->
     <div id="daily-operations" class="tab-content">
-      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">متابعة وتتبع حركات الورش اليومية:</h2>
-      <div class="kanban-board">
-        <div class="kanban-col"><div class="col-title">📥 طلبات تجهيز الخامات</div></div>
-        <div class="kanban-col"><div class="col-title">🪚 مرحلة القص والنجارة</div></div>
-        <div class="kanban-col"><div class="col-title">🎨 مرحلة البوية والتنشيف</div></div>
-        <div class="kanban-col"><div class="col-title">⚡ حفر ليزر وتجميع</div></div>
-        <div class="kanban-col"><div class="col-title">✅ جاهز للتسليم</div></div>
-      </div>
+      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">متابعة وتتبع حركات الورش اليومية</h2>
     </div>
 
   </div>
 
-  <!-- نموذج إضافة / تعديل صنف بدون إشعارات علوية -->
+  <!-- Modal Form -->
   <div id="item-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="modal-title">إضافة صنف جديد</h3>
       <input type="hidden" id="item-id">
       
       <div class="form-group">
-        <label>اسم الصنف:</label>
+        <label>خامات النجارة بالخشب (اسم الصنف):</label>
         <input type="text" id="modal-title-input" placeholder="أدخل اسم الصنف">
       </div>
 
       <div class="form-group" id="field-wood-type">
-        <label id="label-wood-type">نوع الخشب / رقم الجلد / الماركة:</label>
+        <label id="label-wood-type">النوع / التحديد / رقم الجلد:</label>
         <input type="text" id="modal-wood-type-input" placeholder="أدخل التفاصيل">
       </div>
 
       <div class="form-group" id="field-thickness">
-        <label id="label-thickness">السماكة / كود اللون:</label>
-        <input type="text" id="modal-thickness-input" placeholder="مثال: 3 مم">
+        <label id="label-thickness">السماكة / كود اللون / المواصفات:</label>
+        <input type="text" id="modal-thickness-input" placeholder="مثال: 18 مم">
       </div>
 
       <div class="form-group" id="field-dimensions">
-        <label id="label-dimensions">الأبعاد / المقاس / العبوة:</label>
-        <input type="text" id="modal-dimensions-input" placeholder="مثال: 122x244 سم">
+        <label id="label-dimensions">الأبعاد (سم) / الحجم (m³):</label>
+        <input type="text" id="modal-dimensions-input" placeholder="مثال: 122x244 سم أو 2.5 m³">
       </div>
 
       <div class="form-group">
-        <label>الكمية المتوفرة:</label>
+        <label id="label-quantity">الكمية المتوفرة:</label>
         <input type="number" id="modal-quantity-input" value="10">
       </div>
 
       <div class="form-group" id="field-unit">
         <label>الوحدة:</label>
-        <input type="text" id="modal-unit-input" placeholder="مثال: متر / لفة / قطعة" value="متر">
+        <input type="text" id="modal-unit-input" placeholder="مثال: متر مكعب / سم / حبة / كرتون" value="حبة">
       </div>
 
       <div class="form-group">
         <label>موقع التخزين:</label>
-        <input type="text" id="modal-location-input" placeholder="مثال: المستودع الرئيسي - رف A1">
+        <input type="text" id="modal-location-input" placeholder="مثال: مستودع الخشب - رف 2">
       </div>
 
       <div class="modal-actions">
@@ -282,7 +282,6 @@
   </div>
 
   <script>
-    // ربط إعدادات Supabase
     const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
     
@@ -293,11 +292,10 @@
     const SESSION_DURATION_MS = 30 * 60 * 1000;
 
     let currentCategory = 'wood';
+    let currentWoodSubCategory = 'natural_wood';
     let materialsData = [];
 
-    window.onload = function() {
-      checkExistingSession();
-    };
+    window.onload = function() { checkExistingSession(); };
 
     function checkPin() {
       const input = document.getElementById('pin-input').value;
@@ -332,13 +330,8 @@
     function togglePasswordVisibility() {
       const input = document.getElementById('pin-input');
       const icon = document.getElementById('toggle-icon');
-      if (input.type === "password") {
-        input.type = "text";
-        icon.textContent = "🙈";
-      } else {
-        input.type = "password";
-        icon.textContent = "👁️";
-      }
+      if (input.type === "password") { input.type = "text"; icon.textContent = "🙈"; } 
+      else { input.type = "password"; icon.textContent = "👁️"; }
     }
 
     function switchMainTab(tabId, btn) {
@@ -353,15 +346,28 @@
       document.getElementById('warehouse-selection-menu').style.display = 'none';
       document.getElementById('sub-warehouse-container').style.display = 'block';
 
-      const titleMap = {
-        'wood': '🪵 مستودع مواد خام الخشب',
-        'leather': '🥾 مستودع مواد خام الجلد',
-        'paint': '🎨 مستودع مواد خام البوية والدهانات'
-      };
-      document.getElementById('current-warehouse-title').innerText = titleMap[category];
+      if (category === 'wood') {
+        document.getElementById('wood-sub-tabs').style.display = 'flex';
+        document.getElementById('current-warehouse-title').innerText = '🪵 أقسام وقوائم مصنع الخشب';
+        switchWoodSubCategory('natural_wood', document.querySelector('.sub-tab-btn'));
+      } else {
+        document.getElementById('wood-sub-tabs').style.display = 'none';
+        const titleMap = {
+          'leather': '🥾 مصنع الجلد',
+          'paint': '🎨 مصنع البوية والدهانات'
+        };
+        document.getElementById('current-warehouse-title').innerText = titleMap[category];
+        setupTableHeaders(category);
+        await fetchMaterialsFromDatabase(category);
+      }
+    }
 
-      setupTableHeaders(category);
-      await fetchMaterialsFromDatabase(category);
+    function switchWoodSubCategory(subCat, btn) {
+      currentWoodSubCategory = subCat;
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+      setupTableHeaders('wood', subCat);
+      fetchMaterialsFromDatabase('wood', subCat);
     }
 
     function closeSubWarehouse() {
@@ -369,22 +375,71 @@
       document.getElementById('warehouse-selection-menu').style.display = 'block';
     }
 
-    function setupTableHeaders(category) {
+    function setupTableHeaders(category, subCat = '') {
       const tr = document.getElementById('table-headers');
+      
       if (category === 'wood') {
-        tr.innerHTML = `
-          <th>اسم الصنف</th>
-          <th>نوع الخشب</th>
-          <th>السماكة</th>
-          <th>الأبعاد</th>
-          <th>الكمية المتوفرة</th>
-          <th>موقع التخزين</th>
-          <th>الحالة التلقائية</th>
-          <th>إجراءات</th>
-        `;
+        if (subCat === 'natural_wood') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>نوع الخشب الطبيعي</th>
+            <th>الحجم (متر مكعب m³)</th>
+            <th>موقع التخزين</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        } else if (subCat === 'panels') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>السماكة ( مم )</th>
+            <th>الأبعاد (سم)</th>
+            <th>الكمية المتوفرة (ألواح)</th>
+            <th>موقع التخزين</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        } else if (subCat === 'adhesives') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>الماركة / النوع</th>
+            <th>الكمية المتوفرة</th>
+            <th>سعة العبوة</th>
+            <th>موقع التخزين</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        } else if (subCat === 'hardware') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>المقاس / المواصفات</th>
+            <th>الكمية المتوفرة</th>
+            <th>الوحدة</th>
+            <th>موقع التخزين</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        } else if (subCat === 'tools') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>الماركة / الموديل</th>
+            <th>العدد المتوفر</th>
+            <th>موقع التخزين / العهدة</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        } else if (subCat === 'machinery') {
+          tr.innerHTML = `
+            <th>خامات النجارة بالخشب</th>
+            <th>المقاس / المواصفة</th>
+            <th>الكمية المتوفرة</th>
+            <th>موقع التخزين</th>
+            <th>الحالة التلقائية</th>
+            <th>إجراءات</th>
+          `;
+        }
       } else if (category === 'leather') {
         tr.innerHTML = `
-          <th>اسم الصنف</th>
+          <th>خامات النجارة بالخشب</th>
           <th>رقم الجلد</th>
           <th>الكمية المتوفرة</th>
           <th>الوحدة</th>
@@ -394,8 +449,8 @@
         `;
       } else {
         tr.innerHTML = `
-          <th>اسم الدهان/المادة</th>
-          <th>الماركة/التصنيف</th>
+          <th>خامات النجارة بالخشب</th>
+          <th>الماركة / التصنيف</th>
           <th>كود اللون</th>
           <th>الكمية المتوفرة</th>
           <th>حجم العبوة</th>
@@ -406,24 +461,26 @@
       }
     }
 
-    async function fetchMaterialsFromDatabase(category) {
+    async function fetchMaterialsFromDatabase(category, subCat = '') {
       const tbody = document.getElementById('materials-table-body');
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري تحميل البيانات أونلاين...</td></tr>';
 
-      const { data, error } = await supabaseClient
-        .from('materials')
-        .select('*')
-        .eq('category', category);
+      let query = supabaseClient.from('materials').select('*').eq('category', category);
+      if (category === 'wood') {
+        query = query.eq('unit', subCat);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--danger);">حدث خطأ أثناء تحميل البيانات! يرجى التأكد من تعطيل RLS في Supabase.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--danger);">حدث خطأ أثناء تحميل البيانات!</td></tr>';
         return;
       }
 
       materialsData = data || [];
 
       if (materialsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد مواد مسجلة حتى الآن. اضغط "+ إضافة صنف جديد" لإضافة أول صنف!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد أصناف مسجلة هنا حتى الآن. اضغط "+ إضافة صنف جديد" للإضافة!</td></tr>';
         return;
       }
 
@@ -442,40 +499,51 @@
 
         const tr = document.createElement('tr');
 
-        if (category === 'leather') {
-          tr.innerHTML = `
-            <td><strong>${item.title || '-'}</strong></td>
-            <td>${item.wood_type || '-'}</td>
-            <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
-            <td>${item.unit || 'متر'}</td>
-            <td>${item.location || '-'}</td>
-            <td>${badgeHtml}</td>
-            <td>
-              <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-              <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-            </td>
-          `;
-        } else if (category === 'wood') {
-          tr.innerHTML = `
-            <td><strong>${item.title || '-'}</strong></td>
-            <td>${item.wood_type || '-'}</td>
-            <td>${item.thickness || '-'}</td>
-            <td>${item.dimensions || '-'}</td>
-            <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
-            <td>${item.location || '-'}</td>
-            <td>${badgeHtml}</td>
-            <td>
-              <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
-              <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
-            </td>
-          `;
+        if (category === 'wood') {
+          if (subCat === 'natural_wood') {
+            tr.innerHTML = `
+              <td><strong>${item.title || '-'}</strong></td>
+              <td>${item.wood_type || '-'}</td>
+              <td><strong style="color: var(--accent); font-size: 1.05rem;">${item.dimensions || '0'} m³</strong></td>
+              <td>${item.location || '-'}</td>
+              <td>${badgeHtml}</td>
+              <td>
+                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
+                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
+              </td>
+            `;
+          } else if (subCat === 'panels') {
+            tr.innerHTML = `
+              <td><strong>${item.title || '-'}</strong></td>
+              <td>${item.thickness || '-'}</td>
+              <td>${item.dimensions || '-'} سم</td>
+              <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+              <td>${item.location || '-'}</td>
+              <td>${badgeHtml}</td>
+              <td>
+                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
+                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
+              </td>
+            `;
+          } else {
+            tr.innerHTML = `
+              <td><strong>${item.title || '-'}</strong></td>
+              <td>${item.wood_type || item.thickness || '-'}</td>
+              <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+              <td>${item.dimensions || item.location || '-'}</td>
+              <td>${badgeHtml}</td>
+              <td>
+                <button class="action-btn" onclick="openItemModal(${item.id})">تعديل ✏️</button>
+                <button class="delete-btn" onclick="deleteItem(${item.id})">حذف 🗑️</button>
+              </td>
+            `;
+          }
         } else {
           tr.innerHTML = `
             <td><strong>${item.title || '-'}</strong></td>
             <td>${item.wood_type || '-'}</td>
-            <td>${item.thickness || '-'}</td>
-            <td>${item.dimensions || '-'}</td>
             <td><strong style="color: var(--accent); font-size: 1.05rem;">${qty}</strong></td>
+            <td>${item.thickness || 'متر'}</td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
             <td>
@@ -489,25 +557,27 @@
       });
     }
 
-    // التحكم بالنموذج المنبثق (Modal)
     function openItemModal(id = null) {
       document.getElementById('item-id').value = id || '';
       
-      if (currentCategory === 'leather') {
-        document.getElementById('label-wood-type').innerText = 'رقم الجلد:';
-        document.getElementById('field-thickness').style.display = 'none';
-        document.getElementById('field-dimensions').style.display = 'none';
-        document.getElementById('field-unit').style.display = 'block';
-      } else if (currentCategory === 'wood') {
-        document.getElementById('label-wood-type').innerText = 'نوع الخشب:';
-        document.getElementById('field-thickness').style.display = 'block';
-        document.getElementById('field-dimensions').style.display = 'block';
-        document.getElementById('field-unit').style.display = 'none';
-      } else {
-        document.getElementById('label-wood-type').innerText = 'الماركة / التصنيف:';
-        document.getElementById('field-thickness').style.display = 'block';
-        document.getElementById('field-dimensions').style.display = 'block';
-        document.getElementById('field-unit').style.display = 'none';
+      if (currentCategory === 'wood') {
+        if (currentWoodSubCategory === 'natural_wood') {
+          document.getElementById('label-wood-type').innerText = 'نوع الخشب الطبيعي:';
+          document.getElementById('field-thickness').style.display = 'none';
+          document.getElementById('label-dimensions').innerText = 'الحجم بالمتر المكعب (m³):';
+          document.getElementById('field-unit').style.display = 'none';
+        } else if (currentWoodSubCategory === 'panels') {
+          document.getElementById('label-wood-type').innerText = 'نوع المسطح (MDF / أبلكاش):';
+          document.getElementById('field-thickness').style.display = 'block';
+          document.getElementById('label-thickness').innerText = 'السماكة (مم):';
+          document.getElementById('label-dimensions').innerText = 'الأبعاد (سم):';
+          document.getElementById('field-unit').style.display = 'none';
+        } else {
+          document.getElementById('label-wood-type').innerText = 'التفاصيل / الماركة / المقاس:';
+          document.getElementById('field-thickness').style.display = 'block';
+          document.getElementById('label-dimensions').innerText = 'الحجم / العبوة:';
+          document.getElementById('field-unit').style.display = 'block';
+        }
       }
 
       if (id) {
@@ -519,7 +589,6 @@
           document.getElementById('modal-thickness-input').value = item.thickness || '';
           document.getElementById('modal-dimensions-input').value = item.dimensions || '';
           document.getElementById('modal-quantity-input').value = item.quantity || 0;
-          document.getElementById('modal-unit-input').value = item.unit || 'متر';
           document.getElementById('modal-location-input').value = item.location || '';
         }
       } else {
@@ -529,8 +598,7 @@
         document.getElementById('modal-thickness-input').value = '';
         document.getElementById('modal-dimensions-input').value = '';
         document.getElementById('modal-quantity-input').value = 10;
-        document.getElementById('modal-unit-input').value = 'متر';
-        document.getElementById('modal-location-input').value = 'المستودع الرئيسي';
+        document.getElementById('modal-location-input').value = 'مستودع الخشب';
       }
 
       document.getElementById('item-modal').style.display = 'flex';
@@ -543,10 +611,7 @@
     async function saveItemFromModal() {
       const id = document.getElementById('item-id').value;
       const title = document.getElementById('modal-title-input').value.trim();
-      if (!title) {
-        document.getElementById('modal-title-input').style.borderColor = 'var(--danger)';
-        return;
-      }
+      if (!title) return;
 
       const payload = {
         title: title,
@@ -555,7 +620,7 @@
         thickness: document.getElementById('modal-thickness-input').value,
         dimensions: document.getElementById('modal-dimensions-input').value,
         quantity: parseInt(document.getElementById('modal-quantity-input').value) || 0,
-        unit: document.getElementById('modal-unit-input').value,
+        unit: currentCategory === 'wood' ? currentWoodSubCategory : document.getElementById('modal-unit-input').value,
         location: document.getElementById('modal-location-input').value
       };
 
@@ -566,13 +631,13 @@
       }
 
       closeItemModal();
-      fetchMaterialsFromDatabase(currentCategory);
+      fetchMaterialsFromDatabase(currentCategory, currentWoodSubCategory);
     }
 
     async function deleteItem(id) {
-      if (confirm("هل أنت تأكد من إزالة هذا الصنف من المستودع؟")) {
+      if (confirm("هل أنت تأكد من حذف هذا الصنف من قاعدة البيانات؟")) {
         await supabaseClient.from('materials').delete().eq('id', id);
-        fetchMaterialsFromDatabase(currentCategory);
+        fetchMaterialsFromDatabase(currentCategory, currentWoodSubCategory);
       }
     }
   </script>
