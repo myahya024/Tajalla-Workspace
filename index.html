@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام إدارة الورشة والمخزون الداخلي</title>
+  <title>نظام إدارة הورش والمستودعات الاحترافي</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -14,6 +14,7 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --success: #22c55e;
+      --warning: #f59e0b;
       --danger: #ef4444;
       --wood-color: #f59e0b;
       --leather-color: #a855f7;
@@ -34,23 +35,15 @@
     .login-box h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.3rem; }
     
     .password-wrapper {
-      position: relative;
-      width: 100%;
-      margin-bottom: 15px;
+      position: relative; width: 100%; margin-bottom: 15px;
     }
     .password-wrapper input {
       width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid var(--border);
       border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
     }
     .toggle-password {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.2rem;
-      user-select: none;
-      opacity: 0.7;
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7;
     }
 
     .login-box button {
@@ -60,39 +53,51 @@
 
     #main-app { display: none; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-    h1 { font-size: 1.5rem; color: var(--accent); }
-    
-    .btn { background: var(--accent); color: #0f172a; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
-    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--accent); color: #0f172a; font-weight: bold; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    h1 { font-size: 1.4rem; color: var(--accent); }
+    .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .logout-btn:hover { background: var(--danger); color: #fff; }
+
+    /* Navigation Tabs */
+    .nav-tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
+    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 12px 24px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: bold; font-size: 0.95rem; }
+    .tab-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     /* Warehouse Cards Grid */
     .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
-    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 20px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-    .warehouse-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .warehouse-card:hover { transform: translateY(-4px); }
     .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
     .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
-    
-    .warehouse-card h3 { font-size: 1.2rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .warehouse-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
     .warehouse-card p { font-size: 0.85rem; color: var(--text-muted); }
 
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; text-align: right; }
-    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    th { background: #111827; color: var(--accent); }
+    /* Sub-warehouse details */
+    .sub-warehouse-view { display: none; margin-top: 20px; }
+    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold; }
 
+    /* Tables */
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; }
+    th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
+    th { background: #111827; color: var(--accent); }
+    
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+    /* Operations Kanban */
     .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
-    .kanban-col { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); min-height: 300px; }
-    .col-title { font-size: 1rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .kanban-col { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); min-height: 350px; }
+    .col-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     .card { background: #0f172a; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--accent); }
-    .card h4 { font-size: 0.95rem; margin-bottom: 6px; }
-    .card p { font-size: 0.82rem; color: var(--text-muted); }
+    .card h4 { font-size: 0.9rem; margin-bottom: 6px; }
+    .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -113,131 +118,314 @@
     </div>
   </div>
 
-  <!-- تطبيق الورشة المعتاد -->
+  <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
-      <h1>⚙️ نظام إدارة الورش والمستودعات</h1>
+      <h1>⚙️ نظام إدارة الورش والمستودعات الكبرى</h1>
+      <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
     </header>
 
+    <!-- القوائم الرئيسية الخارجية -->
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('raw-materials', this)">📦 مواد خام (مستودعات)</button>
-      <button class="tab-btn" onclick="switchTab('kanban', this)">🪚 تتبع حركات الورشة</button>
-      <button class="tab-btn" onclick="switchTab('inventory', this)">🏷️ سجل العينات والمخزون</button>
+      <button class="tab-btn active" onclick="switchMainTab('raw-materials', this)">📦 مواد خام المستودعات</button>
+      <button class="tab-btn" onclick="switchMainTab('general-inventory', this)">🏷️ المخزون العام والعينات</button>
+      <button class="tab-btn" onclick="switchMainTab('daily-operations', this)">📋 العمليات والحركات اليومية</button>
     </div>
 
-    <!-- قسم المواد الخام والمستودعات -->
+    <!-- 1. قائمة مواد خام المستودعات -->
     <div id="raw-materials" class="tab-content active">
-      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المستودع للتعامل مع المواد الخام:</h2>
       
-      <div class="warehouse-grid">
-        <div class="warehouse-card wood" onclick="filterWarehouse('خشب')">
-          <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
-          <p>الألواح، الخشب الطبيعي، القشرة، ومستلزمات القص والنجارة</p>
-        </div>
+      <!-- اختيار المستودعات الفرعية -->
+      <div id="warehouse-selection-menu">
+        <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لعرض الأصناف والمواصفات:</h2>
+        
+        <div class="warehouse-grid">
+          <div class="warehouse-card wood" onclick="openSubWarehouse('wood')">
+            <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
+            <p>سجل الألواح، أنواع الخشب، السماكات، الأبعاد، ومواقع التخزين</p>
+          </div>
 
-        <div class="warehouse-card leather" onclick="filterWarehouse('جلد')">
-          <h3 style="color: var(--leather-color);">🥾 مواد خام مصنع الجلد</h3>
-          <p>الجلود الطبيعية والصناعية، البطانات، الأكسسوارات، والغراء</p>
-        </div>
+          <div class="warehouse-card leather" onclick="openSubWarehouse('leather')">
+            <h3 style="color: var(--leather-color);">🥾 مواد خام مصنع الجلد</h3>
+            <p>أنواع الجلود، الألوان، السماكة، الأمتار/اللفات، والبطانات</p>
+          </div>
 
-        <div class="warehouse-card paint" onclick="filterWarehouse('بوية')">
-          <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان</h3>
-          <p>الدهانات، الأساس، المعجون، المذيبات، والتينر</p>
-        </div>
-      </div>
-
-      <!-- جدول تفاصيل المواد حسب المستودع المختار -->
-      <div class="table-container">
-        <h3 id="selected-warehouse-title" style="padding: 15px; border-bottom: 1px solid var(--border); color: var(--accent);">📦 جميع المواد الخام المسجلة</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>المادة / الصنف</th>
-              <th>المستودع / التخصص</th>
-              <th>الكمية المتوفرة</th>
-              <th>موقع التخزين</th>
-            </tr>
-          </thead>
-          <tbody id="materials-table-body">
-            <tr>
-              <td>ألواح خشب MDF (3مم)</td>
-              <td><span style="color: var(--wood-color);">مصنع الخشب</span></td>
-              <td>120 لوح</td>
-              <td>المستودع الرئيسي - الرف A1</td>
-            </tr>
-            <tr>
-              <td>جلد طبيعي بني (درجة أولى)</td>
-              <td><span style="color: var(--leather-color);">مصنع الجلد</span></td>
-              <td>45 أمتار</td>
-              <td>مستودع الجلد - رف B2</td>
-            </tr>
-            <tr>
-              <td>دهان ناري أبيض (سوبر)</td>
-              <td><span style="color: var(--paint-color);">البوية والدهان</span></td>
-              <td>15 جالان</td>
-              <td>مستودع الدهانات - رف C1</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Kanban View -->
-    <div id="kanban" class="tab-content">
-      <div class="kanban-board">
-        <div class="kanban-col">
-          <div class="col-title">🪚 ورشة النجارة والقص</div>
-          <div class="card">
-            <h4>قواعد الخشب السفلية</h4>
-            <p><strong>المشروع:</strong> دروع أكريليك</p>
+          <div class="warehouse-card paint" onclick="openSubWarehouse('paint')">
+            <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان</h3>
+            <p>الدهانات، الأكواد، الماركات، درجات اللون، والمواد الكيميائية</p>
           </div>
         </div>
-        <div class="kanban-col">
-          <div class="col-title">🎨 ورشة الدهان والبوية</div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">⚡ حفر ليزر وطباعة</div>
-        </div>
-        <div class="kanban-col">
-          <div class="col-title">✅ التجميع والتسليم</div>
+      </div>
+
+      <!-- عرض تفاصيل مصنع الخشب -->
+      <div id="wood-view" class="sub-warehouse-view">
+        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
+        <h2 style="color: var(--wood-color); margin-bottom: 10px;">🪵 مستودع مواد خام الخشب</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>كود الصنف</th>
+                <th>اسم المادة / الخشب</th>
+                <th>نوع الخشب</th>
+                <th>السماكة (مم)</th>
+                <th>الأبعاد / المقاس (سم)</th>
+                <th>الكمية المتوفرة</th>
+                <th>وحدة القياس</th>
+                <th>موقع التخزين (الرف)</th>
+                <th>حالة المخزون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WD-101</td>
+                <td>ألوح إم دي إف عادي</td>
+                <td>MDF</td>
+                <td>3 مم</td>
+                <td>122 × 244 سم</td>
+                <td>180</td>
+                <td>لوح</td>
+                <td>مستودع A - رف 01</td>
+                <td><span class="badge badge-success">متوفر</span></td>
+              </tr>
+              <tr>
+                <td>WD-102</td>
+                <td>خشب زان ألماني أحمر</td>
+                <td>زان طبيعي</td>
+                <td>50 مم</td>
+                <td>30 × 300 سم</td>
+                <td>12</td>
+                <td>متر مكعب</td>
+                <td>مستودع A - رف 04</td>
+                <td><span class="badge badge-warning">وشك النفاذ</span></td>
+              </tr>
+              <tr>
+                <td>WD-103</td>
+                <td>خشب سويدي (مغلف)</td>
+                <td>سويدي</td>
+                <td>18 مم</td>
+                <td>120 × 240 سم</td>
+                <td>85</td>
+                <td>لوح</td>
+                <td>مستودع A - رف 02</td>
+                <td><span class="badge badge-success">متوفر</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+
+      <!-- عرض تفاصيل مصنع الجلد -->
+      <div id="leather-view" class="sub-warehouse-view">
+        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
+        <h2 style="color: var(--leather-color); margin-bottom: 10px;">🥾 مستودع مواد خام الجلد</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>كود الصنف</th>
+                <th>اسم الجِلد / الصنف</th>
+                <th>النوع</th>
+                <th>اللون / الدرجة</th>
+                <th>السُّمك / الملمس</th>
+                <th>الكمية المتاحة</th>
+                <th>وحدة القياس</th>
+                <th>موقع التخزين</th>
+                <th>حالة المخزون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>LTH-201</td>
+                <td>جلد إيطالي فاخر</td>
+                <td>طبيعي (Natural)</td>
+                <td>بني غامق (#04)</td>
+                <td>1.4 مم - ملمس ناعم</td>
+                <td>65</td>
+                <td>متر مربع</td>
+                <td>مستودع الجلد - A2</td>
+                <td><span class="badge badge-success">متوفر</span></td>
+              </tr>
+              <tr>
+                <td>LTH-202</td>
+                <td>جلد صناعي مقاوم للماء</td>
+                <td>صناعي (PU)</td>
+                <td>أسود مطفي</td>
+                <td>0.9 مم</td>
+                <td>8</td>
+                <td>لفة (Roll)</td>
+                <td>مستودع الجلد - B1</td>
+                <td><span class="badge badge-danger">منخفض جداً</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- عرض تفاصيل مصنع البوية -->
+      <div id="paint-view" class="sub-warehouse-view">
+        <button class="back-btn" onclick="closeSubWarehouse()">⬅️ العودة لجميع المستودعات</button>
+        <h2 style="color: var(--paint-color); margin-bottom: 10px;">🎨 مستودع مواد خام البوية والدهانات</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>كود الصنف</th>
+                <th>اسم المادة / الدهان</th>
+                <th>التصنيف / الماركة</th>
+                <th>كود درجة اللون (Code)</th>
+                <th>الكمية المتوفرة</th>
+                <th>حجم العبوة</th>
+                <th>تاريخ الانتهاء</th>
+                <th>موقع التخزين</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PNT-301</td>
+                <td>دهان ناري دوكو</td>
+                <td>أصيل / الجوزيرة</td>
+                <td>White Ral 9010</td>
+                <td>24</td>
+                <td>جالان (Gallon)</td>
+                <td>2027/05</td>
+                <td>مستودع المواد الخطرة - C1</td>
+                <td><span class="badge badge-success">سليم</span></td>
+              </tr>
+              <tr>
+                <td>PNT-302</td>
+                <td>أساس (أساس ناري)</td>
+                <td>جوتون (Jotun)</td>
+                <td>Grey Primer</td>
+                <td>5</td>
+                <td>جالان (Gallon)</td>
+                <td>2026/11</td>
+                <td>مستودع المواد الخطرة - C2</td>
+                <td><span class="badge badge-warning">يحتاج إعادة طلب</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Inventory View -->
-    <div id="inventory" class="tab-content">
+    <!-- 2. قائمة المخزون العام والعينات -->
+    <div id="general-inventory" class="tab-content">
+      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">سجل عينات المنتجات والمخزون المكتمل:</h2>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>الصنف / المادة</th>
-              <th>التصنيف</th>
-              <th>الكمية المتاحة</th>
+              <th>كود العينة</th>
+              <th>اسم الصنف / العينة</th>
+              <th>الفئة والتصنيف</th>
+              <th>الكمية الجاهزة</th>
+              <th>موقع العرض / التخزين</th>
+              <th>ملاحظات</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>أقلام معدنية (سادة)</td>
-              <td>عينة عامة</td>
-              <td>150 حبة</td>
+              <td>SMP-01</td>
+              <td>درع أكريليك مع قاعدة خشب زان</td>
+              <td>عينات دروع وتكريم</td>
+              <td>15 حبة</td>
+              <td>صالة العرض - الرف 01</td>
+              <td>جاهز للعرض للعملاء</td>
+            </tr>
+            <tr>
+              <td>SMP-02</td>
+              <td>بوكس إهداء جلدي محفور بالليزر</td>
+              <td>عينات التغليف</td>
+              <td>5 حبات</td>
+              <td>صالة العرض - الرف 03</td>
+              <td>مطعم بنحاس ذهبي</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <!-- 3. قائمة العمليات والحركات اليومية -->
+    <div id="daily-operations" class="tab-content">
+      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">متابعة وتتبع حركات الورش والمصانع اليومية:</h2>
+      <div class="kanban-board">
+        <div class="kanban-col">
+          <div class="col-title">📥 طلبات تجهيز الخامات</div>
+          <div class="card">
+            <h4>طلب صرف 20 لوح MDF</h4>
+            <p><strong>المشروع:</strong> بوكسات الملكية</p>
+            <p><strong>التاريخ:</strong> اليوم 10:30 صباحاً</p>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">🪚 مرحلة القص والنجارة</div>
+          <div class="card">
+            <h4>قص 50 قاعدة خشبية</h4>
+            <p><strong>المشروع:</strong> دروع شركة الأمل</p>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">🎨 مرحلة البوية والتنشيف</div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">⚡ حفر ليزر وتجميع</div>
+        </div>
+        <div class="kanban-col">
+          <div class="col-title">✅ جاهز للتسليم</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     const SECRET_PIN = "$Ark0820$";
+    const SESSION_KEY = "app_login_session";
+    const SESSION_DURATION_MS = 30 * 60 * 1000; // 30 دقيقة
+
+    // فحص الجلسة فور فتح الصفحة
+    window.onload = function() {
+      checkExistingSession();
+    };
 
     function checkPin() {
       const input = document.getElementById('pin-input').value;
       if (input === SECRET_PIN) {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
+        // حفظ وقت الدخول في ذاكرة المتصفح
+        localStorage.setItem(SESSION_KEY, Date.now().toString());
+        grantAccess();
       } else {
         document.getElementById('login-error').style.display = 'block';
       }
+    }
+
+    function checkExistingSession() {
+      const savedTime = localStorage.getItem(SESSION_KEY);
+      if (savedTime) {
+        const currentTime = Date.now();
+        if (currentTime - parseInt(savedTime) < SESSION_DURATION_MS) {
+          grantAccess();
+          return;
+        }
+      }
+      // إذا انتهت الـ 30 دقيقة أو لا توجد جلسة
+      logout(false);
+    }
+
+    function grantAccess() {
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+    }
+
+    function logout(clearAlert = true) {
+      localStorage.removeItem(SESSION_KEY);
+      document.getElementById('login-overlay').style.display = 'flex';
+      document.getElementById('main-app').style.display = 'none';
+      document.getElementById('pin-input').value = '';
+      if(clearAlert) alert('تم تسجيل الخروج وقفل النظام.');
     }
 
     function togglePasswordVisibility() {
@@ -252,16 +440,24 @@
       }
     }
 
-    function switchTab(tabId, btn) {
+    // التنقل بين القوائم الرئيسية الخارجية
+    function switchMainTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       btn.classList.add('active');
     }
 
-    function filterWarehouse(type) {
-      const title = document.getElementById('selected-warehouse-title');
-      title.innerText = "📦 مواد خام: " + (type === 'خشب' ? 'مصنع الخشب' : type === 'جلد' ? 'مصنع الجلد' : 'البوية والدهان');
+    // فتح المستودعات الفرعية للمواد الخام
+    function openSubWarehouse(type) {
+      document.getElementById('warehouse-selection-menu').style.display = 'none';
+      document.querySelectorAll('.sub-warehouse-view').forEach(v => v.style.display = 'none');
+      document.getElementById(type + '-view').style.display = 'block';
+    }
+
+    function closeSubWarehouse() {
+      document.querySelectorAll('.sub-warehouse-view').forEach(v => v.style.display = 'none');
+      document.getElementById('warehouse-selection-menu').style.display = 'block';
     }
   </script>
 </body>
