@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام تجلى - Tajalla System</title>
+  <title>نظام تجلى | Tajalla System</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* تنسيق زر العين بشكل دقيق وبدون تأخير */
+    /* تنسيق زر العين الدقيق لمربع كلمة المرور */
     .password-wrapper {
       position: relative;
       width: 100%;
@@ -49,69 +48,138 @@
     </div>
   </div>
 
-  <!-- التطبيق الرئيسي (الواجهات الكاملة) -->
+  <!-- التطبيق الرئيسي -->
   <div id="main-app" style="display:none;">
     <header class="app-header">
-      <h1>نظام إدارة تجلى</h1>
-      <button onclick="logout()" class="btn-logout">خروج</button>
+      <h1>نظام تجلى | Tajalla System</h1>
     </header>
 
     <main class="app-content">
-      <!-- الشاشة الرئيسية -->
-      <section id="sec-home" class="app-section">
-        <h2>القائمة الرئيسية</h2>
+      
+      <!-- 1. الشاشة الرئيسية (Home Hub) -->
+      <section id="home-hub-view" class="app-section">
+        <h2 class="section-title">القائمة الرئيسية</h2>
         <div class="cards-grid">
-          <div class="card" onclick="showSection('sec-materials')">📦 إدارة المواد</div>
-          <div class="card" onclick="showSection('sec-transactions')">📑 سجل الحركات</div>
+          <div class="card" onclick="openRawMaterialsSection()">
+            <div class="card-icon">🪵</div>
+            <div class="card-title">إدارة المواد الخشبيّة</div>
+            <div class="card-desc">أقسام مصنع الخشب، الخشب الطبيعي، المسطحات، الغراء والمستلزمات</div>
+          </div>
+          <div class="card" onclick="openWelcomeKitSection()">
+            <div class="card-icon">🎁</div>
+            <div class="card-title">المخزون العام / Welcome Kit</div>
+            <div class="card-desc">سجلات الهدايا والمنتجات الجاهزة للمخزون العام</div>
+          </div>
+          <div class="card" onclick="openDailyTransactionsSection()">
+            <div class="card-icon">📑</div>
+            <div class="card-title">حركات اليوم / Daily Log</div>
+            <div class="card-desc">تسجيل وتتبع الحركات اليومية وسجل الوارد والمصروف</div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <button class="btn-logout" onclick="logout()">🔒 قفل النظام / Lock</button>
         </div>
       </section>
 
-      <!-- قسم إدارة المواد الخام -->
-      <section id="sec-materials" class="app-section" style="display:none;">
+      <!-- 2. قسم مصنع الخشب والمواد الخام -->
+      <section id="raw-materials-section" class="app-section" style="display:none;">
         <div class="section-header">
-          <h2>📦 إدارة المواد الخام</h2>
-          <button onclick="showHomeHub()" class="btn-back">⬅️ عودة للمصنع</button>
+          <h2 class="section-title">🪵 تصنيف أقسام مصنع الخشب</h2>
+          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
         </div>
-        <div id="materials-container">
-          <!-- يتم تحميل جدول المواد وتفاصيلها عن طريق الجافاسكريبت -->
+
+        <div class="cards-grid">
+          <!-- 1. الخشب الطبيعي -->
+          <div class="card wood-card">
+            <div class="card-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=500&q=80" alt="الخشب الطبيعي">
+              <span class="badge-icon">🌲</span>
+            </div>
+            <div class="card-content">
+              <h3>الخشب الطبيعي</h3>
+              <p>سجل أنواع الخشب الطبيعي والحساب بالتكعيب (m³)</p>
+            </div>
+          </div>
+
+          <!-- 2. المسطحات والألواح -->
+          <div class="card wood-card">
+            <div class="card-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=500&q=80" alt="المسطحات والألواح">
+              <span class="badge-icon">📐</span>
+            </div>
+            <div class="card-content">
+              <h3>المسطحات والألواح</h3>
+              <p>ألواح MDF، الأبلكاش، الميلامين بالسمك والأبعاد القياسية</p>
+            </div>
+          </div>
+
+          <!-- 3. المواد اللاصقة والغراء -->
+          <div class="card wood-card">
+            <div class="card-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80" alt="المواد اللاصقة والغراء">
+              <span class="badge-icon">🧪</span>
+            </div>
+            <div class="card-content">
+              <h3>المواد اللاصقة والغراء</h3>
+              <p>غراء الخشب، الغراء الحراري، والسيليكون باللتر/الكيلو</p>
+            </div>
+          </div>
+
+          <!-- 4. الحدايد والإكسسوارات -->
+          <div class="card wood-card">
+            <div class="card-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=500&q=80" alt="الحدايد والإكسسوارات">
+              <span class="badge-icon">🔩</span>
+            </div>
+            <div class="card-content">
+              <h3>الحدايد والإكسسوارات</h3>
+              <p>المفصلات، السكك، المسامير، المقابض والمستلزمات المعدنية</p>
+            </div>
+          </div>
+
+          <!-- 5. المعدات ومعدات التشغيل -->
+          <div class="card wood-card">
+            <div class="card-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=500&q=80" alt="المعدات ومعدات التشغيل">
+              <span class="badge-icon">🛠️</span>
+            </div>
+            <div class="card-content">
+              <h3>المعدات ومعدات التشغيل</h3>
+              <p>ريش القص، أدوات النجار، الصيانة والمعدات اليدوية والآلية</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- قسم سجل الحركات -->
-      <section id="sec-transactions" class="app-section" style="display:none;">
+      <!-- 3. قسم المخزون العام -->
+      <section id="general-inventory-section" class="app-section" style="display:none;">
         <div class="section-header">
-          <h2>📑 سجل الحركات</h2>
-          <button onclick="showHomeHub()" class="btn-back">⬅️ عودة للمصنع</button>
+          <h2 class="section-title">🎁 المخزون العام / Welcome Kit</h2>
+          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
         </div>
-        <div id="transactions-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم المادة</th>
-                <th>نوع الحركة</th>
-                <th>الكمية</th>
-                <th>التاريخ</th>
-              </tr>
-            </thead>
-            <tbody id="transactions-table-body">
-              <!-- يتم تحميل الحركات هنا تلقائياً -->
-            </tbody>
-          </table>
-        </div>
+        <p style="color: #94a3b8;">هذا القسم مخصص لإدارة منتجات المخزون العام والهديا.</p>
       </section>
+
+      <!-- 4. قسم حركات اليوم -->
+      <section id="daily-transactions-section" class="app-section" style="display:none;">
+        <div class="section-header">
+          <h2 class="section-title">📑 حركات اليوم / Daily Log</h2>
+          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
+        </div>
+        <p style="color: #94a3b8;">سجل الحركات اليومية الصادرة والواردة للمستودع.</p>
+      </section>
+
     </main>
   </div>
 
-  <!-- استدعاء كافة ملفات المشروع والمكتبات -->
+  <!-- ملفات الجافاسكريبت المرفقة -->
   <script src="js/config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/materials.js"></script>
-  <script src="js/transactions.js"></script>
-
-  <!-- كود زر العين الآمن وإدارة الدخول -->
+  <script src="js/navigation.js"></script>
+  
   <script>
+    const SECRET_PIN = "$Arkon1818$";
+
     function togglePassword() {
       const input = document.getElementById('pin-input');
       const icon = document.getElementById('eye-icon');
@@ -125,12 +193,31 @@
       }
     }
 
-    // التحقق المباشر عند التحميل
-    window.addEventListener('DOMContentLoaded', () => {
-      if (typeof checkExistingSession === 'function') {
-        checkExistingSession();
+    function checkPin() {
+      const input = document.getElementById('pin-input').value;
+      const error = document.getElementById('login-error');
+
+      if (input === SECRET_PIN) {
+        localStorage.setItem('tajalla_session', 'active');
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        error.style.display = 'none';
+      } else {
+        error.style.display = 'block';
       }
-    });
+    }
+
+    function logout() {
+      localStorage.removeItem('tajalla_session');
+      location.reload();
+    }
+
+    window.onload = function() {
+      if (localStorage.getItem('tajalla_session') === 'active') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+      }
+    };
   </script>
 </body>
 </html>
