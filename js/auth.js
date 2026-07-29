@@ -28,7 +28,7 @@ function logout() {
   location.reload();
 }
 
-// دالة إظهار وإخفاء كلمة المرور
+// ⭐ دالة إظهار وإخفاء كلمة المرور (تأكد من وجودها) ⭐
 function togglePasswordVisibility() {
   const pinInput = document.getElementById('pin-input');
   const eyeIcon = document.getElementById('eye-icon');
