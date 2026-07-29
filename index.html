@@ -10,7 +10,7 @@
 
     :root {
       --bg: #0b0f19;
-      --card-bg: rgba(22, 30, 49, 0.75);
+      --card-bg: rgba(22, 30, 49, 0.85);
       --card-border: rgba(255, 255, 255, 0.08);
       --accent: #38bdf8;
       --accent-glow: rgba(56, 189, 248, 0.25);
@@ -73,54 +73,110 @@
       letter-spacing: -0.5px;
     }
 
-    /* زر قفل النظام أسفل اليسار */
     .logout-btn-bottom {
       position: fixed; bottom: 20px; left: 20px; z-index: 1000;
-      background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(8px); color: var(--text-muted);
-      border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px;
-      cursor: pointer; font-size: 0.78rem; font-weight: bold; transition: all 0.3s;
-      display: flex; align-items: center; gap: 6px; opacity: 0.6;
+      background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); color: var(--text-muted);
+      border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 20px;
+      cursor: pointer; font-size: 0.82rem; font-weight: bold; transition: all 0.3s;
+      display: flex; align-items: center; gap: 6px; opacity: 0.7;
     }
     .logout-btn-bottom:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: var(--danger); }
 
     .hub-title-section h2 { font-size: 1.15rem; color: var(--text-muted); font-weight: 600; margin-bottom: 25px; text-align: center; }
 
-    /* الكروت الرئيسية والمعرض */
-    .main-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 25px; margin-bottom: 35px; }
-    .main-hub-card {
-      background: var(--card-bg); backdrop-filter: blur(10px);
-      border-radius: 20px; border: 1px solid var(--card-border); padding: 35px 30px;
-      cursor: pointer; transition: all 0.35s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    /* التصميم الجديد للكروت بصور وأيقونات */
+    .main-hub-grid, .warehouse-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 25px; 
+      margin-bottom: 35px; 
     }
-    .main-hub-card:hover {
-      transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 15px 35px var(--accent-glow);
-    }
-    .main-hub-card h2 { font-size: 1.35rem; margin-bottom: 12px; font-weight: 700; }
-    .main-hub-card p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; }
-    .card-footer-link { margin-top: 25px; font-size: 0.9rem; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-    .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-bottom: 25px; }
-    .warehouse-card {
-      background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px;
-      border: 1px solid var(--card-border); padding: 25px; cursor: pointer; transition: all 0.3s;
+    .visual-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
-    .warehouse-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.2); }
-    .warehouse-card.wood { border-top: 4px solid var(--wood-color); }
-    .warehouse-card.leather { border-top: 4px solid var(--leather-color); }
-    .warehouse-card.paint { border-top: 4px solid var(--paint-color); }
-    .warehouse-card.wood-item { border-top: 4px solid var(--wood-color); }
 
+    .visual-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--card-accent-color, var(--accent));
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px var(--card-glow-color, var(--accent-glow));
+    }
+
+    .card-banner-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      filter: brightness(0.75) contrast(1.1);
+      transition: transform 0.5s ease;
+    }
+
+    .visual-card:hover .card-banner-img {
+      transform: scale(1.08);
+      filter: brightness(0.9);
+    }
+
+    .card-icon-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(11, 15, 25, 0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 1.5rem;
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .card-body-content {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-grow: 1;
+    }
+
+    .card-body-content h3, .card-body-content h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .card-body-content p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-footer-link {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: var(--card-accent-color, var(--accent));
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ألوان الجداول والأزرار */
     .section-view { display: none; margin-top: 10px; }
 
-    /* الهيدر الفرعي */
-    .sub-header { 
-      display: grid; 
-      grid-template-columns: 1fr auto 1fr; 
-      align-items: center; 
-      margin-bottom: 25px; 
-      gap: 15px; 
-    }
+    .sub-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 25px; gap: 15px; }
     .sub-header .title-center { text-align: center; grid-column: 2; }
     .sub-header .left-actions { justify-self: start; }
     .sub-header .right-actions { justify-self: end; }
@@ -130,7 +186,6 @@
     .add-btn { background: linear-gradient(135deg, var(--success), #059669); color: #fff; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .add-btn:hover { box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
 
-    /* الجداول */
     .table-container { overflow-x: auto; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--card-border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 16px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; white-space: nowrap; }
@@ -150,7 +205,6 @@
     .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
     .action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-    /* كروت ملفات المشاريع */
     .project-card {
       background: var(--card-bg); border: 1px solid var(--card-border);
       border-radius: 16px; padding: 22px; cursor: pointer; transition: 0.3s;
@@ -161,7 +215,6 @@
     .project-card h3 { color: var(--text); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700; }
     .project-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px; }
 
-    /* المودال */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; }
     .modal-card { background: #161e31; width: 90%; max-width: 520px; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
     .modal-card h3 { color: var(--accent); margin-bottom: 20px; font-weight: 700; text-align: center; }
@@ -171,7 +224,6 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
     .form-group input:focus { border-color: var(--accent); }
 
-    /* التنبيهات */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: #161e31; border: 1px solid var(--accent); color: #fff;
@@ -180,7 +232,6 @@
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
       cursor: pointer; pointer-events: auto;
     }
-    #toast-notification:hover { transform: translateX(-50%) scale(1.03); }
     #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast-notification.success { border-color: var(--success); color: var(--success); }
     #toast-notification.error { border-color: var(--danger); color: var(--danger); }
@@ -212,38 +263,52 @@
       <h1>نظام تجلى | Tajalla System</h1>
     </header>
 
+    <!-- الصفحة الرئيسية -->
     <div id="home-hub-view">
       <div class="hub-title-section">
         <h2>اختر القسم المطلوب لإدارته ومتابعة أداء العمليات:</h2>
       </div>
       
       <div class="main-hub-grid">
-        <div class="main-hub-card" onclick="openRawMaterialsSection()">
-          <div>
-            <h2 style="color: var(--accent);">📦 إدارة مواد خام المستودعات</h2>
-            <p>سجلات مستودعات الأخشاب، الجلود، والدهانات، مع تصنيف المواد الخام وإجراءات الصرف والجرد التفصيلية.</p>
+        <div class="visual-card" onclick="openRawMaterialsSection()" style="--card-accent-color: var(--accent); --card-glow-color: var(--accent-glow);">
+          <div class="card-icon-badge">📦</div>
+          <img class="card-banner-img" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80" alt="Warehouse">
+          <div class="card-body-content">
+            <div>
+              <h2 style="color: var(--accent);">إدارة مواد خام المستودعات</h2>
+              <p>سجلات مستودعات الأخشاب، الجلود، والدهانات، مع تصنيف المواد الخام وإجراءات الصرف والجرد التفصيلية.</p>
+            </div>
+            <div class="card-footer-link">استعراض المصانع والمستودعات ⬅️</div>
           </div>
-          <div class="card-footer-link">استعراض المصانع والمستودعات ⬅️</div>
         </div>
 
-        <div class="main-hub-card" onclick="openWelcomeKitSection()">
-          <div>
-            <h2 style="color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات</h2>
-            <p>قائمة العينات العالمية والـ Welcome Kits والمشاريع التابعة لها ومواقع تخزينها في المستودعات.</p>
+        <div class="visual-card" onclick="openWelcomeKitSection()" style="--card-accent-color: var(--gold-color); --card-glow-color: rgba(251, 191, 36, 0.25);">
+          <div class="card-icon-badge">🎁</div>
+          <img class="card-banner-img" src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80" alt="Welcome Kit">
+          <div class="card-body-content">
+            <div>
+              <h2 style="color: var(--gold-color);">جرد الـ Welcome Kit والعينات</h2>
+              <p>قائمة العينات العالمية والـ Welcome Kits والمشاريع التابعة لها ومواقع تخزينها في المستودعات.</p>
+            </div>
+            <div class="card-footer-link">استعراض العينات والجرد ⬅️</div>
           </div>
-          <div class="card-footer-link">استعراض العينات والجرد ⬅️</div>
         </div>
 
-        <div class="main-hub-card" onclick="openDailyTransactionsSection()">
-          <div>
-            <h2 style="color: var(--wood-color);">📋 سجل العمليات والحركات اليومية</h2>
-            <p>متابعة كافة أذونات الصرف والاستخراج مقسمة حسب ملفات المشاريع والدفعات الزمنية.</p>
+        <div class="visual-card" onclick="openDailyTransactionsSection()" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+          <div class="card-icon-badge">📋</div>
+          <img class="card-banner-img" src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="Transactions Ledger">
+          <div class="card-body-content">
+            <div>
+              <h2 style="color: var(--wood-color);">سجل العمليات والحركات اليومية</h2>
+              <p>متابعة كافة أذونات الصرف والاستخراج مقسمة حسب ملفات المشاريع والدفعات الزمنية.</p>
+            </div>
+            <div class="card-footer-link">عرض سجل المشاريع ⬅️</div>
           </div>
-          <div class="card-footer-link">عرض سجل المشاريع ⬅️</div>
         </div>
       </div>
     </div>
 
+    <!-- قسم المواد الخام والمستودعات -->
     <div id="raw-materials-section" class="section-view">
       <div id="warehouse-selection-menu">
         <div class="sub-header">
@@ -253,22 +318,38 @@
           <h2 class="title-center" style="font-size: 1.25rem; color: var(--accent);">اختر المصنع/المستودع:</h2>
           <div class="left-actions"></div>
         </div>
+        
         <div class="warehouse-grid">
-          <div class="warehouse-card wood" onclick="openWoodCategories()">
-            <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
-            <p>سجل الأخشاب، المواد اللاصقة، الحدايد والمعدات وفق المعايير العالمية</p>
+          <div class="visual-card" onclick="openWoodCategories()" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">🪵</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=600&q=80" alt="Wood Factory">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">مواد خام مصنع الخشب</h3>
+              <p>سجل الأخشاب، المواد اللاصقة، الحدايد والمعدات وفق المعايير العالمية</p>
+            </div>
           </div>
-          <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مواد خام مصنع الجلد')">
-            <h3 style="color: var(--leather-color);">🥾 مواد خام مصنع الجلد</h3>
-            <p>أنواع الجلود، الألوان، السماكة، الأمتار/اللفات، والبطانات</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('leather', 'all', '🥾 مواد خام مصنع الجلد')" style="--card-accent-color: var(--leather-color); --card-glow-color: rgba(168, 85, 247, 0.25);">
+            <div class="card-icon-badge">🥾</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=600&q=80" alt="Leather Factory">
+            <div class="card-body-content">
+              <h3 style="color: var(--leather-color);">مواد خام مصنع الجلد</h3>
+              <p>أنواع الجلود، الألوان، السماكة، الأمتار/اللفات، والبطانات</p>
+            </div>
           </div>
-          <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مواد خام البوية والدهان')">
-            <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان</h3>
-            <p>الدهانات، الأكواد، الماركات، درجات اللون، والعبوات</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('paint', 'all', '🎨 مواد خام البوية والدهان')" style="--card-accent-color: var(--paint-color); --card-glow-color: rgba(236, 72, 153, 0.25);">
+            <div class="card-icon-badge">🎨</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=600&q=80" alt="Paint Factory">
+            <div class="card-body-content">
+              <h3 style="color: var(--paint-color);">مواد خام البوية والدهان</h3>
+              <p>الدهانات، الأكواد، الماركات، درجات اللون، والعبوات</p>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- أقسام الخشب المصورة -->
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
           <div class="right-actions">
@@ -279,25 +360,49 @@
         </div>
 
         <div class="warehouse-grid">
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي (Solid Wood)')">
-            <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي</h3>
-            <p>سجل أنواع الخشب الطبيعي والحساب بالتكعيب (m³)</p>
+          <div class="visual-card" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي (Solid Wood)')" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">🌲</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1520114878144-6123749968dd?auto=format&fit=crop&w=600&q=80" alt="Solid Wood">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">الخشب الطبيعي</h3>
+              <p>سجل أنواع الخشب الطبيعي والحساب بالتكعيب (m³)</p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح (Wood Panels)')">
-            <h3 style="color: var(--wood-color);">📐 المسطحات والألواح</h3>
-            <p>ألواح MDF، الأبلكاش، الميلامين بالسمك والأبعاد القياسية</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح (Wood Panels)')" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">📐</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" alt="Wood Panels">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">المسطحات والألواح</h3>
+              <p>ألواح MDF، الأبلكاش، الميلامين بالسمك والأبعاد القياسية</p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'adhesives', '🧪 المواد اللاصقة والغراء (Adhesives)')">
-            <h3 style="color: var(--wood-color);">🧪 المواد اللاصقة والغراء</h3>
-            <p>غراء الخشب، الغراء الحراري، والسيليكون باللتر/الكيلو</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('wood', 'adhesives', '🧪 المواد اللاصقة والغراء (Adhesives)')" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">🧪</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Adhesives">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">المواد اللاصقة والغراء</h3>
+              <p>غراء الخشب، الغراء الحراري، والسيليكون باللتر/الكيلو</p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'hardware', '🔩 الحدايد والإكسسوارات (Hardware)')">
-            <h3 style="color: var(--wood-color);">🔩 الحدايد والإكسسوارات</h3>
-            <p>المفصلات، السكك، المسامير، المقابض والمستلزمات المعدنية</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('wood', 'hardware', '🔩 الحدايد والإكسسوارات (Hardware)')" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">🔩</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80" alt="Hardware">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">الحدايد والإكسسوارات</h3>
+              <p>المفصلات، السكك، المسامير، المقابض والمستلزمات المعدنية</p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات ومعدات التشغيل (Tools & Machinery)')">
-            <h3 style="color: var(--wood-color);">🛠️ المعدات ومعدات التشغيل</h3>
-            <p>ريش القص، أدوات النجارة، الصيانة والمعدات اليدوية والآلية</p>
+
+          <div class="visual-card" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات ومعدات التشغيل (Tools & Machinery)')" style="--card-accent-color: var(--wood-color); --card-glow-color: rgba(245, 158, 11, 0.25);">
+            <div class="card-icon-badge">🛠️</div>
+            <img class="card-banner-img" src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80" alt="Tools">
+            <div class="card-body-content">
+              <h3 style="color: var(--wood-color);">المعدات ومعدات التشغيل</h3>
+              <p>ريش القص، أدوات النجارة، الصيانة والمعدات اليدوية والآلية</p>
+            </div>
           </div>
         </div>
       </div>
@@ -353,7 +458,6 @@
       </div>
     </div>
 
-    <!-- قسم سجل الحركات اليومية المنظم بملفات المشاريع العالمية -->
     <div id="daily-transactions-section" class="section-view">
       <div id="projects-list-view">
         <div class="sub-header">
@@ -505,12 +609,12 @@
     </div>
   </div>
 
-  <!-- مودال نقل وتعديل حركة الصرف لمشروع آخر -->
   <div id="edit-transaction-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 style="color: var(--warning);">🔄 نقل/تعديل حركة الصرف لمشروع آخر</h3>
       <input type="hidden" id="edit-log-id">
       <input type="hidden" id="edit-log-created-at">
+      <input type="hidden" id="edit-log-item-name">
       
       <div class="form-group">
         <label>الصنف المنسحب / Item:</label>
@@ -731,7 +835,6 @@
       });
     }
 
-    /* جلب حركات العمليات */
     async function fetchDailyLogs() {
       const grid = document.getElementById('projects-grid');
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;">⏳ جاري جلب ملفات المشاريع أونلاين...</div>';
@@ -845,10 +948,10 @@
       fetchDailyLogs();
     }
 
-    /* دوال التعديل والنقل المحسنة بدون الاعتماد على id المفرد */
     function openEditTransactionModal(log) {
       document.getElementById('edit-log-id').value = log.id || '';
       document.getElementById('edit-log-created-at').value = log.created_at || '';
+      document.getElementById('edit-log-item-name').value = log.item_title || '';
       document.getElementById('edit-log-item').value = log.item_title || '-';
       document.getElementById('edit-log-project').value = log.project_code || '';
       document.getElementById('edit-log-recipient').value = log.recipient_name || '';
@@ -859,7 +962,7 @@
     async function saveTransactionTransfer() {
       const logId = document.getElementById('edit-log-id').value;
       const createdAt = document.getElementById('edit-log-created-at').value;
-      const itemTitle = document.getElementById('edit-log-item').value;
+      const itemName = document.getElementById('edit-log-item-name').value;
       const newProjectCode = document.getElementById('edit-log-project').value.trim();
       const newRecipient = document.getElementById('edit-log-recipient').value.trim();
       const newIssuer = document.getElementById('edit-log-issuer').value.trim();
@@ -876,13 +979,12 @@
           issuer_name: newIssuer
         });
 
-        // المرونة في التعرف على الصف المستهدف
-        if (logId) {
+        if (logId && logId !== 'undefined' && logId !== '') {
           query = query.eq('id', logId);
         } else if (createdAt) {
           query = query.eq('created_at', createdAt);
-        } else {
-          query = query.eq('item_title', itemTitle);
+        } else if (itemName) {
+          query = query.eq('item_title', itemName);
         }
 
         const { error } = await query;
@@ -890,7 +992,7 @@
         if (error) throw error;
 
         closeModal('edit-transaction-modal');
-        showToast(`🔄 تم نقل الحركة وتوجيهها للمشروع [${newProjectCode}] بنجاح!`, 'success');
+        showToast(`🔄 تم نقل الحركة للمشروع [${newProjectCode}] بنجاح!`, 'success');
         await fetchDailyLogs();
       } catch (err) {
         showToast('❌ تعذر نقل الحركة: ' + err.message, 'error');
@@ -944,7 +1046,7 @@
         if (id) {
           const { error } = await supabaseClient.from('materials').update(payload).eq('id', id);
           if (error) throw error;
-          showToast('✏️ تم تعديل البيانات وتحديث التاريخ والوقت بنجاح!', 'success');
+          showToast('✏️ تم تعديل البيانات بنجاح!', 'success');
         } else {
           const { error } = await supabaseClient.from('materials').insert([payload]);
           if (error) throw error;
