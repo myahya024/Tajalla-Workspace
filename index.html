@@ -173,7 +173,7 @@
     <!-- 📌 الواجهة الرئيسية: 3 بطاقات كبيرة ومطولة -->
     <div id="home-hub-view">
       <div class="hub-title-section">
-        <h2>اختر القسم المطلوب لإدارته ومتابعته:</h2>
+        <h2>اختر القسم المطلوب لإدارته ومتابعة أداء العمليات:</h2>
       </div>
       
       <div class="main-hub-grid">
@@ -670,17 +670,23 @@
       });
     }
 
-    /* 📋 جلب سجل العمليات أونلاين مباشرة 100% ليراها المدير */
+    /* 📋 دالة جلب سجل العمليات أونلاين بعد التعديل لقرائتها فوراً من Supabase */
     async function fetchDailyLogs() {
       const tbody = document.getElementById('daily-logs-table-body');
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب سجل العمليات من السيرفر...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب سجل العمليات أونلاين...</td></tr>';
 
-      let { data, error } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from('daily_transactions')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error || !data || data.length === 0) {
+      if (error) {
+        console.error('Supabase Error:', error);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">⚠️ حدث خطأ أثناء الاتصال بالداتابيز: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة حتى الآن.</td></tr>';
         return;
       }
@@ -691,8 +697,8 @@
         const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
         tr.innerHTML = `
           <td>${formattedDate}</td>
-          <td><strong>${log.item_title}</strong></td>
-          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity}</span></td>
+          <td><strong>${log.item_title || log.title || '-'}</strong></td>
+          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
           <td>${log.issuer_name || '-'}</td>
           <td>${log.recipient_name || '-'}</td>
           <td>${log.project_code || '-'}</td>
