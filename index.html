@@ -5,30 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام تجلى - Tajalla System</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* تحسين شكل حقل كلمة المرور مع زر العين */
-    .password-container {
+    .password-wrapper {
       position: relative;
-      display: inline-block;
       width: 100%;
-      max-width: 300px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
-    .password-container input {
+    .password-wrapper input {
       width: 100%;
-      padding-left: 40px; /* مساحة لزر العين */
+      padding: 12px 45px 12px 15px !important;
       box-sizing: border-box;
     }
-    .toggle-eye {
+    .eye-btn {
       position: absolute;
-      left: 10px;
+      left: 15px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 18px;
+      font-size: 20px;
       user-select: none;
+      z-index: 10;
     }
   </style>
 </head>
@@ -40,14 +37,13 @@
       <h2>نظام تجلى</h2>
       <p>أدخل رمز الدخول للمتابعة</p>
       
-      <div class="password-container">
+      <div class="password-wrapper">
         <input type="password" id="pin-input" placeholder="****">
-        <span id="eye-icon" class="toggle-eye" onclick="togglePasswordVisibility()">👁️</span>
+        <span id="eye-icon" class="eye-btn" onclick="togglePassword()">👁️</span>
       </div>
       
-      <br>
       <button onclick="checkPin()">دخول</button>
-      <p id="login-error" class="error-msg" style="display:none; color: red; margin-top: 10px;">الرمز غير صحيح!</p>
+      <p id="login-error" class="error-msg" style="display:none; color: #ef4444; margin-top: 10px;">الرمز غير صحيح!</p>
     </div>
   </div>
 
@@ -59,36 +55,58 @@
     </header>
 
     <main class="app-content">
-      <!-- الشاشة الرئيسية -->
       <section id="sec-home" class="app-section">
         <h2>القائمة الرئيسية</h2>
         <div class="cards-grid">
-          <div class="card" onclick="showSection('sec-materials')">📦 إدارة المواد</div>
-          <div class="card" onclick="showSection('sec-transactions')">📑 سجل الحركات</div>
+          <div class="card" onclick="alert('قسم المواد قيد التطوير')">📦 إدارة المواد</div>
+          <div class="card" onclick="alert('سجل الحركات قيد التطوير')">📑 سجل الحركات</div>
         </div>
-      </section>
-
-      <!-- قسم المواد -->
-      <section id="sec-materials" class="app-section" style="display:none;">
-        <h2>إدارة المواد الخام</h2>
-        <button onclick="showHomeHub()">⬅️ عودة للمصنع</button>
-      </section>
-
-      <!-- قسم الحركات -->
-      <section id="sec-transactions" class="app-section" style="display:none;">
-        <h2>سجل الحركات</h2>
-        <button onclick="showHomeHub()">⬅️ عودة للمصنع</button>
       </section>
     </main>
   </div>
 
-  <!-- استدعاء ملفات الجافاسكريبت المنفصلة -->
-  <script src="js/config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/ui.js"></script>
+  <!-- الكود المباشر للأمان والعين -->
   <script>
-    // تشغيل التحقق من الجلسة عند تحميل الصفحة
-    window.onload = checkExistingSession;
+    const SECRET_PIN = "$Arkon1818$";
+
+    function togglePassword() {
+      const input = document.getElementById('pin-input');
+      const icon = document.getElementById('eye-icon');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '👁️‍🗨️';
+      } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+      }
+    }
+
+    function checkPin() {
+      const input = document.getElementById('pin-input').value;
+      const error = document.getElementById('login-error');
+
+      if (input === SECRET_PIN) {
+        localStorage.setItem('tajalla_session', 'active');
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        error.style.display = 'none';
+      } else {
+        error.style.display = 'block';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('tajalla_session');
+      location.reload();
+    }
+
+    window.onload = function() {
+      if (localStorage.getItem('tajalla_session') === 'active') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+      }
+    };
   </script>
 </body>
 </html>
