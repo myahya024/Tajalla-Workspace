@@ -167,7 +167,7 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
     .form-group input:focus { border-color: var(--accent); }
 
-    /* التنبيهات الداخلية (Toast) - تم إضافة خاصية الضغط عليها */
+    /* التنبيهات الداخلية (Toast) */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: #161e31; border: 1px solid var(--accent); color: #fff;
@@ -184,15 +184,12 @@
 </head>
 <body>
 
-  <!-- تنبيه يظهر عند الصرف ويمكّن المستخدم من الانتقال لصفحة الحركات اليومية مباشرة -->
   <div id="toast-notification" onclick="onToastClick()"></div>
 
-  <!-- زر قفل النظام أسفل اليسار -->
   <button class="logout-btn-bottom" onclick="logout()">
     <span>🔒</span> قفل النظام / Lock
   </button>
 
-  <!-- شاشة الدخول -->
   <div id="login-overlay">
     <div class="login-box">
       <h2>🔒 نظام تجلى | Tajalla</h2>
@@ -206,7 +203,6 @@
     </div>
   </div>
 
-  <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
       <h1>نظام تجلى | Tajalla System</h1>
@@ -244,7 +240,6 @@
       </div>
     </div>
 
-    <!-- 1. قسم مواد خام المستودعات -->
     <div id="raw-materials-section" class="section-view">
       <div id="warehouse-selection-menu">
         <div class="sub-header">
@@ -325,7 +320,6 @@
       </div>
     </div>
 
-    <!-- 2. قسم الـ Welcome Kit والعينات -->
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
         <div class="right-actions">
@@ -355,7 +349,6 @@
       </div>
     </div>
 
-    <!-- 3. قسم سجل العمليات اليومية -->
     <div id="daily-transactions-section" class="section-view">
       <div class="sub-header">
         <div class="right-actions">
@@ -386,7 +379,6 @@
     </div>
   </div>
 
-  <!-- ➕/✏️ نافذة إضافة أو تعديل صنف -->
   <div id="material-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="material-modal-title">إضافة صنف جديد / Add Item</h3>
@@ -419,7 +411,6 @@
     </div>
   </div>
 
-  <!-- 🗑️ نافذة تأكيد الحذف الداخلي -->
   <div id="delete-confirm-modal" class="modal-overlay">
     <div class="modal-card" style="max-width: 400px; text-align: center;">
       <h3 style="color: var(--danger);">⚠️ تأكيد الحذف النهائي</h3>
@@ -432,7 +423,7 @@
     </div>
   </div>
 
-  <!-- 📤 نافذة استخراج وصرف كمية -->
+  <!-- نافذة الصرف -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>📤 إذن صرف واستخراج / Issue Material</h3>
@@ -501,7 +492,7 @@
 
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
-    let toastRedirectToLogs = false; // تتبع لإعادة التوجيه عند النقر على إشعار الصرف
+    let toastRedirectToLogs = false;
 
     window.onload = function() { checkExistingSession(); };
 
@@ -651,13 +642,20 @@
 
       tbody.innerHTML = '';
       data.forEach(item => {
-        const qty = parseInt(item.quantity) || 0;
+        const qty = Number(item.quantity) || 0;
         let badgeHtml = qty > 5 ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 منخفض</span>';
-        const titleName = item.title || item.wood_type || item.name || '-';
+        
+        // قراءة تفقدية لاسم الصنف عبر كل المفاتيح المحتملة بالترتيب
+        const titleName = item.title || item.wood_type || item.name || item.item_name || item.item_title || '-';
         const sizeInfo = item.thickness || item.size || item.dimensions || '-';
         const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString('ar-SA') : '-';
         
         const tr = document.createElement('tr');
+
+        // تجهيز كائن البيانات لمنع الأخطاء في وظيفة التعديل
+        const safeItemJson = JSON.stringify(item).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+        // تنظيف الاسم لاستخدامه الآمن في الاستدعاء المباشر
+        const escapedTitle = titleName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
         tr.innerHTML = `
           <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
@@ -667,8 +665,8 @@
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
           <td style="text-align: center;">
-            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف</button>
-            <button class="action-btn btn-edit" onclick="openEditMaterialModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">✏️ تعديل</button>
+            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${escapedTitle}', ${qty})">📤 صرف</button>
+            <button class="action-btn btn-edit" onclick="openEditMaterialModal(${safeItemJson})">✏️ تعديل</button>
             <button class="action-btn btn-delete" onclick="triggerDeleteMaterial(${item.id})">🗑️ حذف</button>
           </td>
         `;
@@ -723,14 +721,14 @@
     function openEditMaterialModal(item) {
       document.getElementById('material-modal-title').innerText = '✏️ تعديل البيانات / Edit Item';
       document.getElementById('mat-id').value = item.id;
-      document.getElementById('mat-title').value = item.title || item.wood_type || item.name || '';
+      // ملء حقل الاسم بدعم جميع أسماء الأعمدة المحتملة
+      document.getElementById('mat-title').value = item.title || item.wood_type || item.name || item.item_name || item.item_title || '';
       document.getElementById('mat-thickness').value = item.thickness || item.size || item.dimensions || '';
       document.getElementById('mat-qty').value = item.quantity || 0;
       document.getElementById('mat-location').value = item.location || '';
       document.getElementById('material-modal').style.display = 'flex';
     }
 
-    /* دالة الحفظ والتعديل - تم تحديث created_at لتحديث الوقت والتاريخ عند كل تعديل */
     async function saveMaterial() {
       const id = document.getElementById('mat-id').value;
       const title = document.getElementById('mat-title').value.trim();
@@ -743,14 +741,16 @@
         return;
       }
 
+      // دعم التخزين المزدوج لاسم الصنف للمحافظة على التوافق مع الجداول القديمة والجديدة
       const payload = {
         title: title,
+        wood_type: title,
         thickness: thickness,
         quantity: qty,
         location: location,
         category: currentCategory,
         unit: currentSubUnit,
-        created_at: new Date().toISOString() // تحديث الوقت والتاريخ الحالي فوراً عند الحفظ أو التعديل
+        created_at: new Date().toISOString()
       };
 
       try {
@@ -789,10 +789,11 @@
       }
     }
 
+    /* دالة فتح نافذة الصرف */
     function openExtractModal(id, title, currentQty) {
       document.getElementById('ext-id').value = id;
       document.getElementById('ext-title').value = title;
-      document.getElementById('ext-current-qty').value = currentQty;
+      document.getElementById('ext-current-qty').value = Number(currentQty) || 0;
       document.getElementById('ext-project').value = '';
       document.getElementById('ext-issuer').value = '';
       document.getElementById('ext-recipient').value = '';
@@ -800,37 +801,25 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    /* دالة التأكيد مع التوجيه عند الضغط على الإشعار */
+    /* دالة تنفيذ الصرف وتخزين سجل العمليات اليومية */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
-      const curQty = parseInt(document.getElementById('ext-current-qty').value) || 0;
-      const extQty = parseInt(document.getElementById('ext-qty').value) || 0;
+      const curQty = Number(document.getElementById('ext-current-qty').value) || 0;
+      const extQty = Number(document.getElementById('ext-qty').value) || 0;
       const movementType = document.getElementById('ext-movement-type').value;
       const projectCode = document.getElementById('ext-project').value.trim();
       const department = document.getElementById('ext-department').value;
       const issuerName = document.getElementById('ext-issuer').value.trim();
       const recipientName = document.getElementById('ext-recipient').value.trim();
 
-      if (!projectCode) {
-        showToast('⚠️ يرجى كتابة اسم أو رقم المشروع!', 'error');
-        return;
-      }
-      if (!issuerName) {
-        showToast('⚠️ يرجى كتابة اسم المسؤول عن الصرف!', 'error');
-        return;
-      }
-      if (!recipientName) {
-        showToast('⚠️ يرجى كتابة اسم المستلم الفعلي!', 'error');
-        return;
-      }
-      if (!extQty || extQty <= 0) {
-        showToast('⚠️ يرجى تحديد كمية صحيحة للصرف!', 'error');
-        return;
-      }
+      if (!projectCode) return showToast('⚠️ يرجى كتابة اسم أو رقم المشروع!', 'error');
+      if (!issuerName) return showToast('⚠️ يرجى كتابة اسم المسؤول عن الصرف!', 'error');
+      if (!recipientName) return showToast('⚠️ يرجى كتابة اسم المستلم الفعلي!', 'error');
+      if (!extQty || extQty <= 0) return showToast('⚠️ يرجى تحديد كمية صحيحة للصرف!', 'error');
+      
       if (extQty > curQty) {
-        showToast('❌ الكمية المطلوبة غير متوفرة بالمخزن!', 'error');
-        return;
+        return showToast(`❌ الكمية المطلوبة (${extQty}) أكبر من المتوفر بالمخزن (${curQty})!`, 'error');
       }
 
       try {
@@ -838,7 +827,7 @@
           .from('materials')
           .update({ 
             quantity: curQty - extQty,
-            created_at: new Date().toISOString() // تحديث وقت الصنف عند الاستخراج والصرف
+            created_at: new Date().toISOString()
           })
           .eq('id', id);
 
@@ -861,7 +850,6 @@
         if (logErr) throw logErr;
 
         closeModal('extract-modal');
-        // إظهار إشعار الصرف مع إمكانية الضغط عليه للانتقال إلى سجل العمليات اليومية
         showToast(`📦 تم صرف (${extQty}) للمشروع [${projectCode}] بنجاح!`, 'success', true);
         fetchMaterialsFromDatabase();
       } catch (err) {
