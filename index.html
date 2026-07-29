@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام تجلى - Tajalla System</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* تنسيق زر العين بشكل دقيق وبدون تأخير */
     .password-wrapper {
       position: relative;
       width: 100%;
@@ -47,7 +49,7 @@
     </div>
   </div>
 
-  <!-- التطبيق الرئيسي -->
+  <!-- التطبيق الرئيسي (الواجهات الكاملة) -->
   <div id="main-app" style="display:none;">
     <header class="app-header">
       <h1>نظام إدارة تجلى</h1>
@@ -55,20 +57,61 @@
     </header>
 
     <main class="app-content">
+      <!-- الشاشة الرئيسية -->
       <section id="sec-home" class="app-section">
         <h2>القائمة الرئيسية</h2>
         <div class="cards-grid">
-          <div class="card" onclick="alert('قسم المواد قيد التطوير')">📦 إدارة المواد</div>
-          <div class="card" onclick="alert('سجل الحركات قيد التطوير')">📑 سجل الحركات</div>
+          <div class="card" onclick="showSection('sec-materials')">📦 إدارة المواد</div>
+          <div class="card" onclick="showSection('sec-transactions')">📑 سجل الحركات</div>
+        </div>
+      </section>
+
+      <!-- قسم إدارة المواد الخام -->
+      <section id="sec-materials" class="app-section" style="display:none;">
+        <div class="section-header">
+          <h2>📦 إدارة المواد الخام</h2>
+          <button onclick="showHomeHub()" class="btn-back">⬅️ عودة للمصنع</button>
+        </div>
+        <div id="materials-container">
+          <!-- يتم تحميل جدول المواد وتفاصيلها عن طريق الجافاسكريبت -->
+        </div>
+      </section>
+
+      <!-- قسم سجل الحركات -->
+      <section id="sec-transactions" class="app-section" style="display:none;">
+        <div class="section-header">
+          <h2>📑 سجل الحركات</h2>
+          <button onclick="showHomeHub()" class="btn-back">⬅️ عودة للمصنع</button>
+        </div>
+        <div id="transactions-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم المادة</th>
+                <th>نوع الحركة</th>
+                <th>الكمية</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <!-- يتم تحميل الحركات هنا تلقائياً -->
+            </tbody>
+          </table>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- الكود المباشر للأمان والعين -->
-  <script>
-    const SECRET_PIN = "$Arkon1818$";
+  <!-- استدعاء كافة ملفات المشروع والمكتبات -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/materials.js"></script>
+  <script src="js/transactions.js"></script>
 
+  <!-- كود زر العين الآمن وإدارة الدخول -->
+  <script>
     function togglePassword() {
       const input = document.getElementById('pin-input');
       const icon = document.getElementById('eye-icon');
@@ -82,31 +125,12 @@
       }
     }
 
-    function checkPin() {
-      const input = document.getElementById('pin-input').value;
-      const error = document.getElementById('login-error');
-
-      if (input === SECRET_PIN) {
-        localStorage.setItem('tajalla_session', 'active');
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        error.style.display = 'none';
-      } else {
-        error.style.display = 'block';
+    // التحقق المباشر عند التحميل
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof checkExistingSession === 'function') {
+        checkExistingSession();
       }
-    }
-
-    function logout() {
-      localStorage.removeItem('tajalla_session');
-      location.reload();
-    }
-
-    window.onload = function() {
-      if (localStorage.getItem('tajalla_session') === 'active') {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-      }
-    };
+    });
   </script>
 </body>
 </html>
