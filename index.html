@@ -510,6 +510,7 @@
     <div class="modal-card">
       <h3 style="color: var(--warning);">🔄 نقل/تعديل حركة الصرف لمشروع آخر</h3>
       <input type="hidden" id="edit-log-id">
+      <input type="hidden" id="edit-log-created-at">
       
       <div class="form-group">
         <label>الصنف المنسحب / Item:</label>
@@ -721,16 +722,16 @@
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
           <td style="text-align: center;">
-            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${escapedTitle}', ${qty})">📤 صرف</button>
+            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id || 0}, '${escapedTitle}', ${qty})">📤 صرف</button>
             <button class="action-btn btn-edit" onclick="openEditMaterialModal(${safeItemJson})">✏️ تعديل</button>
-            <button class="action-btn btn-delete" onclick="triggerDeleteMaterial(${item.id})">🗑️ حذف</button>
+            <button class="action-btn btn-delete" onclick="triggerDeleteMaterial(${item.id || 0})">🗑️ حذف</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    /* دالة جلب سجل العمليات وتجميع البيانات حسب ملفات المشاريع */
+    /* جلب حركات العمليات */
     async function fetchDailyLogs() {
       const grid = document.getElementById('projects-grid');
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;">⏳ جاري جلب ملفات المشاريع أونلاين...</div>';
@@ -750,7 +751,6 @@
       allTransactionsData = data;
       renderProjectsGrid(data);
 
-      // إذا كنا نفتح تفاصيل مشروع حالياً، نقوم بتسريع التحديث داخل الملف نفسه
       if (document.getElementById('project-details-view').style.display === 'block' && currentActiveProject) {
         const activeLogs = data.filter(l => (l.project_code || 'بدون اسم مشروع') === currentActiveProject);
         openProjectDetails(currentActiveProject, activeLogs);
@@ -845,9 +845,10 @@
       fetchDailyLogs();
     }
 
-    /* دوال نقل الحركة وتغيير المشروع الخاطئ */
+    /* دوال التعديل والنقل المحسنة بدون الاعتماد على id المفرد */
     function openEditTransactionModal(log) {
-      document.getElementById('edit-log-id').value = log.id;
+      document.getElementById('edit-log-id').value = log.id || '';
+      document.getElementById('edit-log-created-at').value = log.created_at || '';
       document.getElementById('edit-log-item').value = log.item_title || '-';
       document.getElementById('edit-log-project').value = log.project_code || '';
       document.getElementById('edit-log-recipient').value = log.recipient_name || '';
@@ -857,6 +858,8 @@
 
     async function saveTransactionTransfer() {
       const logId = document.getElementById('edit-log-id').value;
+      const createdAt = document.getElementById('edit-log-created-at').value;
+      const itemTitle = document.getElementById('edit-log-item').value;
       const newProjectCode = document.getElementById('edit-log-project').value.trim();
       const newRecipient = document.getElementById('edit-log-recipient').value.trim();
       const newIssuer = document.getElementById('edit-log-issuer').value.trim();
@@ -867,14 +870,22 @@
       }
 
       try {
-        const { error } = await supabaseClient
-          .from('daily_transactions')
-          .update({
-            project_code: newProjectCode,
-            recipient_name: newRecipient,
-            issuer_name: newIssuer
-          })
-          .eq('id', logId);
+        let query = supabaseClient.from('daily_transactions').update({
+          project_code: newProjectCode,
+          recipient_name: newRecipient,
+          issuer_name: newIssuer
+        });
+
+        // المرونة في التعرف على الصف المستهدف
+        if (logId) {
+          query = query.eq('id', logId);
+        } else if (createdAt) {
+          query = query.eq('created_at', createdAt);
+        } else {
+          query = query.eq('item_title', itemTitle);
+        }
+
+        const { error } = await query;
 
         if (error) throw error;
 
@@ -898,7 +909,7 @@
 
     function openEditMaterialModal(item) {
       document.getElementById('material-modal-title').innerText = '✏️ تعديل البيانات / Edit Item';
-      document.getElementById('mat-id').value = item.id;
+      document.getElementById('mat-id').value = item.id || '';
       document.getElementById('mat-title').value = item.title || item.wood_type || item.name || item.item_name || item.item_title || '';
       document.getElementById('mat-thickness').value = item.thickness || item.size || item.dimensions || '';
       document.getElementById('mat-qty').value = item.quantity || 0;
@@ -997,20 +1008,21 @@
       }
 
       try {
-        const { error: updateErr } = await supabaseClient
-          .from('materials')
-          .update({ 
-            quantity: curQty - extQty,
-            created_at: new Date().toISOString()
-          })
-          .eq('id', id);
+        if (id && id !== "0") {
+          const { error: updateErr } = await supabaseClient
+            .from('materials')
+            .update({ 
+              quantity: curQty - extQty,
+              created_at: new Date().toISOString()
+            })
+            .eq('id', id);
 
-        if (updateErr) throw updateErr;
+          if (updateErr) throw updateErr;
+        }
 
         const { error: logErr } = await supabaseClient
           .from('daily_transactions')
           .insert([{
-            item_id: parseInt(id) || null,
             item_title: itemTitle,
             quantity: extQty,
             movement_type: movementType,
