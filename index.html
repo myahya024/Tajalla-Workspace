@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام إدارة الورش والمستودعات الكبرى | تجلى Agency</title>
+  <title>منصة تجلى | Tajalla Operations Hub</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -43,20 +43,24 @@
     .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
     #main-app { display: none; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-    h1 { font-size: 1.4rem; color: var(--accent); }
-    .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    h1 { font-size: 1.4rem; color: var(--accent); font-weight: bold; }
+    .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
     .logout-btn:hover { background: var(--danger); color: #fff; }
 
-    /* التبويبات */
-    .nav-tabs { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
-    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 12px 24px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: bold; font-size: 0.95rem; }
-    .tab-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+    /* الكروت الرئيسية الثلاث المطولة */
+    .main-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .main-hub-card {
+      background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); padding: 30px 20px;
+      cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;
+    }
+    .main-hub-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.15); }
+    .main-hub-card h2 { font-size: 1.25rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .main-hub-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+    .card-footer-link { margin-top: 15px; font-size: 0.85rem; color: var(--accent); font-weight: bold; }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* شبكة المستودعات */
+    /* شبكة المستودعات الفرعية */
     .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
     .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 22px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .warehouse-card:hover { transform: translateY(-4px); }
@@ -65,10 +69,12 @@
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
     .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
 
-    /* العرض والجدول */
-    .sub-warehouse-view { display: none; margin-top: 20px; }
-    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    /* الأقسام المنفصلة (العرض) */
+    .section-view { display: none; margin-top: 10px; }
+
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .back-btn:hover { background: var(--border); }
     .add-btn { background: var(--success); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
     /* الجدول */
@@ -117,23 +123,55 @@
   <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
-      <h1>⚙️ نظام إدارة الورش والمستودعات الكبرى | تجلى Agency</h1>
+      <h1>🏛️ منصة تجلى | Tajalla Operations Hub</h1>
       <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
     </header>
 
-    <!-- التنقل الرئيسي -->
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchMainTab('raw-materials', this)">📦 مواد خام المستودعات</button>
-      <button class="tab-btn" onclick="switchMainTab('general-inventory', this)">🎁 جرد الـ Welcome Kit والعينات العالمية</button>
-      <button class="tab-btn" onclick="switchMainTab('daily-transactions', this)">📋 سجل العمليات اليومية</button>
+    <!-- 📌 الواجهة الرئيسية: 3 كروت مطولة للاختيار -->
+    <div id="home-hub-view">
+      <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر القسم المطلوب للبدء:</h2>
+      
+      <div class="main-hub-grid">
+        <!-- كارت 1 -->
+        <div class="main-hub-card" onclick="openRawMaterialsSection()">
+          <div>
+            <h2 style="color: var(--accent);">📦 إدارة مواد خام المستودعات</h2>
+            <p>سجلات مستودعات الأخشاب، الجلود، والدهانات، مع تصنيف المواد الخام وإجراءات الصرف والجرد.</p>
+          </div>
+          <div class="card-footer-link">استعراض المصانع والمستودعات ⬅️</div>
+        </div>
+
+        <!-- كارت 2 -->
+        <div class="main-hub-card" onclick="openWelcomeKitSection()">
+          <div>
+            <h2 style="color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات</h2>
+            <p>قائمة العينات العالمية والـ Welcome Kits والمشاريع التابعة لها ومواقع تخزينها.</p>
+          </div>
+          <div class="card-footer-link">استعراض العينات والجرد ⬅️</div>
+        </div>
+
+        <!-- كارت 3 -->
+        <div class="main-hub-card" onclick="openDailyTransactionsSection()">
+          <div>
+            <h2 style="color: var(--warning);">📋 سجل العمليات والحركات اليومية</h2>
+            <p>متابعة كافة أذونات الصرف والاستخراج المسجلة فورياً مع تفاصيل المسؤولين والمشاريع.</p>
+          </div>
+          <div class="card-footer-link">عرض السجل اليومي ⬅️</div>
+        </div>
+      </div>
     </div>
 
+
     <!-- 1. قسم مواد خام المستودعات -->
-    <div id="raw-materials" class="tab-content active">
+    <div id="raw-materials-section" class="section-view">
       
-      <!-- قائمة اختيار المصانع -->
+      <!-- قائمة اختيار المصانع الثلاثة -->
       <div id="warehouse-selection-menu">
-        <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لإدارة الأصناف أونلاين:</h2>
+        <div class="sub-header">
+          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
+          <h2 style="font-size: 1.1rem; color: var(--accent);">اختر المصنع/المستودع أونلاين:</h2>
+          <div></div>
+        </div>
         <div class="warehouse-grid">
           <div class="warehouse-card wood" onclick="openWoodCategories()">
             <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
@@ -150,11 +188,11 @@
         </div>
       </div>
 
-      <!-- قائمة أخشاب المصنع الفرعية بالتصنيف العالمي -->
+      <!-- قائمة أخشاب المصنع الفرعية -->
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
-          <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات الرئيسية</button>
-          <h2 style="color: var(--wood-color);">🪵 تصنيف أقسام مصنع الخشب (التصنيف القياسي)</h2>
+          <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات</button>
+          <h2 style="color: var(--wood-color);">🪵 تصنيف أقسام مصنع الخشب</h2>
           <div></div>
         </div>
 
@@ -183,9 +221,9 @@
       </div>
 
       <!-- الجدول الديناميكي -->
-      <div id="sub-warehouse-container" class="sub-warehouse-view">
+      <div id="sub-warehouse-container" style="display: none;">
         <div class="sub-header">
-          <button class="back-btn" onclick="backFromTable()">⬅️ العودة للورا</button>
+          <button class="back-btn" onclick="backFromTable()">⬅️ رجوع</button>
           <h2 id="current-warehouse-title">المستودع</h2>
           <button class="add-btn" onclick="openAddModal()">+ إضافة صنف جديد</button>
         </div>
@@ -203,9 +241,10 @@
     </div>
 
     <!-- 2. قسم الـ Welcome Kit والعينات -->
-    <div id="general-inventory" class="tab-content">
+    <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
-        <h2 style="font-size: 1.1rem; color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات (مرجع عالمي):</h2>
+        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
+        <h2 style="font-size: 1.1rem; color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات العالمية:</h2>
         <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / Kit</button>
       </div>
       <div class="table-container">
@@ -228,8 +267,9 @@
     </div>
 
     <!-- 3. قسم سجل العمليات اليومية -->
-    <div id="daily-transactions" class="tab-content">
+    <div id="daily-transactions-section" class="section-view">
       <div class="sub-header">
+        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
         <h2 style="font-size: 1.1rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية:</h2>
         <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل</button>
       </div>
@@ -319,38 +359,33 @@
     </div>
   </div>
 
-  <!-- 📤 3. نافذة استخراج وصرف كمية (المعدلة بالكامل بناء على التوجيهات) -->
+  <!-- 📤 3. نافذة استخراج وصرف كمية -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>📤 إذن صرف واستخراج صنف</h3>
       <input type="hidden" id="ext-id">
       <input type="hidden" id="ext-current-qty">
       
-      <!-- 1. اسم الصنف ثابت ومقفول لقراءة فقط -->
       <div class="form-group">
         <label>اسم الصنف المطلوب صرفه:</label>
         <input type="text" id="ext-title" readonly style="opacity: 0.8; background: #0b1329; border-color: var(--accent); color: var(--accent); font-weight: bold;">
       </div>
 
-      <!-- 2. رقم أمر التشغيل / المشروع -->
       <div class="form-group">
         <label>رقم أمر التشغيل / المشروع (Work Order / Project):</label>
         <input type="text" id="ext-project" placeholder="مثال: WO-2026-08 أو مشروع برج الفخامة">
       </div>
 
-      <!-- 3. اسم المسئول عن الاستخراج (إجباري) -->
       <div class="form-group">
         <label>اسم المستخرج / المسؤول عن الصرف: <span class="required-star">*</span></label>
         <input type="text" id="ext-issuer" placeholder="اسم أمين المخزن / المسؤول" required>
       </div>
 
-      <!-- 4. اسم المستلم / الجهة المستلمة -->
       <div class="form-group">
         <label>اسم المستلم / الجهة المستلمة:</label>
         <input type="text" id="ext-recipient" placeholder="اسم النجار / الفني / قسم الورشة">
       </div>
 
-      <!-- 5. سبب الاستخراج (خيارات محددة) -->
       <div class="form-group">
         <label>سبب / الغرض من الاستخراج: <span class="required-star">*</span></label>
         <select id="ext-reason">
@@ -360,7 +395,6 @@
         </select>
       </div>
 
-      <!-- 6. الكمية المراد صرفها -->
       <div class="form-group">
         <label>الكمية المراد صرفها:</label>
         <input type="number" id="ext-qty" value="1" min="1">
@@ -415,6 +449,7 @@
     function grantAccess() {
       document.getElementById('login-overlay').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
+      showHomeHub();
     }
 
     function logout() {
@@ -427,14 +462,37 @@
       pin.type = pin.type === 'password' ? 'text' : 'password';
     }
 
-    function switchMainTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+    /* التنقل وإظهار الأقسام الرئيسية */
+    function hideAllSections() {
+      document.getElementById('home-hub-view').style.display = 'none';
+      document.getElementById('raw-materials-section').style.display = 'none';
+      document.getElementById('general-inventory-section').style.display = 'none';
+      document.getElementById('daily-transactions-section').style.display = 'none';
+    }
 
-      if (tabId === 'general-inventory') fetchWelcomeKits();
-      if (tabId === 'daily-transactions') fetchDailyLogs();
+    function showHomeHub() {
+      hideAllSections();
+      document.getElementById('home-hub-view').style.display = 'block';
+    }
+
+    function openRawMaterialsSection() {
+      hideAllSections();
+      document.getElementById('raw-materials-section').style.display = 'block';
+      document.getElementById('warehouse-selection-menu').style.display = 'block';
+      document.getElementById('wood-categories-menu').style.display = 'none';
+      document.getElementById('sub-warehouse-container').style.display = 'none';
+    }
+
+    function openWelcomeKitSection() {
+      hideAllSections();
+      document.getElementById('general-inventory-section').style.display = 'block';
+      fetchWelcomeKits();
+    }
+
+    function openDailyTransactionsSection() {
+      hideAllSections();
+      document.getElementById('daily-transactions-section').style.display = 'block';
+      fetchDailyLogs();
     }
 
     function openWoodCategories() {
@@ -568,7 +626,7 @@
       let { data, error } = await supabaseClient.from('daily_transactions').select('*').order('created_at', { ascending: false });
 
       if (error || !data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة اليوم.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة حتى الآن.</td></tr>';
         return;
       }
 
@@ -651,7 +709,6 @@
       fetchMaterialsFromDatabase();
     }
 
-    /* 📤 فتح نموذج الصرف وتعبئة اسم الصنف تلقائياً للضغط عليه مباشرة */
     function openExtractModal(id, title, currentQty) {
       document.getElementById('ext-id').value = id;
       document.getElementById('ext-title').value = title;
@@ -663,7 +720,6 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    /* 📤 تأكيد عملية الصرف وإرسال البيانات للعمليات اليومية */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
@@ -674,7 +730,6 @@
       const recipientName = document.getElementById('ext-recipient').value.trim();
       const reason = document.getElementById('ext-reason').value;
 
-      // تحقق من الحقول الإجبارية
       if (!issuerName) {
         alert('⚠️ يجب إدخال اسم المستخرج / المسؤول عن الصرف لإتمام العملية!');
         return;
@@ -693,9 +748,9 @@
       // 1. تحديث الكمية المتبقية
       await supabaseClient.from('materials').update({ quantity: curQty - extQty }).eq('id', id);
 
-      // 2. تسجيل العملية في جدول العمليات اليومية
+      // 2. تسجيل العملية فورياً أونلاين في جدول العمليات اليومية
       await supabaseClient.from('daily_transactions').insert([{
-        item_id: id,
+        item_id: parseInt(id) || null,
         item_title: itemTitle,
         quantity: extQty,
         project_code: projectCode,
@@ -705,6 +760,7 @@
       }]);
 
       closeModal('extract-modal');
+      alert('✅ تم الصرف بنجاح وتم تسجيل العملية في السجل اليومي!');
       fetchMaterialsFromDatabase();
     }
 
