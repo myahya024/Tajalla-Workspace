@@ -113,7 +113,7 @@
 
     .section-view { display: none; margin-top: 10px; }
 
-    /* تحسين وتطوير الهيدر الفرعي ليكون متوسط الأفق ومترتب */
+    /* الهيدر الفرعي المحاذى بالنص */
     .sub-header { 
       display: grid; 
       grid-template-columns: 1fr auto 1fr; 
@@ -137,7 +137,7 @@
     .add-btn { background: linear-gradient(135deg, var(--success), #059669); color: #fff; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .add-btn:hover { box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
 
-    /* الجداول والجداول المزدوجة اللغة */
+    /* الجداول */
     .table-container { overflow-x: auto; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--card-border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 16px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; white-space: nowrap; }
@@ -157,7 +157,7 @@
     .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
     .action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-    /* المودال - النوافذ الداخلية للصفحة */
+    /* المودال */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; }
     .modal-card { background: #161e31; width: 90%; max-width: 520px; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
     .modal-card h3 { color: var(--accent); margin-bottom: 20px; font-weight: 700; text-align: center; }
@@ -166,7 +166,7 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
     .form-group input:focus { border-color: var(--accent); }
 
-    /* التنبيهات الداخلية (Toast) داخل الصفحة بدون Popups */
+    /* التنبيهات Toast */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: #161e31; border: 1px solid var(--accent); color: #fff;
@@ -183,7 +183,7 @@
 
   <div id="toast-notification"></div>
 
-  <!-- زر قفل النظام الصغير أسفل اليسار -->
+  <!-- زر قفل النظام -->
   <button class="logout-btn-bottom" onclick="logout()">
     <span>🔒</span> قفل النظام / Lock
   </button>
@@ -336,8 +336,6 @@
         <table>
           <thead>
             <tr>
-              <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
-              <th><div class="bilingual-header"><span>كود الصنف</span><span class="en">SKU Code</span></div></th>
               <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
               <th><div class="bilingual-header"><span>التفاصيل والمواصفات</span><span class="en">Details & Specs</span></div></th>
               <th><div class="bilingual-header"><span>الكمية</span><span class="en">Quantity</span></div></th>
@@ -366,7 +364,6 @@
         <table>
           <thead>
             <tr>
-              <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
               <th><div class="bilingual-header"><span>نوع الحركة</span><span class="en">Movement Type</span></div></th>
               <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
               <th><div class="bilingual-header"><span>الكمية المستخرجة</span><span class="en">Issued Qty</span></div></th>
@@ -415,7 +412,7 @@
     </div>
   </div>
 
-  <!-- 🗑️ نافذة تأكيد الحذف المصممة داخل الصفحة (بديل نافذة المتصفح المنبثقة) -->
+  <!-- 🗑️ نافذة تأكيد الحذف المصممة داخل الصفحة -->
   <div id="delete-confirm-modal" class="modal-overlay">
     <div class="modal-card" style="max-width: 400px; text-align: center;">
       <h3 style="color: var(--danger);">⚠️ تأكيد الحذف النهائي</h3>
@@ -602,7 +599,6 @@
     function setupTableHeaders() {
       const tr = document.getElementById('table-headers-row');
       tr.innerHTML = `
-        <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
         <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
         <th><div class="bilingual-header"><span>المواصفات / التفاصيل</span><span class="en">Details & Specs</span></div></th>
         <th><div class="bilingual-header"><span>الكمية المتوفرة</span><span class="en">Stock Qty</span></div></th>
@@ -614,7 +610,7 @@
 
     async function fetchMaterialsFromDatabase() {
       const tbody = document.getElementById('materials-table-body');
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
 
       let query = supabaseClient.from('materials').select('*').eq('category', currentCategory);
       if (currentSubUnit !== 'all') query = query.eq('unit', currentSubUnit);
@@ -622,12 +618,12 @@
       const { data, error } = await query;
 
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">⚠️ خطأ أثناء التحميل: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--danger);">⚠️ خطأ أثناء التحميل: ${error.message}</td></tr>`;
         return;
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً.</td></tr>';
         return;
       }
 
@@ -637,12 +633,10 @@
         let badgeHtml = qty > 5 ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 منخفض</span>';
         const titleName = item.title || item.wood_type || item.name || '-';
         const sizeInfo = item.thickness || item.size || item.dimensions || '-';
-        const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString('ar-SA') : '-';
         
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
-          <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><strong>${titleName}</strong></td>
           <td>${sizeInfo}</td>
           <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
@@ -659,27 +653,25 @@
     }
 
     async function fetchDailyLogs() {
-      const tbody = document.getElementById('daily-logs-table-body');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب السجل أونلاين...</td></tr>';
+      const tbody = document.getElementById('daily-transactions-section').querySelector('tbody');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب السجل أونلاين...</td></tr>';
 
       const { data, error } = await supabaseClient.from('daily_transactions').select('*');
 
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</td></tr>`;
         return;
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة.</td></tr>';
         return;
       }
 
       tbody.innerHTML = '';
       data.forEach(log => {
         const tr = document.createElement('tr');
-        const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
         tr.innerHTML = `
-          <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><span class="badge badge-info">${log.movement_type || 'صرف'}</span></td>
           <td><strong>${log.item_title || '-'}</strong></td>
           <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
@@ -712,7 +704,7 @@
       document.getElementById('material-modal').style.display = 'flex';
     }
 
-    /* إصلاح عملية الإضافة والتعديل لتعمل بشكل مثالي وموثوق مع Supabase */
+    /* إصلاح دالة الحفظ والتعديل بحذف الحقول غير الموجودة بالقاعدة */
     async function saveMaterial() {
       const id = document.getElementById('mat-id').value;
       const title = document.getElementById('mat-title').value.trim();
@@ -744,7 +736,6 @@
           showToast('✏️ تم تعديل البيانات والحفظ بنجاح!', 'success');
         } else {
           // الإضافة
-          payload.created_at = new Date().toISOString();
           const { error } = await supabaseClient.from('materials').insert([payload]);
           if (error) throw error;
           showToast('➕ تم إضافة الصنف الجديد بنجاح!', 'success');
@@ -757,7 +748,6 @@
       }
     }
 
-    /* استبدال نافذة الـ Browser Alert بقارئ داخل الصفحة */
     function triggerDeleteMaterial(id) {
       document.getElementById('delete-target-id').value = id;
       document.getElementById('delete-confirm-modal').style.display = 'flex';
@@ -819,8 +809,7 @@
         department: department,
         issuer_name: issuerName,
         recipient_name: recipientName,
-        reason: movementType,
-        created_at: new Date().toISOString()
+        reason: movementType
       }]);
 
       closeModal('extract-modal');
