@@ -1,5 +1,5 @@
 // رمز الدخول الخاص بالنظام
-const SECRET_PIN = "1234";
+const SECRET_PIN = "$Arkon1818$";
 
 function checkPin() {
   const pinInput = document.getElementById('pin-input').value;
@@ -26,4 +26,18 @@ function checkExistingSession() {
 function logout() {
   localStorage.removeItem('tajalla_session');
   location.reload();
+}
+
+// دالة إظهار وإخفاء كلمة المرور
+function togglePasswordVisibility() {
+  const pinInput = document.getElementById('pin-input');
+  const eyeIcon = document.getElementById('eye-icon');
+  
+  if (pinInput.type === 'password') {
+    pinInput.type = 'text';
+    eyeIcon.textContent = '👁️‍🗨️'; // شكل العين المفتوحة
+  } else {
+    pinInput.type = 'password';
+    eyeIcon.textContent = '👁️'; // شكل العين المغلقة
+  }
 }
