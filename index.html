@@ -65,13 +65,13 @@
     .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
     .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
 
-    /* عرض الأقسام والجدول */
+    /* العرض والجدول */
     .sub-warehouse-view { display: none; margin-top: 20px; }
     .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .add-btn { background: var(--success); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* تصميم الجدول */
+    /* الجدول */
     .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
     th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
@@ -81,16 +81,16 @@
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-    /* الأزرار داخل الجدول */
-    .action-btn { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
+    /* الأزرار */
+    .action-btn { border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-left: 3px; }
     .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
     .btn-edit { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
     .btn-delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
     .btn-delete:hover { background: var(--danger); color: #fff; }
 
-    /* النوافذ المنبثقة المصممة (Modal Windows) */
+    /* النوافذ المنبثقة الداكنة */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10000; }
-    .modal-card { background: var(--card-bg); width: 90%; max-width: 450px; padding: 25px; border-radius: 12px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+    .modal-card { background: var(--card-bg); width: 90%; max-width: 480px; padding: 25px; border-radius: 12px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
     .modal-card h3 { color: var(--accent); margin-bottom: 15px; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
@@ -99,42 +99,39 @@
 </head>
 <body>
 
-  <!-- 1. شاشة تسجيل الدخول -->
+  <!-- شاشة الدخول -->
   <div id="login-overlay">
     <div class="login-box">
       <h2>🔒 دخول آمن للنظام</h2>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">أدخل الرقم السري للوصول للبيانات</p>
-      
       <div class="password-wrapper">
         <input type="password" id="pin-input" placeholder="كلمة السر" onkeydown="if(event.key==='Enter') checkPin()">
-        <span class="toggle-password" onclick="togglePasswordVisibility()" id="toggle-icon">👁️</span>
+        <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
       </div>
-
       <button onclick="checkPin()">دخول النظام</button>
       <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">الرمز السري خاطئ!</p>
     </div>
   </div>
 
-  <!-- 2. التطبيق الرئيسي -->
+  <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
       <h1>⚙️ نظام إدارة الورش والمستودعات الكبرى | تجلى Agency</h1>
       <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
     </header>
 
-    <!-- القوائم الرئيسية -->
+    <!-- التنقل الرئيسي -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchMainTab('raw-materials', this)">📦 مواد خام المستودعات</button>
       <button class="tab-btn" onclick="switchMainTab('general-inventory', this)">🎁 جرد الـ Welcome Kit والعينات العالمية</button>
     </div>
 
-    <!-- 📦 قسم مواد خام المستودعات -->
+    <!-- 1. قسم مواد خام المستودعات -->
     <div id="raw-materials" class="tab-content active">
       
-      <!-- قائمة اختيار المصانع الرئيسية -->
+      <!-- قائمة اختيار المصانع -->
       <div id="warehouse-selection-menu">
         <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-muted);">اختر المصنع/المستودع لإدارة الأصناف أونلاين:</h2>
-        
         <div class="warehouse-grid">
           <div class="warehouse-card wood" onclick="openWoodCategories()">
             <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب</h3>
@@ -171,7 +168,7 @@
         </div>
       </div>
 
-      <!-- جدول البيانات الرئيسي -->
+      <!-- الجدول الديناميكي -->
       <div id="sub-warehouse-container" class="sub-warehouse-view">
         <div class="sub-header">
           <button class="back-btn" onclick="backFromTable()">⬅️ العودة للورا</button>
@@ -182,14 +179,7 @@
         <div class="table-container">
           <table>
             <thead>
-              <tr>
-                <th>اسم الصنف</th>
-                <th>المقاس / السماكة</th>
-                <th>الكمية المتوفرة</th>
-                <th>موقع التخزين</th>
-                <th>الحالة</th>
-                <th style="text-align: center;">إجراءات العمليات</th>
-              </tr>
+              <tr id="table-headers-row"></tr>
             </thead>
             <tbody id="materials-table-body"></tbody>
           </table>
@@ -198,53 +188,91 @@
 
     </div>
 
-    <!-- 🎁 قسم المخزون العام -->
+    <!-- 2. قسم الـ Welcome Kit والعينات -->
     <div id="general-inventory" class="tab-content">
       <div class="sub-header">
         <h2 style="font-size: 1.1rem; color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات (مرجع عالمي):</h2>
+        <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / Kit</button>
       </div>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>كود الصنف</th>
+              <th>كود الصنف (SKU)</th>
               <th>المشروع / العميل</th>
               <th>الصنف</th>
+              <th>التفاصيل والخامة</th>
               <th>الكمية</th>
-              <th>الموقع</th>
+              <th>موقع التخزين</th>
               <th>الحالة</th>
+              <th style="text-align: center;">إجراءات العمليات</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد عينات مسجلة حالياً</td>
-            </tr>
-          </tbody>
+          <tbody id="welcome-kit-table-body"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- 📥 1. نافذة إضافة صنف جديد (بدون prompt!) -->
-  <div id="add-modal" class="modal-overlay">
+  <!-- ✏️ 1. نافذة التعديل الكاملة للصنف (وليس الكمية فقط) -->
+  <div id="full-edit-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>➕ إضافة صنف جديد للمخزن</h3>
+      <h3>✏️ تعديل بيانات الصنف بالكامل</h3>
+      <input type="hidden" id="edit-item-id">
+      
       <div class="form-group">
-        <label>اسم الصنف / المادة:</label>
-        <input type="text" id="add-title" placeholder="مثال: MDF إسباني أو خشب سويدي">
+        <label>اسم الصنف / النوع:</label>
+        <input type="text" id="edit-item-title">
       </div>
-      <div class="form-group">
-        <label>المقاس / السماكة (اختياري):</label>
-        <input type="text" id="add-size" placeholder="مثال: 18 مم أو ستاندر">
+      
+      <div class="form-group" id="edit-size-group">
+        <label id="edit-size-label">المقاس / السماكة / التفاصيل:</label>
+        <input type="text" id="edit-item-size">
       </div>
+
       <div class="form-group">
         <label>الكمية المتوفرة:</label>
-        <input type="number" id="add-qty" value="10" min="0">
+        <input type="number" id="edit-item-qty" min="0">
       </div>
+
       <div class="form-group">
         <label>موقع التخزين / الرف:</label>
-        <input type="text" id="add-location" placeholder="مثال: رف B2 أو المستودع A">
+        <input type="text" id="edit-item-location">
       </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="add-btn" style="flex:1;" onclick="confirmFullEdit()">حفظ التعديلات 💾</button>
+        <button class="logout-btn" style="flex:1;" onclick="closeModal('full-edit-modal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📥 2. نافذة إضافة صنف جديد -->
+  <div id="add-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 id="add-modal-title">➕ إضافة صنف جديد</h3>
+      <input type="hidden" id="add-target-type" value="materials">
+      
+      <div class="form-group">
+        <label id="add-title-label">اسم الصنف / المادة:</label>
+        <input type="text" id="add-title" placeholder="أدخل الاسم">
+      </div>
+      
+      <div class="form-group">
+        <label id="add-size-label">المقاس / السماكة / التفاصيل:</label>
+        <input type="text" id="add-size" placeholder="مثال: 18 مم أو ستاندر">
+      </div>
+
+      <div class="form-group">
+        <label>الكمية:</label>
+        <input type="number" id="add-qty" value="10" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>موقع التخزين / الرف:</label>
+        <input type="text" id="add-location" placeholder="مثال: رف B2">
+      </div>
+
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmAddItem()">تأكيد الإضافة ✨</button>
         <button class="logout-btn" style="flex:1;" onclick="closeModal('add-modal')">إلغاء</button>
@@ -252,26 +280,10 @@
     </div>
   </div>
 
-  <!-- ✏️ 2. نافذة تعديل الكمية -->
-  <div id="edit-modal" class="modal-overlay">
-    <div class="modal-card">
-      <h3>✏️ تعديل الكمية</h3>
-      <input type="hidden" id="edit-id">
-      <div class="form-group">
-        <label>الكمية الجديدة المعدلة:</label>
-        <input type="number" id="edit-qty-input" min="0">
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="add-btn" style="flex:1;" onclick="confirmEditQty()">حفظ التعديل 💾</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('edit-modal')">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📤 3. نافذة صرف كمية -->
+  <!-- 📤 3. نافذة صرف المادة -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>📤 صرف / استخراج مادة</h3>
+      <h3>📤 صرف / استخراج كمية</h3>
       <input type="hidden" id="ext-id">
       <input type="hidden" id="ext-current-qty">
       <div class="form-group">
@@ -289,7 +301,7 @@
     </div>
   </div>
 
-  <!-- 🗑️ 4. نافذة تأكيد الحذف الصريحة -->
+  <!-- 🗑️ 4. نافذة تأكيد الحذف -->
   <div id="delete-modal" class="modal-overlay">
     <div class="modal-card" style="border-color: var(--danger);">
       <h3 style="color: var(--danger);">🗑️ تأكيد حذف الصنف</h3>
@@ -303,7 +315,6 @@
   </div>
 
   <script>
-    // ربط قاعدة بيانات Supabase
     const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -312,7 +323,7 @@
     const SESSION_KEY = "app_login_session";
 
     let currentCategory = 'wood';
-    let currentSubUnit = 'all';
+    let currentSubUnit = 'natural_wood';
 
     window.onload = function() { checkExistingSession(); };
 
@@ -349,6 +360,8 @@
       document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       btn.classList.add('active');
+
+      if (tabId === 'general-inventory') fetchWelcomeKits();
     }
 
     function openWoodCategories() {
@@ -378,22 +391,38 @@
       document.getElementById('sub-warehouse-container').style.display = 'block';
       document.getElementById('current-warehouse-title').innerText = title || 'المستودع';
 
+      setupTableHeaders();
       await fetchMaterialsFromDatabase();
+    }
+
+    function setupTableHeaders() {
+      const tr = document.getElementById('table-headers-row');
+      if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+        tr.innerHTML = `<th>نوع الخشب</th><th>التكعيب (m³) / المقاس</th><th>الكمية</th><th>موقع التخزين</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+        tr.innerHTML = `<th>اسم الصنف</th><th>المقاس</th><th>السماكة (مم)</th><th>الكمية المتوفرة</th><th>موقع التخزين</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      } else if (currentCategory === 'leather') {
+        tr.innerHTML = `<th>نوع الجلد</th><th>اللون والتفاصيل</th><th>الكمية (أمتار/لفات)</th><th>موقع التخزين</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      } else if (currentCategory === 'paint') {
+        tr.innerHTML = `<th>اسم الدهان / الكود</th><th>الماركة / درجات اللون</th><th>العبوة / الكمية</th><th>موقع التخزين</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      } else {
+        tr.innerHTML = `<th>اسم الصنف</th><th>المقاس / التفاصيل</th><th>الكمية</th><th>الموقع</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      }
     }
 
     async function fetchMaterialsFromDatabase() {
       const tbody = document.getElementById('materials-table-body');
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ جاري جلب البيانات من السيرفر...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
 
       let query = supabaseClient.from('materials').select('*').eq('category', currentCategory);
       if (currentSubUnit !== 'all') {
         query = query.eq('unit', currentSubUnit);
       }
 
-      const { data, error } = await query;
+      const { data } = await query;
 
-      if (error || !data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة. اضغط على "+ إضافة صنف جديد" بالفي الأعلى.</td></tr>';
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً. اضغط "+ إضافة صنف جديد"</td></tr>';
         return;
       }
 
@@ -401,19 +430,65 @@
       data.forEach(item => {
         const qty = parseInt(item.quantity) || 0;
         let badgeHtml = qty > 5 ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 منخفض</span>';
-        const titleName = item.title || item.wood_type || item.name || 'صنف غير مسمى';
+        const titleName = item.title || item.wood_type || item.name || '-';
         const sizeInfo = item.thickness || item.size || item.dimensions || '-';
+        const tr = document.createElement('tr');
 
+        if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${item.dimensions || 'ستاندر'}</td>
+            <td>${sizeInfo}</td>
+            <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${item.id}, '${titleName}', '${sizeInfo}', ${qty}, '${item.location || ''}')">✏️ تعديل كامل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${sizeInfo}</td>
+            <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${item.id}, '${titleName}', '${sizeInfo}', ${qty}, '${item.location || ''}')">✏️ تعديل كامل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function fetchWelcomeKits() {
+      const tbody = document.getElementById('welcome-kit-table-body');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب عينات الـ Welcome Kit...</td></tr>';
+
+      let { data } = await supabaseClient.from('welcome_kits').select('*');
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عينات مسجلة.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${titleName}</strong></td>
-          <td>${sizeInfo}</td>
-          <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
+          <td>${item.sku || '-'}</td>
+          <td>${item.project || '-'}</td>
+          <td><strong>${item.title || '-'}</strong></td>
+          <td>${item.details || '-'}</td>
+          <td><strong style="color:var(--accent);">${item.quantity || 0}</strong></td>
           <td>${item.location || '-'}</td>
-          <td>${badgeHtml}</td>
+          <td><span class="badge badge-success">🟢 جهاز</span></td>
           <td style="text-align: center;">
-            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف</button>
-            <button class="action-btn btn-edit" onclick="openEditModal(${item.id}, ${qty})">✏️ تعديل</button>
             <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
           </td>
         `;
@@ -421,12 +496,41 @@
       });
     }
 
-    /* إدارة النوافذ المنبثقة الداكنة المخصصة */
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
+    /* النوافذ المنبثقة */
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+    // فتح التعديل الشامل
+    function openFullEditModal(id, title, size, qty, location) {
+      document.getElementById('edit-item-id').value = id;
+      document.getElementById('edit-item-title').value = title;
+      document.getElementById('edit-item-size').value = size;
+      document.getElementById('edit-item-qty').value = qty;
+      document.getElementById('edit-item-location').value = location;
+      document.getElementById('full-edit-modal').style.display = 'flex';
     }
 
-    function openAddModal() {
+    async function confirmFullEdit() {
+      const id = document.getElementById('edit-item-id').value;
+      const title = document.getElementById('edit-item-title').value;
+      const size = document.getElementById('edit-item-size').value;
+      const qty = parseInt(document.getElementById('edit-item-qty').value) || 0;
+      const location = document.getElementById('edit-item-location').value;
+
+      await supabaseClient.from('materials').update({
+        title: title,
+        wood_type: title,
+        thickness: size,
+        size: size,
+        quantity: qty,
+        location: location
+      }).eq('id', id);
+
+      closeModal('full-edit-modal');
+      fetchMaterialsFromDatabase();
+    }
+
+    function openAddModal(target = 'materials') {
+      document.getElementById('add-target-type').value = target;
       document.getElementById('add-title').value = '';
       document.getElementById('add-size').value = '';
       document.getElementById('add-qty').value = '10';
@@ -435,15 +539,12 @@
     }
 
     async function confirmAddItem() {
-      const title = document.getElementById('add-title').value.trim();
-      const size = document.getElementById('add-size').value.trim();
+      const title = document.getElementById('add-title').value;
+      const size = document.getElementById('add-size').value;
       const qty = parseInt(document.getElementById('add-qty').value) || 0;
-      const location = document.getElementById('add-location').value.trim();
+      const location = document.getElementById('add-location').value;
 
-      if (!title) {
-        alert('الرجاء كتابة اسم الصنف أولاً!');
-        return;
-      }
+      if (!title) return;
 
       await supabaseClient.from('materials').insert([{
         title: title,
@@ -459,26 +560,10 @@
       fetchMaterialsFromDatabase();
     }
 
-    function openEditModal(id, currentQty) {
-      document.getElementById('edit-id').value = id;
-      document.getElementById('edit-qty-input').value = currentQty;
-      document.getElementById('edit-modal').style.display = 'flex';
-    }
-
-    async function confirmEditQty() {
-      const id = document.getElementById('edit-id').value;
-      const newQty = parseInt(document.getElementById('edit-qty-input').value) || 0;
-
-      await supabaseClient.from('materials').update({ quantity: newQty }).eq('id', id);
-      closeModal('edit-modal');
-      fetchMaterialsFromDatabase();
-    }
-
     function openExtractModal(id, title, currentQty) {
       document.getElementById('ext-id').value = id;
       document.getElementById('ext-title').value = title;
       document.getElementById('ext-current-qty').value = currentQty;
-      document.getElementById('ext-qty').value = '1';
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
@@ -487,10 +572,7 @@
       const curQty = parseInt(document.getElementById('ext-current-qty').value) || 0;
       const extQty = parseInt(document.getElementById('ext-qty').value) || 0;
 
-      if (extQty > curQty) {
-        alert('الكمية المطلوبة أكبر من الكمية المتوفرة بالمخزن!');
-        return;
-      }
+      if (extQty > curQty) return;
 
       await supabaseClient.from('materials').update({ quantity: curQty - extQty }).eq('id', id);
       closeModal('extract-modal');
