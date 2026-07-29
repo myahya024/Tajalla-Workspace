@@ -3,131 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة تجلى | Tajalla Operations Hub</title>
+  <title>نظام تجلى | Tajalla System</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
       --accent: #38bdf8;
-      --text: #f8fafc;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --text: #f1f5f9;
       --text-muted: #94a3b8;
-      --border: #334155;
-      --success: #22c55e;
+      --border: #1e293b;
+      --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
       --wood-color: #f59e0b;
       --leather-color: #a855f7;
       --paint-color: #ec4899;
-      --gold-color: #c59b27;
+      --gold-color: #fbbf24;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', system-ui, -apple-system, sans-serif; }
     
+    body {
+      background: radial-gradient(circle at top right, #111827, #0b0f19, #05070c);
+      color: var(--text);
+      padding: 30px;
+      direction: rtl;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* شاشة الدخول */
     #login-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
+      background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(12px);
+      display: flex; justify-content: center; align-items: center; z-index: 9999;
     }
     .login-box {
-      background: var(--card-bg); padding: 35px; border-radius: 14px; border: 1px solid var(--border);
-      text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--card-border);
+      text-align: center; max-width: 420px; width: 90%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
-    .login-box h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.4rem; }
-    .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+    .login-box h2 { margin-bottom: 15px; color: var(--accent); font-size: 1.6rem; font-weight: 800; }
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
     .password-wrapper input {
-      width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid var(--border);
-      border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
+      width: 100%; padding: 14px 45px 14px 15px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+      border-radius: 12px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr; transition: 0.3s;
     }
-    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7; }
-    .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+    .password-wrapper input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    .toggle-password { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; opacity: 0.7; }
+    .login-box button {
+      width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #0284c7);
+      color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.05rem; transition: 0.3s;
+    }
+    .login-box button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--accent-glow); }
 
+    /* الهيدر العلوي */
     #main-app { display: none; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 15px; }
-    h1 { font-size: 1.6rem; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
-    .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s; }
-    .logout-btn:hover { background: var(--danger); color: #fff; }
-
-    .hub-title-section { margin-bottom: 20px; }
-    .hub-title-section h2 { font-size: 1.25rem; color: var(--text-muted); }
-
-    .main-hub-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-      gap: 25px; 
-      margin-bottom: 35px; 
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 35px; padding-bottom: 20px; border-bottom: 1px solid var(--card-border);
     }
+    h1 {
+      font-size: 1.9rem; font-weight: 800; background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    /* زر قفل النظام أسفل اليسار */
+    .logout-btn-bottom {
+      position: fixed; bottom: 20px; left: 20px; z-index: 1000;
+      background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(8px); color: var(--text-muted);
+      border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px;
+      cursor: pointer; font-size: 0.78rem; font-weight: bold; transition: all 0.3s;
+      display: flex; align-items: center; gap: 6px; opacity: 0.6;
+    }
+    .logout-btn-bottom:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: var(--danger); }
+
+    .hub-title-section h2 { font-size: 1.15rem; color: var(--text-muted); font-weight: 600; margin-bottom: 25px; }
+
+    /* الكروت الرئيسية والمعرض */
+    .main-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 25px; margin-bottom: 35px; }
     .main-hub-card {
-      background: var(--card-bg); 
-      border-radius: 16px; 
-      border: 1px solid var(--border); 
-      padding: 35px 25px;
-      cursor: pointer; 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between; 
-      min-height: 240px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background: var(--card-bg); backdrop-filter: blur(10px);
+      border-radius: 20px; border: 1px solid var(--card-border); padding: 35px 30px;
+      cursor: pointer; transition: all 0.35s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
-    .main-hub-card:hover { 
-      transform: translateY(-8px); 
-      border-color: var(--accent); 
-      box-shadow: 0 15px 30px rgba(56, 189, 248, 0.15); 
+    .main-hub-card:hover {
+      transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 15px 35px var(--accent-glow);
     }
-    .main-hub-card h2 { font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-    .main-hub-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
-    .card-footer-link { 
-      margin-top: 25px; 
-      font-size: 0.95rem; 
-      color: var(--accent); 
-      font-weight: bold; 
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .main-hub-card h2 { font-size: 1.35rem; margin-bottom: 12px; font-weight: 700; }
+    .main-hub-card p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; }
+    .card-footer-link { margin-top: 25px; font-size: 0.9rem; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-    .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px; }
-    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 25px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-    .warehouse-card:hover { transform: translateY(-4px); }
-    .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
-    .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
-    .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
-    .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
+    .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-bottom: 25px; }
+    .warehouse-card {
+      background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px;
+      border: 1px solid var(--card-border); padding: 25px; cursor: pointer; transition: all 0.3s;
+    }
+    .warehouse-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.2); }
+    .warehouse-card.wood { border-top: 4px solid var(--wood-color); }
+    .warehouse-card.leather { border-top: 4px solid var(--leather-color); }
+    .warehouse-card.paint { border-top: 4px solid var(--paint-color); }
+    .warehouse-card.wood-item { border-top: 4px solid var(--wood-color); }
 
     .section-view { display: none; margin-top: 10px; }
 
-    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .back-btn:hover { background: var(--border); }
-    .add-btn { background: var(--success); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+    .back-btn { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); color: var(--accent); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .back-btn:hover { background: var(--border); color: #fff; }
+    .add-btn { background: linear-gradient(135deg, var(--success), #059669); color: #fff; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .add-btn:hover { box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
 
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
+    /* الجداول والجداول المزدوجة اللغة */
+    .table-container { overflow-x: auto; background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--card-border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
-    th { background: #111827; color: var(--accent); font-size: 0.95rem; }
+    th, td { padding: 16px 20px; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; white-space: nowrap; }
+    th { background: rgba(15, 23, 42, 0.9); color: var(--accent); font-size: 0.88rem; font-weight: 700; }
     
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
-    .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-    .badge-info { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
+    .bilingual-header { display: flex; flex-direction: column; gap: 2px; }
+    .bilingual-header .en { font-size: 0.72rem; color: var(--text-muted); font-weight: normal; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .action-btn { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-left: 3px; }
-    .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
-    .btn-edit { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-    .btn-delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-    .btn-delete:hover { background: var(--danger); color: #fff; }
+    .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-info { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10000; }
-    .modal-card { background: var(--card-bg); width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
-    .modal-card h3 { color: var(--accent); margin-bottom: 15px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; outline: none; }
-    .required-star { color: var(--danger); }
+    .action-btn { border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.82rem; margin-left: 4px; transition: 0.2s; }
+    .btn-extract { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .btn-edit { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    /* المودال - النوافذ المنبثقة */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; }
+    .modal-card { background: #161e31; width: 90%; max-width: 520px; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
+    .modal-card h3 { color: var(--accent); margin-bottom: 20px; font-weight: 700; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
+    .form-group input:focus { border-color: var(--accent); }
 
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
-      background: var(--card-bg); border: 1px solid var(--accent); color: #fff;
+      background: #161e31; border: 1px solid var(--accent); color: #fff;
       padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 0.95rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99999; opacity: 0;
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); pointer-events: none;
@@ -141,25 +164,29 @@
 
   <div id="toast-notification"></div>
 
+  <!-- زر قفل النظام الصغير أسفل اليسار -->
+  <button class="logout-btn-bottom" onclick="logout()">
+    <span>🔒</span> قفل النظام / Lock
+  </button>
+
   <!-- شاشة الدخول -->
   <div id="login-overlay">
     <div class="login-box">
-      <h2>🔒 دخول آمن للنظام</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">أدخل الرقم السري للوصول للبيانات</p>
+      <h2>🔒 نظام تجلى | Tajalla</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">أدخل رمز المرور للوصول للنظام</p>
       <div class="password-wrapper">
-        <input type="password" id="pin-input" placeholder="كلمة السر" onkeydown="if(event.key==='Enter') checkPin()">
+        <input type="password" id="pin-input" placeholder="Password / كلمة السر" onkeydown="if(event.key==='Enter') checkPin()">
         <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
       </div>
-      <button onclick="checkPin()">دخول النظام</button>
-      <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">الرمز السري خاطئ!</p>
+      <button onclick="checkPin()">دخول / Login</button>
+      <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 15px; display: none;">رمز المرور غير صحيح!</p>
     </div>
   </div>
 
   <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
-      <h1>🏛️ منصة تجلى | Tajalla Operations Hub</h1>
-      <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
+      <h1>نظام تجلى | Tajalla System</h1>
     </header>
 
     <div id="home-hub-view">
@@ -198,8 +225,8 @@
     <div id="raw-materials-section" class="section-view">
       <div id="warehouse-selection-menu">
         <div class="sub-header">
-          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
-          <h2 style="font-size: 1.1rem; color: var(--accent);">اختر المصنع/المستودع أونلاين:</h2>
+          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back</button>
+          <h2 style="font-size: 1.1rem; color: var(--accent);">اختر المصنع/المستودع:</h2>
           <div></div>
         </div>
         <div class="warehouse-grid">
@@ -220,7 +247,7 @@
 
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
-          <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات</button>
+          <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات / Back</button>
           <h2 style="color: var(--wood-color);">🪵 تصنيف أقسام مصنع الخشب</h2>
           <div></div>
         </div>
@@ -251,9 +278,9 @@
 
       <div id="sub-warehouse-container" style="display: none;">
         <div class="sub-header">
-          <button class="back-btn" onclick="backFromTable()">⬅️ رجوع</button>
+          <button class="back-btn" onclick="backFromTable()">⬅️ رجوع / Back</button>
           <h2 id="current-warehouse-title">المستودع</h2>
-          <button class="add-btn" onclick="openAddModal()">+ إضافة صنف جديد</button>
+          <button class="add-btn" onclick="openAddMaterialModal()">+ إضافة صنف جديد / Add Item</button>
         </div>
 
         <div class="table-container">
@@ -270,22 +297,22 @@
     <!-- 2. قسم الـ Welcome Kit والعينات -->
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
-        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
+        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back</button>
         <h2 style="font-size: 1.1rem; color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات العالمية:</h2>
-        <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / Kit</button>
+        <button class="add-btn" onclick="openAddMaterialModal()">+ إضافة عينة / Add Kit</button>
       </div>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>كود الصنف (SKU)</th>
-              <th>المشروع / العميل</th>
-              <th>الصنف</th>
-              <th>التفاصيل وخامة الصنع</th>
-              <th>الكمية</th>
-              <th>موقع التخزين</th>
-              <th>الحالة</th>
-              <th style="text-align: center;">إجراءات العمليات</th>
+              <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
+              <th><div class="bilingual-header"><span>كود الصنف</span><span class="en">SKU Code</span></div></th>
+              <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
+              <th><div class="bilingual-header"><span>التفاصيل والمواصفات</span><span class="en">Details & Specs</span></div></th>
+              <th><div class="bilingual-header"><span>الكمية</span><span class="en">Quantity</span></div></th>
+              <th><div class="bilingual-header"><span>موقع التخزين</span><span class="en">Location</span></div></th>
+              <th><div class="bilingual-header"><span>الحالة</span><span class="en">Status</span></div></th>
+              <th style="text-align: center;"><div class="bilingual-header"><span>إجراءات العمليات</span><span class="en">Actions</span></div></th>
             </tr>
           </thead>
           <tbody id="welcome-kit-table-body"></tbody>
@@ -296,22 +323,22 @@
     <!-- 3. قسم سجل العمليات اليومية -->
     <div id="daily-transactions-section" class="section-view">
       <div class="sub-header">
-        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
+        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back</button>
         <h2 style="font-size: 1.1rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية:</h2>
-        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل</button>
+        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث / Refresh</button>
       </div>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>التاريخ والوقت</th>
-              <th>نوع الحركة</th>
-              <th>اسم الصنف</th>
-              <th>الكمية المستخرجة</th>
-              <th>المسؤول عن الصرف</th>
-              <th>القسم / الورشه المستلمة</th>
-              <th>رقم / اسم المشروع</th>
-              <th>الغرض من الاستخراج</th>
+              <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
+              <th><div class="bilingual-header"><span>نوع الحركة</span><span class="en">Movement Type</span></div></th>
+              <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
+              <th><div class="bilingual-header"><span>الكمية المستخرجة</span><span class="en">Issued Qty</span></div></th>
+              <th><div class="bilingual-header"><span>المسؤول عن الصرف</span><span class="en">Issued By</span></div></th>
+              <th><div class="bilingual-header"><span>القسم / الورشة</span><span class="en">Department</span></div></th>
+              <th><div class="bilingual-header"><span>المشروع</span><span class="en">Project</span></div></th>
+              <th><div class="bilingual-header"><span>الغرض من الاستخراج</span><span class="en">Reason</span></div></th>
             </tr>
           </thead>
           <tbody id="daily-logs-table-body"></tbody>
@@ -320,20 +347,53 @@
     </div>
   </div>
 
+  <!-- ➕/✏️ نافذة إضافة أو تعديل صنف -->
+  <div id="material-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 id="material-modal-title">إضافة صنف جديد / Add Item</h3>
+      <input type="hidden" id="mat-id">
+      
+      <div class="form-group">
+        <label>اسم الصنف / Item Name:</label>
+        <input type="text" id="mat-title" placeholder="مثال: لوح MDF أبيض 18mm" required>
+      </div>
+
+      <div class="form-group">
+        <label>المواصفات / القياسات / Specs:</label>
+        <input type="text" id="mat-thickness" placeholder="مثال: 122x244 cm أو 5 mm">
+      </div>
+
+      <div class="form-group">
+        <label>الكمية المتوفرة / Quantity:</label>
+        <input type="number" id="mat-qty" value="1" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>موقع التخزين بالمستودع / Location:</label>
+        <input type="text" id="mat-location" placeholder="مثال: الرف A-2 أو المستودع الرئيسي">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="add-btn" style="flex:1;" onclick="saveMaterial()">حفظ البيانات / Save 💾</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('material-modal')">إلغاء / Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 📤 نافذة استخراج وصرف كمية -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>📤 إذن صرف واستخراج صنف (حركة ERP)</h3>
+      <h3>📤 إذن صرف واستخراج / Issue Material</h3>
       <input type="hidden" id="ext-id">
       <input type="hidden" id="ext-current-qty">
       
       <div class="form-group">
-        <label>اسم الصنف المطلوب صرفه:</label>
+        <label>اسم الصنف المطلوب صرفه / Item:</label>
         <input type="text" id="ext-title" readonly style="opacity: 0.8; background: #0b1329; border-color: var(--accent); color: var(--accent); font-weight: bold;">
       </div>
 
       <div class="form-group">
-        <label>نوع حركة الاستخراج:</label>
+        <label>نوع حركة الاستخراج / Action Type:</label>
         <select id="ext-movement-type">
           <option value="صرف مشروع">📦 صرف لمشروع محدد</option>
           <option value="معالجة وبوية">🎨 صرف لورشة البوية/الدهان</option>
@@ -343,12 +403,12 @@
       </div>
 
       <div class="form-group">
-        <label>رقم المشروع / كود أمر الشغل (Project Code): <span class="required-star">*</span></label>
-        <input type="text" id="ext-project" placeholder="مثال: PRJ-2026-001 أو مشروع برج الفخامة">
+        <label>رقم المشروع / Project Code:</label>
+        <input type="text" id="ext-project" placeholder="مثال: PRJ-2026-001">
       </div>
 
       <div class="form-group">
-        <label>الجهة / القسم المستلم:</label>
+        <label>الجهة المستلمة / Department:</label>
         <select id="ext-department">
           <option value="ورشة الخشب والتصنيع">🪵 ورشة الخشب والتصنيع</option>
           <option value="قسم البوية والدهان">🎨 قسم البوية والدهان</option>
@@ -358,23 +418,23 @@
       </div>
 
       <div class="form-group">
-        <label>اسم المسؤول عن الصرف: <span class="required-star">*</span></label>
-        <input type="text" id="ext-issuer" placeholder="اسم أمين المخزن" required>
+        <label>اسم المسؤول عن الصرف / Issued By:</label>
+        <input type="text" id="ext-issuer" placeholder="اسم أمين المخزن">
       </div>
 
       <div class="form-group">
-        <label>اسم المستلم الفعلي:</label>
-        <input type="text" id="ext-recipient" placeholder="اسم الفني / النجار / الدهان">
+        <label>اسم المستلم الفعلي / Recipient:</label>
+        <input type="text" id="ext-recipient" placeholder="اسم الفني / المستلم">
       </div>
 
       <div class="form-group">
-        <label>الكمية المراد صرفها:</label>
+        <label>الكمية المراد صرفها / Quantity:</label>
         <input type="number" id="ext-qty" value="1" min="1">
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد واستخراج 📤</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('extract-modal')">إلغاء</button>
+        <button class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد واستخراج / Confirm 📤</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('extract-modal')">إلغاء / Cancel</button>
       </div>
     </div>
   </div>
@@ -451,7 +511,7 @@
     function openWelcomeKitSection() {
       hideAllSections();
       document.getElementById('general-inventory-section').style.display = 'block';
-      fetchWelcomeKits();
+      fetchMaterialsFromDatabase();
     }
 
     function openDailyTransactionsSection() {
@@ -491,14 +551,23 @@
       await fetchMaterialsFromDatabase();
     }
 
+    /* تجهيز أشرطة العناوين المزدوجة باللغتين العربي والإنجليزي */
     function setupTableHeaders() {
       const tr = document.getElementById('table-headers-row');
-      tr.innerHTML = `<th>اسم الصنف</th><th>المواصفات / التفاصيل</th><th>الكمية المتوفرة</th><th>الموقع</th><th>الحالة</th><th style="text-align: center;">إجراءات العمليات</th>`;
+      tr.innerHTML = `
+        <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
+        <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
+        <th><div class="bilingual-header"><span>المواصفات / التفاصيل</span><span class="en">Details & Specs</span></div></th>
+        <th><div class="bilingual-header"><span>الكمية المتوفرة</span><span class="en">Stock Qty</span></div></th>
+        <th><div class="bilingual-header"><span>الموقع</span><span class="en">Location</span></div></th>
+        <th><div class="bilingual-header"><span>الحالة</span><span class="en">Status</span></div></th>
+        <th style="text-align: center;"><div class="bilingual-header"><span>إجراءات العمليات</span><span class="en">Actions</span></div></th>
+      `;
     }
 
     async function fetchMaterialsFromDatabase() {
       const tbody = document.getElementById('materials-table-body');
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
 
       let query = supabaseClient.from('materials').select('*').eq('category', currentCategory);
       if (currentSubUnit !== 'all') query = query.eq('unit', currentSubUnit);
@@ -506,7 +575,7 @@
       const { data } = await query;
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً.</td></tr>';
         return;
       }
 
@@ -516,16 +585,21 @@
         let badgeHtml = qty > 5 ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 منخفض</span>';
         const titleName = item.title || item.wood_type || item.name || '-';
         const sizeInfo = item.thickness || item.size || item.dimensions || '-';
+        const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString('ar-SA') : '-';
+        
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
+          <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><strong>${titleName}</strong></td>
           <td>${sizeInfo}</td>
           <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
           <td style="text-align: center;">
-            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف لمشروع</button>
+            <button class="action-btn btn-extract" onclick="openExtractModal(${item.id}, '${titleName}', ${qty})">📤 صرف</button>
+            <button class="action-btn btn-edit" onclick="openEditMaterialModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">✏️ تعديل</button>
+            <button class="action-btn btn-delete" onclick="deleteMaterial(${item.id})">🗑️ حذف</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -536,9 +610,7 @@
       const tbody = document.getElementById('daily-logs-table-body');
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب السجل أونلاين...</td></tr>';
 
-      const { data, error } = await supabaseClient
-        .from('daily_transactions')
-        .select('*');
+      const { data, error } = await supabaseClient.from('daily_transactions').select('*');
 
       if (error) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</td></tr>`;
@@ -555,7 +627,7 @@
         const tr = document.createElement('tr');
         const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
         tr.innerHTML = `
-          <td>${formattedDate}</td>
+          <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><span class="badge badge-info">${log.movement_type || 'صرف'}</span></td>
           <td><strong>${log.item_title || '-'}</strong></td>
           <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
@@ -566,6 +638,68 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function openAddMaterialModal() {
+      document.getElementById('material-modal-title').innerText = '➕ إضافة صنف جديد / Add Item';
+      document.getElementById('mat-id').value = '';
+      document.getElementById('mat-title').value = '';
+      document.getElementById('mat-thickness').value = '';
+      document.getElementById('mat-qty').value = '1';
+      document.getElementById('mat-location').value = '';
+      document.getElementById('material-modal').style.display = 'flex';
+    }
+
+    function openEditMaterialModal(item) {
+      document.getElementById('material-modal-title').innerText = '✏️ تعديل البيانات / Edit Item';
+      document.getElementById('mat-id').value = item.id;
+      document.getElementById('mat-title').value = item.title || item.wood_type || item.name || '';
+      document.getElementById('mat-thickness').value = item.thickness || item.size || item.dimensions || '';
+      document.getElementById('mat-qty').value = item.quantity || 0;
+      document.getElementById('mat-location').value = item.location || '';
+      document.getElementById('material-modal').style.display = 'flex';
+    }
+
+    async function saveMaterial() {
+      const id = document.getElementById('mat-id').value;
+      const title = document.getElementById('mat-title').value.trim();
+      const thickness = document.getElementById('mat-thickness').value.trim();
+      const qty = parseInt(document.getElementById('mat-qty').value) || 0;
+      const location = document.getElementById('mat-location').value.trim();
+
+      if (!title) {
+        showToast('⚠️ يرجى كتابة اسم الصنف!', 'error');
+        return;
+      }
+
+      const payload = {
+        title: title,
+        thickness: thickness,
+        quantity: qty,
+        location: location,
+        category: currentCategory,
+        unit: currentSubUnit,
+        created_at: new Date().toISOString()
+      };
+
+      if (id) {
+        await supabaseClient.from('materials').update(payload).eq('id', id);
+        showToast('✏️ تم تعديل الصنف بنجاح!', 'success');
+      } else {
+        await supabaseClient.from('materials').insert([payload]);
+        showToast('➕ تم إضافة الصنف الجديد بنجاح!', 'success');
+      }
+
+      closeModal('material-modal');
+      fetchMaterialsFromDatabase();
+    }
+
+    async function deleteMaterial(id) {
+      if (!confirm('⚠️ هل أنت متأكد من حذف هذا الصنف بالكامل؟')) return;
+
+      await supabaseClient.from('materials').delete().eq('id', id);
+      showToast('🗑️ تم حذف الصنف بنجاح!', 'success');
+      fetchMaterialsFromDatabase();
     }
 
     function openExtractModal(id, title, currentQty) {
@@ -611,7 +745,8 @@
         department: department,
         issuer_name: issuerName,
         recipient_name: recipientName,
-        reason: movementType
+        reason: movementType,
+        created_at: new Date().toISOString()
       }]);
 
       closeModal('extract-modal');
