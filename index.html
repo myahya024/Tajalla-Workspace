@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام تجلى - Tajalla System</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- شاشة تسجيل الدخول -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-box">
+      <h2>نظام تجلى</h2>
+      <p>أدخل رمز الدخول للمتابعة</p>
+      <input type="password" id="pin-input" placeholder="****">
+      <button onclick="checkPin()">دخول</button>
+      <p id="login-error" class="error-msg" style="display:none;">الرمز غير صحيح!</p>
+    </div>
+  </div>
+
+  <!-- التطبيق الرئيسي -->
+  <div id="main-app" style="display:none;">
+    <header class="app-header">
+      <h1>نظام إدارة تجلى</h1>
+      <button onclick="logout()" class="btn-logout">خروج</button>
+    </header>
+
+    <main class="app-content">
+      <!-- الشاشة الرئيسية -->
+      <section id="sec-home" class="app-section">
+        <h2>القائمة الرئيسية</h2>
+        <div class="cards-grid">
+          <div class="card" onclick="showSection('sec-materials')">📦 إدارة المواد</div>
+          <div class="card" onclick="showSection('sec-transactions')">📑 سجل الحركات</div>
+        </div>
+      </section>
+
+      <!-- قسم المواد -->
+      <section id="sec-materials" class="app-section" style="display:none;">
+        <h2>إدارة المواد الخام</h2>
+        <button onclick="showHomeHub()">⬅️ عودة للمصنع</button>
+      </section>
+
+      <!-- قسم الحركات -->
+      <section id="sec-transactions" class="app-section" style="display:none;">
+        <h2>سجل الحركات</h2>
+        <button onclick="showHomeHub()">⬅️ عودة للمصنع</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- استدعاء ملفات الجافاسكريبت المنفصلة -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    // تشغيل التحقق من الجلسة عند تحميل الصفحة
+    window.onload = checkExistingSession;
+  </script>
+</body>
+</html>
