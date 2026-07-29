@@ -167,14 +167,16 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
     .form-group input:focus { border-color: var(--accent); }
 
-    /* التنبيهات الداخلية (Toast) داخل الصفحة دون إشعار المتصفح */
+    /* التنبيهات الداخلية (Toast) - تم إضافة خاصية الضغط عليها */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: #161e31; border: 1px solid var(--accent); color: #fff;
       padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 0.95rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99999; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      cursor: pointer; pointer-events: auto;
     }
+    #toast-notification:hover { transform: translateX(-50%) scale(1.03); }
     #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast-notification.success { border-color: var(--success); color: var(--success); }
     #toast-notification.error { border-color: var(--danger); color: var(--danger); }
@@ -182,7 +184,8 @@
 </head>
 <body>
 
-  <div id="toast-notification"></div>
+  <!-- تنبيه يظهر عند الصرف ويمكّن المستخدم من الانتقال لصفحة الحركات اليومية مباشرة -->
+  <div id="toast-notification" onclick="onToastClick()"></div>
 
   <!-- زر قفل النظام أسفل اليسار -->
   <button class="logout-btn-bottom" onclick="logout()">
@@ -498,14 +501,28 @@
 
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
+    let toastRedirectToLogs = false; // تتبع لإعادة التوجيه عند النقر على إشعار الصرف
 
     window.onload = function() { checkExistingSession(); };
 
-    function showToast(message, type = 'success') {
+    function showToast(message, type = 'success', isExtraction = false) {
       const toast = document.getElementById('toast-notification');
-      toast.innerText = message;
+      toast.innerText = message + (isExtraction ? ' 🔗 (اضغط هنا للاستعراض)' : '');
       toast.className = `show ${type}`;
-      setTimeout(() => { toast.className = ''; }, 3200);
+      toastRedirectToLogs = isExtraction;
+
+      setTimeout(() => { 
+        toast.className = '';
+        toastRedirectToLogs = false;
+      }, 5000);
+    }
+
+    function onToastClick() {
+      const toast = document.getElementById('toast-notification');
+      if (toastRedirectToLogs) {
+        toast.className = '';
+        openDailyTransactionsSection();
+      }
     }
 
     function checkPin() {
@@ -663,7 +680,7 @@
       const tbody = document.getElementById('daily-logs-table-body');
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب السجل أونلاين...</td></tr>';
 
-      const { data, error } = await supabaseClient.from('daily_transactions').select('*');
+      const { data, error } = await supabaseClient.from('daily_transactions').select('*').order('created_at', { ascending: false });
 
       if (error) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</td></tr>`;
@@ -713,7 +730,7 @@
       document.getElementById('material-modal').style.display = 'flex';
     }
 
-    /* دالة إضافة وتعديل نظيفة ومستقرة تماماً مع Supabase */
+    /* دالة الحفظ والتعديل - تم تحديث created_at لتحديث الوقت والتاريخ عند كل تعديل */
     async function saveMaterial() {
       const id = document.getElementById('mat-id').value;
       const title = document.getElementById('mat-title').value.trim();
@@ -732,14 +749,15 @@
         quantity: qty,
         location: location,
         category: currentCategory,
-        unit: currentSubUnit
+        unit: currentSubUnit,
+        created_at: new Date().toISOString() // تحديث الوقت والتاريخ الحالي فوراً عند الحفظ أو التعديل
       };
 
       try {
         if (id) {
           const { error } = await supabaseClient.from('materials').update(payload).eq('id', id);
           if (error) throw error;
-          showToast('✏️ تم تعديل البيانات والحفظ بنجاح!', 'success');
+          showToast('✏️ تم تعديل البيانات وتحديث التاريخ والوقت بنجاح!', 'success');
         } else {
           const { error } = await supabaseClient.from('materials').insert([payload]);
           if (error) throw error;
@@ -782,7 +800,7 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    /* دالة الصرف التي تتأكد من أن جميع الخانات إلزامية ومكتملة */
+    /* دالة التأكيد مع التوجيه عند الضغط على الإشعار */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
@@ -794,7 +812,6 @@
       const issuerName = document.getElementById('ext-issuer').value.trim();
       const recipientName = document.getElementById('ext-recipient').value.trim();
 
-      // إجبار تعبئة كل الخانات
       if (!projectCode) {
         showToast('⚠️ يرجى كتابة اسم أو رقم المشروع!', 'error');
         return;
@@ -819,7 +836,10 @@
       try {
         const { error: updateErr } = await supabaseClient
           .from('materials')
-          .update({ quantity: curQty - extQty })
+          .update({ 
+            quantity: curQty - extQty,
+            created_at: new Date().toISOString() // تحديث وقت الصنف عند الاستخراج والصرف
+          })
           .eq('id', id);
 
         if (updateErr) throw updateErr;
@@ -841,7 +861,8 @@
         if (logErr) throw logErr;
 
         closeModal('extract-modal');
-        showToast(`📦 تم صرف (${extQty}) للمشروع [${projectCode}] بنجاح!`, 'success');
+        // إظهار إشعار الصرف مع إمكانية الضغط عليه للانتقال إلى سجل العمليات اليومية
+        showToast(`📦 تم صرف (${extQty}) للمشروع [${projectCode}] بنجاح!`, 'success', true);
         fetchMaterialsFromDatabase();
       } catch (err) {
         showToast('❌ حدث خطأ أثناء الصرف: ' + err.message, 'error');
