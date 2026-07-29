@@ -95,6 +95,7 @@
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; outline: none; }
+    .required-star { color: var(--danger); }
   </style>
 </head>
 <body>
@@ -124,6 +125,7 @@
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchMainTab('raw-materials', this)">📦 مواد خام المستودعات</button>
       <button class="tab-btn" onclick="switchMainTab('general-inventory', this)">🎁 جرد الـ Welcome Kit والعينات العالمية</button>
+      <button class="tab-btn" onclick="switchMainTab('daily-transactions', this)">📋 سجل العمليات اليومية</button>
     </div>
 
     <!-- 1. قسم مواد خام المستودعات -->
@@ -224,6 +226,31 @@
         </table>
       </div>
     </div>
+
+    <!-- 3. قسم سجل العمليات اليومية -->
+    <div id="daily-transactions" class="tab-content">
+      <div class="sub-header">
+        <h2 style="font-size: 1.1rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية:</h2>
+        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ والوقت</th>
+              <th>اسم الصنف</th>
+              <th>الكمية المستخرجة</th>
+              <th>المسؤول عن الصرف</th>
+              <th>المستلم / الجهة</th>
+              <th>رقم الأمر / المشروع</th>
+              <th>الغرض من الاستخراج</th>
+            </tr>
+          </thead>
+          <tbody id="daily-logs-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <!-- ✏️ 1. نافذة التعديل الكاملة للصنف -->
@@ -292,38 +319,48 @@
     </div>
   </div>
 
-  <!-- 📤 3. نافذة استخراج وصرف كمية (نموذج دقيق قياسي عالمياً) -->
+  <!-- 📤 3. نافذة استخراج وصرف كمية (المعدلة بالكامل بناء على التوجيهات) -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>📤 إذن صرف مواد (Material Outbound / Requisition)</h3>
+      <h3>📤 إذن صرف واستخراج صنف</h3>
       <input type="hidden" id="ext-id">
       <input type="hidden" id="ext-current-qty">
       
+      <!-- 1. اسم الصنف ثابت ومقفول لقراءة فقط -->
       <div class="form-group">
         <label>اسم الصنف المطلوب صرفه:</label>
-        <input type="text" id="ext-title" readonly style="opacity: 0.7; background: #0f172a;">
+        <input type="text" id="ext-title" readonly style="opacity: 0.8; background: #0b1329; border-color: var(--accent); color: var(--accent); font-weight: bold;">
       </div>
 
+      <!-- 2. رقم أمر التشغيل / المشروع -->
       <div class="form-group">
         <label>رقم أمر التشغيل / المشروع (Work Order / Project):</label>
-        <input type="text" id="ext-project" placeholder="مثال: WO-2026-08">
+        <input type="text" id="ext-project" placeholder="مثال: WO-2026-08 أو مشروع برج الفخامة">
       </div>
 
+      <!-- 3. اسم المسئول عن الاستخراج (إجباري) -->
       <div class="form-group">
-        <label>اسم المستلم / الفني المسؤول:</label>
-        <input type="text" id="ext-recipient" placeholder="اسم النجار / رئيس القسم">
+        <label>اسم المستخرج / المسؤول عن الصرف: <span class="required-star">*</span></label>
+        <input type="text" id="ext-issuer" placeholder="اسم أمين المخزن / المسؤول" required>
       </div>
 
+      <!-- 4. اسم المستلم / الجهة المستلمة -->
       <div class="form-group">
-        <label>الغرض من الصرف:</label>
+        <label>اسم المستلم / الجهة المستلمة:</label>
+        <input type="text" id="ext-recipient" placeholder="اسم النجار / الفني / قسم الورشة">
+      </div>
+
+      <!-- 5. سبب الاستخراج (خيارات محددة) -->
+      <div class="form-group">
+        <label>سبب / الغرض من الاستخراج: <span class="required-star">*</span></label>
         <select id="ext-reason">
-          <option value="production">تصنيع وإناج جديد</option>
-          <option value="maintenance">صيانة وأدوات</option>
-          <option value="damage">بديل لتالف / هالك</option>
-          <option value="sample">نماذج وعينات</option>
+          <option value="تصنيع مشروع">🔨 تصنيع مشروع</option>
+          <option value="تصنيع عينة">🧪 تصنيع عينة</option>
+          <option value="تالف / هالك">⚠️ تالف / هالك</option>
         </select>
       </div>
 
+      <!-- 6. الكمية المراد صرفها -->
       <div class="form-group">
         <label>الكمية المراد صرفها:</label>
         <input type="number" id="ext-qty" value="1" min="1">
@@ -354,7 +391,6 @@
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // تم تحديث كلمة السر
     const SECRET_PIN = "$Ark0820";
     const SESSION_KEY = "app_login_session";
 
@@ -398,6 +434,7 @@
       btn.classList.add('active');
 
       if (tabId === 'general-inventory') fetchWelcomeKits();
+      if (tabId === 'daily-transactions') fetchDailyLogs();
     }
 
     function openWoodCategories() {
@@ -524,6 +561,34 @@
       });
     }
 
+    async function fetchDailyLogs() {
+      const tbody = document.getElementById('daily-logs-table-body');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب سجل العمليات...</td></tr>';
+
+      let { data, error } = await supabaseClient.from('daily_transactions').select('*').order('created_at', { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة اليوم.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(log => {
+        const tr = document.createElement('tr');
+        const formattedDate = new Date(log.created_at).toLocaleString('ar-SA');
+        tr.innerHTML = `
+          <td>${formattedDate}</td>
+          <td><strong>${log.item_title}</strong></td>
+          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity}</span></td>
+          <td>${log.issuer_name || '-'}</td>
+          <td>${log.recipient_name || '-'}</td>
+          <td>${log.project_code || '-'}</td>
+          <td><span class="badge badge-success">${log.reason}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
     function openFullEditModal(id, title, size, qty, location) {
@@ -586,26 +651,59 @@
       fetchMaterialsFromDatabase();
     }
 
+    /* 📤 فتح نموذج الصرف وتعبئة اسم الصنف تلقائياً للضغط عليه مباشرة */
     function openExtractModal(id, title, currentQty) {
       document.getElementById('ext-id').value = id;
       document.getElementById('ext-title').value = title;
       document.getElementById('ext-current-qty').value = currentQty;
       document.getElementById('ext-project').value = '';
+      document.getElementById('ext-issuer').value = '';
       document.getElementById('ext-recipient').value = '';
+      document.getElementById('ext-qty').value = '1';
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
+    /* 📤 تأكيد عملية الصرف وإرسال البيانات للعمليات اليومية */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
+      const itemTitle = document.getElementById('ext-title').value;
       const curQty = parseInt(document.getElementById('ext-current-qty').value) || 0;
       const extQty = parseInt(document.getElementById('ext-qty').value) || 0;
+      const projectCode = document.getElementById('ext-project').value;
+      const issuerName = document.getElementById('ext-issuer').value.trim();
+      const recipientName = document.getElementById('ext-recipient').value.trim();
+      const reason = document.getElementById('ext-reason').value;
 
-      if (extQty > curQty) {
-        alert('خطأ: الكمية المطلوبة أكبر من المتوفر بالمخزن!');
+      // تحقق من الحقول الإجبارية
+      if (!issuerName) {
+        alert('⚠️ يجب إدخال اسم المستخرج / المسؤول عن الصرف لإتمام العملية!');
         return;
       }
 
+      if (extQty <= 0) {
+        alert('⚠️ الرجاء تحديد كمية صرف صالحة!');
+        return;
+      }
+
+      if (extQty > curQty) {
+        alert('❌ خطأ: الكمية المطلوبة أكبر من المتوفر بالمخزن!');
+        return;
+      }
+
+      // 1. تحديث الكمية المتبقية
       await supabaseClient.from('materials').update({ quantity: curQty - extQty }).eq('id', id);
+
+      // 2. تسجيل العملية في جدول العمليات اليومية
+      await supabaseClient.from('daily_transactions').insert([{
+        item_id: id,
+        item_title: itemTitle,
+        quantity: extQty,
+        project_code: projectCode,
+        issuer_name: issuerName,
+        recipient_name: recipientName,
+        reason: reason
+      }]);
+
       closeModal('extract-modal');
       fetchMaterialsFromDatabase();
     }
