@@ -113,7 +113,7 @@
 
     .section-view { display: none; margin-top: 10px; }
 
-    /* الهيدر الفرعي المترتب وتنصيف العناوين */
+    /* الهيدر الفرعي */
     .sub-header { 
       display: grid; 
       grid-template-columns: 1fr auto 1fr; 
@@ -157,7 +157,18 @@
     .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
     .action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-    /* المودال - النوافذ الداخلية للصفحة */
+    /* كروت ملفات المشاريع */
+    .project-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 22px; cursor: pointer; transition: 0.3s;
+      display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+    }
+    .project-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 25px var(--accent-glow); }
+    .project-card::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; background: var(--accent); }
+    .project-card h3 { color: var(--text); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700; }
+    .project-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px; }
+
+    /* المودال */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; }
     .modal-card { background: #161e31; width: 90%; max-width: 520px; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
     .modal-card h3 { color: var(--accent); margin-bottom: 20px; font-weight: 700; text-align: center; }
@@ -167,7 +178,7 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 10px; color: #fff; outline: none; transition: 0.3s; }
     .form-group input:focus { border-color: var(--accent); }
 
-    /* التنبيهات الداخلية (Toast) */
+    /* التنبيهات */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: #161e31; border: 1px solid var(--accent); color: #fff;
@@ -233,9 +244,9 @@
         <div class="main-hub-card" onclick="openDailyTransactionsSection()">
           <div>
             <h2 style="color: var(--wood-color);">📋 سجل العمليات والحركات اليومية</h2>
-            <p>متابعة كافة أذونات الصرف والاستخراج المسجلة فورياً مع تفاصيل الأقسام والمشاريع وأسباب الاستخراج.</p>
+            <p>متابعة كافة أذونات الصرف والاستخراج مقسمة حسب ملفات المشاريع والدفعات الزمنية.</p>
           </div>
-          <div class="card-footer-link">عرض السجل اليومي ⬅️</div>
+          <div class="card-footer-link">عرض سجل المشاريع ⬅️</div>
         </div>
       </div>
     </div>
@@ -349,32 +360,51 @@
       </div>
     </div>
 
+    <!-- قسم سجل الحركات اليومية المنظم بملفات المشاريع العالمية -->
     <div id="daily-transactions-section" class="section-view">
-      <div class="sub-header">
-        <div class="right-actions">
-          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back</button>
+      <div id="projects-list-view">
+        <div class="sub-header">
+          <div class="right-actions">
+            <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back</button>
+          </div>
+          <h2 class="title-center" style="font-size: 1.25rem; color: var(--accent);">📂 سجل حركات الصرف حسب المشاريع (Project Ledger):</h2>
+          <div class="left-actions">
+            <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث / Refresh</button>
+          </div>
         </div>
-        <h2 class="title-center" style="font-size: 1.25rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية:</h2>
-        <div class="left-actions">
-          <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث / Refresh</button>
+
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="project-search-input" placeholder="🔍 بحث عن اسم أو رقم مشروع..." onkeyup="filterProjects()" style="width: 100%; padding: 12px 18px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none;">
         </div>
+
+        <div id="projects-grid" class="warehouse-grid"></div>
       </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
-              <th><div class="bilingual-header"><span>نوع الحركة</span><span class="en">Movement Type</span></div></th>
-              <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
-              <th><div class="bilingual-header"><span>الكمية المستخرجة</span><span class="en">Issued Qty</span></div></th>
-              <th><div class="bilingual-header"><span>المسؤول عن الصرف</span><span class="en">Issued By</span></div></th>
-              <th><div class="bilingual-header"><span>الجهة/القسم</span><span class="en">Department</span></div></th>
-              <th><div class="bilingual-header"><span>المشروع</span><span class="en">Project</span></div></th>
-              <th><div class="bilingual-header"><span>المستلم الفعلي</span><span class="en">Recipient</span></div></th>
-            </tr>
-          </thead>
-          <tbody id="daily-logs-table-body"></tbody>
-        </table>
+
+      <div id="project-details-view" style="display: none;">
+        <div class="sub-header">
+          <div class="right-actions">
+            <button class="back-btn" onclick="backToProjectsList()">⬅️ العودة لقائمة المشاريع / Back</button>
+          </div>
+          <h2 class="title-center" id="selected-project-title" style="font-size: 1.25rem; color: var(--gold-color);">المشروع</h2>
+          <div class="left-actions"></div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><div class="bilingual-header"><span>التاريخ والوقت</span><span class="en">Date & Time</span></div></th>
+                <th><div class="bilingual-header"><span>نوع الحركة</span><span class="en">Movement Type</span></div></th>
+                <th><div class="bilingual-header"><span>اسم الصنف</span><span class="en">Item Name</span></div></th>
+                <th><div class="bilingual-header"><span>الكمية المستخرجة</span><span class="en">Issued Qty</span></div></th>
+                <th><div class="bilingual-header"><span>المسؤول عن الصرف</span><span class="en">Issued By</span></div></th>
+                <th><div class="bilingual-header"><span>الجهة/القسم</span><span class="en">Department</span></div></th>
+                <th><div class="bilingual-header"><span>المستلم الفعلي</span><span class="en">Recipient</span></div></th>
+              </tr>
+            </thead>
+            <tbody id="project-logs-table-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -423,7 +453,6 @@
     </div>
   </div>
 
-  <!-- نافذة الصرف -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>📤 إذن صرف واستخراج / Issue Material</h3>
@@ -493,6 +522,7 @@
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
     let toastRedirectToLogs = false;
+    let allTransactionsData = [];
 
     window.onload = function() { checkExistingSession(); };
 
@@ -574,6 +604,8 @@
     function openDailyTransactionsSection() {
       hideAllSections();
       document.getElementById('daily-transactions-section').style.display = 'block';
+      document.getElementById('projects-list-view').style.display = 'block';
+      document.getElementById('project-details-view').style.display = 'none';
       fetchDailyLogs();
     }
 
@@ -645,16 +677,12 @@
         const qty = Number(item.quantity) || 0;
         let badgeHtml = qty > 5 ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 منخفض</span>';
         
-        // قراءة تفقدية لاسم الصنف عبر كل المفاتيح المحتملة بالترتيب
         const titleName = item.title || item.wood_type || item.name || item.item_name || item.item_title || '-';
         const sizeInfo = item.thickness || item.size || item.dimensions || '-';
         const formattedDate = item.created_at ? new Date(item.created_at).toLocaleString('ar-SA') : '-';
         
         const tr = document.createElement('tr');
-
-        // تجهيز كائن البيانات لمنع الأخطاء في وظيفة التعديل
         const safeItemJson = JSON.stringify(item).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
-        // تنظيف الاسم لاستخدامه الآمن في الاستدعاء المباشر
         const escapedTitle = titleName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
         tr.innerHTML = `
@@ -674,38 +702,106 @@
       });
     }
 
+    /* دالة جلب سجل العمليات وتجميع البيانات حسب ملفات المشاريع */
     async function fetchDailyLogs() {
-      const tbody = document.getElementById('daily-logs-table-body');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب السجل أونلاين...</td></tr>';
+      const grid = document.getElementById('projects-grid');
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;">⏳ جاري جلب ملفات المشاريع أونلاين...</div>';
 
       const { data, error } = await supabaseClient.from('daily_transactions').select('*').order('created_at', { ascending: false });
 
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</td></tr>`;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--danger);">⚠️ خطأ: ${error.message}</div>`;
         return;
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة.</td></tr>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color: var(--text-muted);">لا توجد حركات صرف مسجلة حالياً.</div>';
         return;
       }
 
-      tbody.innerHTML = '';
+      allTransactionsData = data;
+      renderProjectsGrid(data);
+    }
+
+    function renderProjectsGrid(data) {
+      const grid = document.getElementById('projects-grid');
+      grid.innerHTML = '';
+
+      // تجميع العمليات بناءً على اسم/رقم المشروع
+      const projectsMap = {};
       data.forEach(log => {
+        const pName = log.project_code || 'بدون اسم مشروع';
+        if (!projectsMap[pName]) {
+          projectsMap[pName] = { logs: [], totalQty: 0, lastDate: log.created_at };
+        }
+        projectsMap[pName].logs.push(log);
+        projectsMap[pName].totalQty += (Number(log.quantity) || 0);
+      });
+
+      Object.keys(projectsMap).forEach(projectName => {
+        const proj = projectsMap[projectName];
+        const lastFormattedDate = proj.lastDate ? new Date(proj.lastDate).toLocaleDateString('ar-SA') : '-';
+
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.onclick = () => openProjectDetails(projectName, proj.logs);
+
+        card.innerHTML = `
+          <div>
+            <h3>🏗️ ${projectName}</h3>
+            <p style="font-size: 0.88rem; color: var(--accent); margin-top: 5px;">
+              إجمالي الدفعات/الحركات: <strong>${proj.logs.length}</strong>
+            </p>
+          </div>
+          <div class="project-meta">
+            <span>إجمالي الكمية: <strong style="color:var(--warning);">${proj.totalQty}</strong></span>
+            <span>آخر حركة: <strong>${lastFormattedDate}</strong></span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterProjects() {
+      const q = document.getElementById('project-search-input').value.toLowerCase().trim();
+      if (!q) {
+        renderProjectsGrid(allTransactionsData);
+        return;
+      }
+      const filtered = allTransactionsData.filter(log => 
+        (log.project_code && log.project_code.toLowerCase().includes(q)) ||
+        (log.item_title && log.item_title.toLowerCase().includes(q))
+      );
+      renderProjectsGrid(filtered);
+    }
+
+    function openProjectDetails(projectName, logs) {
+      document.getElementById('projects-list-view').style.display = 'none';
+      document.getElementById('project-details-view').style.display = 'block';
+      document.getElementById('selected-project-title').innerText = `📑 ملف مشروع: ${projectName}`;
+
+      const tbody = document.getElementById('project-logs-table-body');
+      tbody.innerHTML = '';
+
+      logs.forEach(log => {
         const tr = document.createElement('tr');
         const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
         tr.innerHTML = `
           <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><span class="badge badge-info">${log.movement_type || 'صرف'}</span></td>
           <td><strong>${log.item_title || '-'}</strong></td>
-          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
+          <td><span style="color:var(--warning); font-weight:bold; font-size:1.05rem;">${log.quantity || 0}</span></td>
           <td>${log.issuer_name || '-'}</td>
           <td>${log.department || '-'}</td>
-          <td><strong style="color:var(--accent);">${log.project_code || '-'}</strong></td>
           <td><span class="badge badge-success">${log.recipient_name || '-'}</span></td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function backToProjectsList() {
+      document.getElementById('project-details-view').style.display = 'none';
+      document.getElementById('projects-list-view').style.display = 'block';
     }
 
     function openAddMaterialModal() {
@@ -721,7 +817,6 @@
     function openEditMaterialModal(item) {
       document.getElementById('material-modal-title').innerText = '✏️ تعديل البيانات / Edit Item';
       document.getElementById('mat-id').value = item.id;
-      // ملء حقل الاسم بدعم جميع أسماء الأعمدة المحتملة
       document.getElementById('mat-title').value = item.title || item.wood_type || item.name || item.item_name || item.item_title || '';
       document.getElementById('mat-thickness').value = item.thickness || item.size || item.dimensions || '';
       document.getElementById('mat-qty').value = item.quantity || 0;
@@ -741,7 +836,6 @@
         return;
       }
 
-      // دعم التخزين المزدوج لاسم الصنف للمحافظة على التوافق مع الجداول القديمة والجديدة
       const payload = {
         title: title,
         wood_type: title,
@@ -789,7 +883,6 @@
       }
     }
 
-    /* دالة فتح نافذة الصرف */
     function openExtractModal(id, title, currentQty) {
       document.getElementById('ext-id').value = id;
       document.getElementById('ext-title').value = title;
@@ -801,7 +894,6 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    /* دالة تنفيذ الصرف وتخزين سجل العمليات اليومية */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
