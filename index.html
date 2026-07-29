@@ -121,16 +121,9 @@
       margin-bottom: 25px; 
       gap: 15px; 
     }
-    .sub-header .title-center {
-      text-align: center;
-      grid-column: 2;
-    }
-    .sub-header .left-actions {
-      justify-self: start;
-    }
-    .sub-header .right-actions {
-      justify-self: end;
-    }
+    .sub-header .title-center { text-align: center; grid-column: 2; }
+    .sub-header .left-actions { justify-self: start; }
+    .sub-header .right-actions { justify-self: end; }
 
     .back-btn { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); color: var(--accent); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .back-btn:hover { background: var(--border); color: #fff; }
@@ -400,6 +393,7 @@
                 <th><div class="bilingual-header"><span>المسؤول عن الصرف</span><span class="en">Issued By</span></div></th>
                 <th><div class="bilingual-header"><span>الجهة/القسم</span><span class="en">Department</span></div></th>
                 <th><div class="bilingual-header"><span>المستلم الفعلي</span><span class="en">Recipient</span></div></th>
+                <th style="text-align: center;"><div class="bilingual-header"><span>إجراءات / نقل الحركة</span><span class="en">Move Transaction</span></div></th>
               </tr>
             </thead>
             <tbody id="project-logs-table-body"></tbody>
@@ -511,6 +505,39 @@
     </div>
   </div>
 
+  <!-- مودال نقل وتعديل حركة الصرف لمشروع آخر -->
+  <div id="edit-transaction-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="color: var(--warning);">🔄 نقل/تعديل حركة الصرف لمشروع آخر</h3>
+      <input type="hidden" id="edit-log-id">
+      
+      <div class="form-group">
+        <label>الصنف المنسحب / Item:</label>
+        <input type="text" id="edit-log-item" readonly style="opacity: 0.8; background: #0b1329;">
+      </div>
+
+      <div class="form-group">
+        <label>انقل إلى اسم المشروع الصحيح / Move to Project <span class="req">*</span>:</label>
+        <input type="text" id="edit-log-project" placeholder="أدخل اسم/كود المشروع الصحيح هنا" required>
+      </div>
+
+      <div class="form-group">
+        <label>المستلم الفعلي / Recipient:</label>
+        <input type="text" id="edit-log-recipient">
+      </div>
+
+      <div class="form-group">
+        <label>المسؤول عن الصرف / Issued By:</label>
+        <input type="text" id="edit-log-issuer">
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="add-btn" style="flex:1; background: linear-gradient(135deg, var(--warning), #d97706);" onclick="saveTransactionTransfer()">نقل الحركة الحالية 🔄</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('edit-transaction-modal')">إلغاء / Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
@@ -523,6 +550,7 @@
     let currentSubUnit = 'natural_wood';
     let toastRedirectToLogs = false;
     let allTransactionsData = [];
+    let currentActiveProject = '';
 
     window.onload = function() { checkExistingSession(); };
 
@@ -721,13 +749,18 @@
 
       allTransactionsData = data;
       renderProjectsGrid(data);
+
+      // إذا كنا نفتح تفاصيل مشروع حالياً، نقوم بتسريع التحديث داخل الملف نفسه
+      if (document.getElementById('project-details-view').style.display === 'block' && currentActiveProject) {
+        const activeLogs = data.filter(l => (l.project_code || 'بدون اسم مشروع') === currentActiveProject);
+        openProjectDetails(currentActiveProject, activeLogs);
+      }
     }
 
     function renderProjectsGrid(data) {
       const grid = document.getElementById('projects-grid');
       grid.innerHTML = '';
 
-      // تجميع العمليات بناءً على اسم/رقم المشروع
       const projectsMap = {};
       data.forEach(log => {
         const pName = log.project_code || 'بدون اسم مشروع';
@@ -776,6 +809,7 @@
     }
 
     function openProjectDetails(projectName, logs) {
+      currentActiveProject = projectName;
       document.getElementById('projects-list-view').style.display = 'none';
       document.getElementById('project-details-view').style.display = 'block';
       document.getElementById('selected-project-title').innerText = `📑 ملف مشروع: ${projectName}`;
@@ -786,6 +820,8 @@
       logs.forEach(log => {
         const tr = document.createElement('tr');
         const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
+        const safeLogJson = JSON.stringify(log).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+
         tr.innerHTML = `
           <td><span style="color:var(--text-muted); font-size:0.82rem;">${formattedDate}</span></td>
           <td><span class="badge badge-info">${log.movement_type || 'صرف'}</span></td>
@@ -794,14 +830,60 @@
           <td>${log.issuer_name || '-'}</td>
           <td>${log.department || '-'}</td>
           <td><span class="badge badge-success">${log.recipient_name || '-'}</span></td>
+          <td style="text-align: center;">
+            <button class="action-btn btn-edit" onclick="openEditTransactionModal(${safeLogJson})">✏️ نقل / تعديل</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     function backToProjectsList() {
+      currentActiveProject = '';
       document.getElementById('project-details-view').style.display = 'none';
       document.getElementById('projects-list-view').style.display = 'block';
+      fetchDailyLogs();
+    }
+
+    /* دوال نقل الحركة وتغيير المشروع الخاطئ */
+    function openEditTransactionModal(log) {
+      document.getElementById('edit-log-id').value = log.id;
+      document.getElementById('edit-log-item').value = log.item_title || '-';
+      document.getElementById('edit-log-project').value = log.project_code || '';
+      document.getElementById('edit-log-recipient').value = log.recipient_name || '';
+      document.getElementById('edit-log-issuer').value = log.issuer_name || '';
+      document.getElementById('edit-transaction-modal').style.display = 'flex';
+    }
+
+    async function saveTransactionTransfer() {
+      const logId = document.getElementById('edit-log-id').value;
+      const newProjectCode = document.getElementById('edit-log-project').value.trim();
+      const newRecipient = document.getElementById('edit-log-recipient').value.trim();
+      const newIssuer = document.getElementById('edit-log-issuer').value.trim();
+
+      if (!newProjectCode) {
+        showToast('⚠️ يرجى تحديد اسم أو رقم المشروع المطلوب نقل الحركة إليه!', 'error');
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient
+          .from('daily_transactions')
+          .update({
+            project_code: newProjectCode,
+            recipient_name: newRecipient,
+            issuer_name: newIssuer
+          })
+          .eq('id', logId);
+
+        if (error) throw error;
+
+        closeModal('edit-transaction-modal');
+        showToast(`🔄 تم نقل الحركة وتوجيهها للمشروع [${newProjectCode}] بنجاح!`, 'success');
+        await fetchDailyLogs();
+      } catch (err) {
+        showToast('❌ تعذر نقل الحركة: ' + err.message, 'error');
+      }
     }
 
     function openAddMaterialModal() {
