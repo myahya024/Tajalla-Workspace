@@ -4,10 +4,160 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام تجلى | Tajalla System</title>
-  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* تنسيق زر العين الدقيق لمربع كلمة المرور */
+    /* التنسيقات العامة والتصميم الداكن */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      direction: rtl;
+    }
+    .app-header {
+      background-color: #1e293b;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #334155;
+    }
+    .app-header h1 {
+      color: #38bdf8;
+      font-size: 24px;
+    }
+    .app-content {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .section-title {
+      color: #f59e0b;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 22px;
+    }
+    
+    /* شبكة الكروت */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #38bdf8;
+      box-shadow: 0 10px 20px rgba(56, 189, 248, 0.15);
+    }
+    .card-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* كروت مصنع الخشب بالصور */
+    .wood-card {
+      padding: 0;
+    }
+    .card-img-wrapper {
+      position: relative;
+      height: 160px;
+      width: 100%;
+    }
+    .card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .badge-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+    .wood-card .card-content {
+      padding: 15px;
+    }
+    .wood-card h3 {
+      color: #f59e0b;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .wood-card p {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    /* الأزرار */
+    .btn-logout, .btn-back {
+      background-color: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover, .btn-back:hover {
+      background-color: #475569;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    /* شاشة تسجيل الدخول */
+    .login-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .login-box {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      text-align: center;
+      width: 320px;
+    }
+    .login-box h2 { color: #38bdf8; margin-bottom: 10px; }
+    .login-box p { color: #94a3b8; margin-bottom: 20px; font-size: 14px; }
+    
     .password-wrapper {
       position: relative;
       width: 100%;
@@ -15,19 +165,35 @@
     }
     .password-wrapper input {
       width: 100%;
-      padding: 12px 45px 12px 15px !important;
-      box-sizing: border-box;
+      padding: 10px 40px 10px 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #fff;
+      text-align: center;
+      font-size: 16px;
     }
     .eye-btn {
       position: absolute;
-      left: 15px;
+      left: 10px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 20px;
+      font-size: 18px;
       user-select: none;
-      z-index: 10;
     }
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .login-box button:hover { background: #0369a1; }
   </style>
 </head>
 <body>
@@ -44,7 +210,7 @@
       </div>
       
       <button onclick="checkPin()">دخول</button>
-      <p id="login-error" class="error-msg" style="display:none; color: #ef4444; margin-top: 10px;">الرمز غير صحيح!</p>
+      <p id="login-error" style="display:none; color: #ef4444; margin-top: 10px; font-size: 13px;">الرمز غير صحيح!</p>
     </div>
   </div>
 
@@ -56,41 +222,40 @@
 
     <main class="app-content">
       
-      <!-- 1. الشاشة الرئيسية (Home Hub) -->
-      <section id="home-hub-view" class="app-section">
+      <!-- 1. الشاشة الرئيسية -->
+      <section id="sec-home" class="app-section">
         <h2 class="section-title">القائمة الرئيسية</h2>
         <div class="cards-grid">
-          <div class="card" onclick="openRawMaterialsSection()">
+          <div class="card" onclick="showSection('sec-raw-materials')">
             <div class="card-icon">🪵</div>
             <div class="card-title">إدارة المواد الخشبيّة</div>
             <div class="card-desc">أقسام مصنع الخشب، الخشب الطبيعي، المسطحات، الغراء والمستلزمات</div>
           </div>
-          <div class="card" onclick="openWelcomeKitSection()">
+          <div class="card" onclick="showSection('sec-general-inventory')">
             <div class="card-icon">🎁</div>
             <div class="card-title">المخزون العام / Welcome Kit</div>
             <div class="card-desc">سجلات الهدايا والمنتجات الجاهزة للمخزون العام</div>
           </div>
-          <div class="card" onclick="openDailyTransactionsSection()">
+          <div class="card" onclick="showSection('sec-daily-log')">
             <div class="card-icon">📑</div>
             <div class="card-title">حركات اليوم / Daily Log</div>
             <div class="card-desc">تسجيل وتتبع الحركات اليومية وسجل الوارد والمصروف</div>
           </div>
         </div>
         
-        <div style="margin-top: 30px;">
+        <div style="margin-top: 40px; text-align: center;">
           <button class="btn-logout" onclick="logout()">🔒 قفل النظام / Lock</button>
         </div>
       </section>
 
       <!-- 2. قسم مصنع الخشب والمواد الخام -->
-      <section id="raw-materials-section" class="app-section" style="display:none;">
+      <section id="sec-raw-materials" class="app-section" style="display:none;">
         <div class="section-header">
-          <h2 class="section-title">🪵 تصنيف أقسام مصنع الخشب</h2>
-          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
+          <h2 class="section-title" style="margin:0;">🪵 تصنيف أقسام مصنع الخشب</h2>
+          <button onclick="showSection('sec-home')" class="btn-back">🔙 العودة للمستودعات / Back</button>
         </div>
 
         <div class="cards-grid">
-          <!-- 1. الخشب الطبيعي -->
           <div class="card wood-card">
             <div class="card-img-wrapper">
               <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=500&q=80" alt="الخشب الطبيعي">
@@ -102,7 +267,6 @@
             </div>
           </div>
 
-          <!-- 2. المسطحات والألواح -->
           <div class="card wood-card">
             <div class="card-img-wrapper">
               <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=500&q=80" alt="المسطحات والألواح">
@@ -114,7 +278,6 @@
             </div>
           </div>
 
-          <!-- 3. المواد اللاصقة والغراء -->
           <div class="card wood-card">
             <div class="card-img-wrapper">
               <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80" alt="المواد اللاصقة والغراء">
@@ -126,7 +289,6 @@
             </div>
           </div>
 
-          <!-- 4. الحدايد والإكسسوارات -->
           <div class="card wood-card">
             <div class="card-img-wrapper">
               <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=500&q=80" alt="الحدايد والإكسسوارات">
@@ -138,7 +300,6 @@
             </div>
           </div>
 
-          <!-- 5. المعدات ومعدات التشغيل -->
           <div class="card wood-card">
             <div class="card-img-wrapper">
               <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=500&q=80" alt="المعدات ومعدات التشغيل">
@@ -153,37 +314,32 @@
       </section>
 
       <!-- 3. قسم المخزون العام -->
-      <section id="general-inventory-section" class="app-section" style="display:none;">
+      <section id="sec-general-inventory" class="app-section" style="display:none;">
         <div class="section-header">
-          <h2 class="section-title">🎁 المخزون العام / Welcome Kit</h2>
-          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
+          <h2 class="section-title" style="margin:0;">🎁 المخزون العام / Welcome Kit</h2>
+          <button onclick="showSection('sec-home')" class="btn-back">🔙 العودة للمستودعات / Back</button>
         </div>
-        <p style="color: #94a3b8;">هذا القسم مخصص لإدارة منتجات المخزون العام والهديا.</p>
+        <p style="color: #94a3b8; text-align:center; margin-top:40px;">قسم إدارة منتجات المخزون العام والهديا.</p>
       </section>
 
       <!-- 4. قسم حركات اليوم -->
-      <section id="daily-transactions-section" class="app-section" style="display:none;">
+      <section id="sec-daily-log" class="app-section" style="display:none;">
         <div class="section-header">
-          <h2 class="section-title">📑 حركات اليوم / Daily Log</h2>
-          <button onclick="showHomeHub()" class="btn-back">🔙 العودة للمستودعات / Back</button>
+          <h2 class="section-title" style="margin:0;">📑 حركات اليوم / Daily Log</h2>
+          <button onclick="showSection('sec-home')" class="btn-back">🔙 العودة للمستودعات / Back</button>
         </div>
-        <p style="color: #94a3b8;">سجل الحركات اليومية الصادرة والواردة للمستودع.</p>
+        <p style="color: #94a3b8; text-align:center; margin-top:40px;">سجل الحركات اليومية الصادرة والواردة.</p>
       </section>
 
     </main>
   </div>
 
-  <!-- ملفات الجافاسكريبت المرفقة -->
-  <script src="js/config.js"></script>
-  <script src="js/navigation.js"></script>
-  
   <script>
     const SECRET_PIN = "$Arkon1818$";
 
     function togglePassword() {
       const input = document.getElementById('pin-input');
       const icon = document.getElementById('eye-icon');
-      
       if (input.type === 'password') {
         input.type = 'text';
         icon.textContent = '👁️‍🗨️';
@@ -196,7 +352,6 @@
     function checkPin() {
       const input = document.getElementById('pin-input').value;
       const error = document.getElementById('login-error');
-
       if (input === SECRET_PIN) {
         localStorage.setItem('tajalla_session', 'active');
         document.getElementById('login-overlay').style.display = 'none';
@@ -210,6 +365,12 @@
     function logout() {
       localStorage.removeItem('tajalla_session');
       location.reload();
+    }
+
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.app-section');
+      sections.forEach(sec => sec.style.display = 'none');
+      document.getElementById(sectionId).style.display = 'block';
     }
 
     window.onload = function() {
