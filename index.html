@@ -28,7 +28,6 @@
     .en-sub { display: block; font-size: 0.8em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 3px; }
     .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.85em; }
 
-    /* شاشة الدخول */
     #login-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
@@ -47,7 +46,6 @@
     .login-box button { width: 100%; padding: 11px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
 
     #main-app { display: none; padding-bottom: 20px; position: relative; min-height: calc(100vh - 40px); }
-    
     .hub-footer-logout { margin-top: 35px; display: flex; justify-content: center; }
 
     .static-logout-btn { 
@@ -153,7 +151,6 @@
 </head>
 <body>
 
-  <!-- إشعار التنبيه -->
   <div id="toast-notification"></div>
 
   <!-- شاشة الدخول -->
@@ -480,7 +477,7 @@
     </div>
   </div>
 
-  <!-- 📤 Modal الصرف -->
+  <!-- 📤 Modal الصرف (تم ترتيب سبب الصرف في النهاية) -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>📤 إذن صرف صنف <span class="en-sub">Dispatch Voucher</span></h3>
@@ -488,7 +485,7 @@
       <input type="hidden" id="ext-current-qty">
       <input type="hidden" id="ext-current-boards">
       
-      <!-- تفاصيل الصنف المقفلة للمسطحات والخشب -->
+      <!-- 1. تفاصيل الصنف -->
       <div class="form-group">
         <label>الصنف المطلوب صرفه:</label>
         <input type="text" id="ext-title" readonly>
@@ -499,32 +496,25 @@
         <input type="text" id="ext-panel-info" readonly>
       </div>
 
+      <!-- 2. أمر التشغيل -->
       <div class="form-group">
         <label>رقم أمر التشغيل / المشروع: <span class="required-star">*</span></label>
         <input type="text" id="ext-project" required>
       </div>
 
+      <!-- 3. المسؤول عن الصرف -->
       <div class="form-group">
         <label>اسم المسؤول عن الصرف: <span class="required-star">*</span></label>
         <input type="text" id="ext-issuer" required>
       </div>
 
+      <!-- 4. المستلم -->
       <div class="form-group">
         <label>اسم المستلم / القسم: <span class="required-star">*</span></label>
         <input type="text" id="ext-recipient" required>
       </div>
 
-      <div class="form-group">
-        <label>سبب / الغرض من الاستخراج: <span class="required-star">*</span></label>
-        <select id="ext-reason" required>
-          <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع</option>
-          <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة</option>
-          <option value="حدث / Event">🎉 حدث / Event</option>
-          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك</option>
-        </select>
-      </div>
-
-      <!-- خانات الخشب الطبيعي للصرف الإجباري بالتكعيب أو الألواح معاً -->
+      <!-- 5. الكميات المراد صرفها -->
       <div id="ext-natural-wood-inputs" style="display: none;">
         <div style="background: rgba(56, 189, 248, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--accent); margin-bottom: 12px;">
           <p style="font-size: 0.8rem; color: var(--accent); margin-bottom: 8px;">اختر الخانة المناسبة للصرف (عبّئ إحداهما):</p>
@@ -539,10 +529,20 @@
         </div>
       </div>
 
-      <!-- خانة الصرف القياسية للمسطحات وبقية المستودعات -->
       <div class="form-group" id="ext-standard-input">
         <label id="ext-qty-label">الكمية المراد صرفها: <span class="required-star">*</span></label>
         <input type="number" id="ext-qty" min="0.01" step="any" required>
+      </div>
+
+      <!-- 6. سبب الغرض من الاستخراج (تم نقله هنا ليكون الأخير) -->
+      <div class="form-group">
+        <label>سبب / الغرض من الاستخراج: <span class="required-star">*</span></label>
+        <select id="ext-reason" required>
+          <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع</option>
+          <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة</option>
+          <option value="حدث / Event">🎉 حدث / Event</option>
+          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك</option>
+        </select>
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -865,7 +865,6 @@
 
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
-    /* ➕ تجهيز نافذة الإضافة المحدثة */
     function openAddModal(target = 'materials') {
       document.getElementById('add-target-type').value = target;
       document.getElementById('add-title').value = '';
@@ -926,6 +925,15 @@
       let thicknessVal = '';
       let boardsVal = 0;
 
+      const payload = {
+        title: title,
+        wood_type: title,
+        category: currentCategory,
+        unit: currentSubUnit,
+        quantity: qty,
+        location: location
+      };
+
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         const boardsStr = document.getElementById('add-boards').value;
         if (boardsStr === '') {
@@ -933,6 +941,7 @@
           return;
         }
         boardsVal = parseInt(boardsStr) || 0;
+        payload.boards_count = boardsVal;
       } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
         sizeVal = document.getElementById('add-size-select').value;
         thicknessVal = document.getElementById('add-extra').value.trim();
@@ -940,25 +949,19 @@
           showToast('⚠️ يرجى إدخال السماكة!', 'error');
           return;
         }
+        payload.size = sizeVal;
+        payload.thickness = thicknessVal;
       } else {
         sizeVal = document.getElementById('add-size-input').value.trim();
         if (!sizeVal) {
           showToast('⚠️ يرجى إدخال المواصفات/المقاس!', 'error');
           return;
         }
+        payload.size = sizeVal;
+        payload.thickness = sizeVal;
       }
 
-      const { error } = await supabaseClient.from('materials').insert([{
-        title: title,
-        wood_type: title,
-        size: sizeVal,
-        thickness: thicknessVal || sizeVal,
-        category: currentCategory,
-        unit: currentSubUnit,
-        quantity: qty,
-        boards_count: boardsVal,
-        location: location
-      }]);
+      const { error } = await supabaseClient.from('materials').insert([payload]);
 
       if (error) {
         showToast('❌ حدث خطأ في الإضافة: ' + error.message, 'error');
@@ -970,7 +973,6 @@
       fetchMaterialsFromDatabase();
     }
 
-    /* ✏️ فتح وتجهيز نافذة التعديل المحدثة */
     function openFullEditModal(item) {
       document.getElementById('edit-item-id').value = item.id;
       document.getElementById('edit-item-title').value = item.title || item.wood_type || '';
@@ -1031,7 +1033,13 @@
       const qty = parseFloat(qtyStr) || 0;
       let sizeVal = '';
       let thicknessVal = '';
-      let boardsVal = 0;
+
+      const payload = {
+        title: title,
+        wood_type: title,
+        quantity: qty,
+        location: location
+      };
 
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         const boardsStr = document.getElementById('edit-item-boards').value;
@@ -1039,7 +1047,7 @@
           showToast('⚠️ يرجى إدخال عدد الألواح!', 'error');
           return;
         }
-        boardsVal = parseInt(boardsStr) || 0;
+        payload.boards_count = parseInt(boardsStr) || 0;
       } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
         sizeVal = document.getElementById('edit-item-size-select').value;
         thicknessVal = document.getElementById('edit-item-extra').value.trim();
@@ -1047,23 +1055,19 @@
           showToast('⚠️ يرجى إدخال السماكة!', 'error');
           return;
         }
+        payload.size = sizeVal;
+        payload.thickness = thicknessVal;
       } else {
         sizeVal = document.getElementById('edit-item-size-input').value.trim();
         if (!sizeVal) {
           showToast('⚠️ يرجى إدخال المقاس/المواصفات!', 'error');
           return;
         }
+        payload.size = sizeVal;
+        payload.thickness = sizeVal;
       }
 
-      const { error } = await supabaseClient.from('materials').update({
-        title: title,
-        wood_type: title,
-        size: sizeVal,
-        thickness: thicknessVal || sizeVal,
-        quantity: qty,
-        boards_count: boardsVal,
-        location: location
-      }).eq('id', id);
+      const { error } = await supabaseClient.from('materials').update(payload).eq('id', id);
 
       if (error) {
         showToast('❌ حدث خطأ في التعديل: ' + error.message, 'error');
@@ -1075,7 +1079,6 @@
       fetchMaterialsFromDatabase();
     }
 
-    /* 📤 فتح وتجهيز شاشة الصرف المحدثة بالكامل */
     function openExtractModal(item) {
       document.getElementById('ext-id').value = item.id;
       document.getElementById('ext-title').value = item.title || item.wood_type || '';
@@ -1133,6 +1136,8 @@
       let newBoards = curBoards;
       let logQtyDisplay = "";
 
+      const updateData = {};
+
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         const cubicVal = parseFloat(document.getElementById('ext-cubic-qty').value) || 0;
         const boardsVal = parseInt(document.getElementById('ext-boards-qty').value) || 0;
@@ -1161,6 +1166,8 @@
           newBoards = Math.max(0, curBoards - boardsVal);
           logQtyDisplay = `${boardsVal} لوح (${deductedCubic.toFixed(3)} m³)`;
         }
+        updateData.quantity = newQty;
+        updateData.boards_count = newBoards;
       } else {
         const extInputQty = parseFloat(document.getElementById('ext-qty').value) || 0;
         if (extInputQty <= 0) {
@@ -1173,12 +1180,10 @@
         }
         newQty = curQty - extInputQty;
         logQtyDisplay = `${extInputQty}`;
+        updateData.quantity = newQty;
       }
 
-      const { error: updateErr } = await supabaseClient.from('materials').update({ 
-        quantity: newQty,
-        boards_count: newBoards 
-      }).eq('id', id);
+      const { error: updateErr } = await supabaseClient.from('materials').update(updateData).eq('id', id);
 
       if (updateErr) {
         showToast('❌ خطأ أثناء التحديث: ' + updateErr.message, 'error');
