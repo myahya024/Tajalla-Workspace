@@ -547,12 +547,12 @@
       <!-- 1. تفاصيل الصنف -->
       <div class="form-group">
         <label>الصنف المطلوب صرفه:</label>
-        <input type="text" id="ext-title" readonly tabindex="-1">
+        <input type="text" id="ext-title" readonly>
       </div>
 
       <div class="form-group" id="ext-panel-details" style="display: none;">
         <label>تفاصيل الصنف:</label>
-        <input type="text" id="ext-panel-info" readonly tabindex="-1">
+        <input type="text" id="ext-panel-info" readonly>
       </div>
 
       <!-- 2. أمر التشغيل -->
@@ -605,7 +605,7 @@
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button id="ext-submit-btn" class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد والصرف 📤</button>
+        <button class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد والصرف 📤</button>
         <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('extract-modal')">إلغاء</button>
       </div>
     </div>
@@ -640,57 +640,7 @@
     window.onload = function() { 
       checkExistingSession(); 
       setupGlobalKeyBindings();
-      setupModalFormNavigation();
     };
-
-    /* إدارة التنقل بالكيبورد (Enter / Up / Down / Backspace) */
-    function setupModalFormNavigation() {
-      document.addEventListener('keydown', function(event) {
-        const activeElem = document.activeElement;
-        if (!activeElem) return;
-
-        const tag = activeElem.tagName.toLowerCase();
-        const isInputField = (tag === 'input' || tag === 'select' || tag === 'textarea');
-
-        if (!isInputField) return;
-
-        // خروج بالسكيب أو التفاعل مع النوافذ المنبثقة الظاهرة فقط
-        const openModal = document.querySelector('.modal-overlay[style*="display: flex"]');
-        if (!openModal) return;
-
-        // الحصول على جميع عناصر المدخلات القابلة للتفاعل داخل النافذة
-        const focusables = Array.from(openModal.querySelectorAll('input:not([readonly]):not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'))
-                                .filter(el => el.offsetWidth > 0 && el.offsetHeight > 0 && getComputedStyle(el).visibility !== 'hidden');
-
-        const currentIndex = focusables.indexOf(activeElem);
-
-        if (currentIndex !== -1) {
-          if (event.key === 'Enter' || event.key === 'ArrowDown') {
-            // الاستثناء: إذا كان الشفت مضعوطاً مع انتر أو كانت آخر خانة، نقوم بالتأكيد فوراً
-            if (event.shiftKey || currentIndex === focusables.length - 1) {
-              if (openModal.id === 'extract-modal') {
-                event.preventDefault();
-                confirmExtraction();
-              } else if (openModal.id === 'add-modal') {
-                event.preventDefault();
-                confirmAddItem();
-              } else if (openModal.id === 'full-edit-modal') {
-                event.preventDefault();
-                confirmFullEdit();
-              }
-            } else {
-              event.preventDefault();
-              focusables[currentIndex + 1].focus();
-            }
-          } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            if (currentIndex > 0) {
-              focusables[currentIndex - 1].focus();
-            }
-          }
-        }
-      });
-    }
 
     function setupGlobalKeyBindings() {
       document.addEventListener('keydown', function(event) {
@@ -923,6 +873,7 @@
         const qty = parseFloat(item.quantity) || 0;
         const boards = parseInt(item.boards_count) || 0;
         
+        // التحقق من حالة التوفر (تظهر متوفرة إذا كانت هناك كمية أو ألواح أكبر من 0)
         const isAvailable = (qty > 0 || boards > 0);
         let badgeHtml = isAvailable ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 غير متوفر</span>';
         const extractDisabled = !isAvailable ? 'disabled' : '';
@@ -1142,7 +1093,6 @@
       }
 
       document.getElementById('add-modal').style.display = 'flex';
-      setTimeout(() => { document.getElementById('add-title').focus(); }, 100);
     }
 
     async function confirmAddItem() {
@@ -1277,7 +1227,6 @@
       }
 
       document.getElementById('full-edit-modal').style.display = 'flex';
-      setTimeout(() => { document.getElementById('edit-item-title').focus(); }, 100);
     }
 
     async function confirmFullEdit() {
@@ -1365,7 +1314,6 @@
       }
 
       document.getElementById('extract-modal').style.display = 'flex';
-      setTimeout(() => { document.getElementById('ext-project').focus(); }, 100);
     }
 
     async function confirmExtraction() {
@@ -1405,6 +1353,7 @@
             showToast('❌ قيمة التكعيب المخصومة أكبر من المتوفر بالمخزون!', 'error');
             return;
           }
+          // حماية العمليات الرياضية وتجنب السوالب الشاذة
           newQty = Math.max(0, parseFloat((curQty - cubicVal).toFixed(4)));
           detailsNotes.push(`خصم ${cubicVal} m³`);
         }
