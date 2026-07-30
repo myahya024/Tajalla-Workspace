@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام تجلى | Tajalla Operations Hub</title>
+  <title>نظام تجلى | Tajalla System</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -49,7 +49,7 @@
 
     #main-app { display: none; padding-bottom: 20px; position: relative; min-height: calc(100vh - 40px); }
     
-    /* 🔒 زر قفل النظام المخصص فقط للقائمة الرئيسية / Lock Button for Main Hub */
+    /* 🔒 زر قفل النظام المخصص للقائمة الرئيسية فقط */
     .hub-footer-logout {
       margin-top: 35px;
       display: flex;
@@ -74,7 +74,7 @@
 
     /* 📌 الواجهة الرئيسية / Main Hub */
     .hub-title-section { text-align: center; margin-bottom: 28px; }
-    .hub-title-section h2 { font-size: 1.35rem; color: var(--text); font-weight: 600; }
+    .hub-title-section h2 { font-size: 1.5rem; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
 
     .main-hub-grid { 
       display: grid; 
@@ -106,7 +106,7 @@
       box-shadow: 0 15px 30px rgba(56, 189, 248, 0.18); 
     }
     
-    /* 🖼️ منع ظهور علامات الأدوات المتصفح فوق الصور / Remove lens icon */
+    /* 🖼️ منع ظهور أيقونة عدسة المتصفح وظبط مقاس الصور */
     .card-img, .sub-card-img {
       width: 100%;
       height: 150px;
@@ -115,7 +115,7 @@
       margin-bottom: 14px;
       border: 1px solid rgba(255,255,255,0.08);
       background-color: #0f172a;
-      pointer-events: none; /* يمنع أيقونة عدسة المتصفح */
+      pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
     }
@@ -132,7 +132,7 @@
       gap: 6px;
     }
 
-    /* شبكة المستودعات الفرعية متناسقة / Sub Warehouse Grid */
+    /* شبكة المستودعات الفرعية / Sub Warehouse Grid */
     .warehouse-header-container {
       text-align: center;
       margin-bottom: 25px;
@@ -180,7 +180,7 @@
 
     .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
 
-    /* ✨ تصميم جديد وأنيق لزر العودة للرئيسية / Premium Back-to-Home Button */
+    /* ✨ تصميم أنيق لزر العودة للرئيسية */
     .back-btn { 
       background: rgba(255, 255, 255, 0.05); 
       border: 1px solid var(--border); 
@@ -245,13 +245,13 @@
 </head>
 <body>
 
-  <!-- التنبيه المنبثق الراقـي / Toast Notification -->
+  <!-- التنبيه المنبثق / Toast Notification -->
   <div id="toast-notification"></div>
 
   <!-- شاشة الدخول / Login Screen -->
   <div id="login-overlay">
     <div class="login-box">
-      <h2>🔒 دخول آمن للنظام <span class="en-sub">Secure System Access</span></h2>
+      <h2>🔒 دخول آمن نظام تجلى <span class="en-sub">Tajalla Secure System Access</span></h2>
       <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px;">
         أدخل الرقم السري للوصول للبيانات
         <span class="en-sub">Enter password to access data</span>
@@ -273,14 +273,14 @@
     <!-- 📌 الواجهة الرئيسية / Main Hub View -->
     <div id="home-hub-view">
       <div class="hub-title-section">
-        <h2>نظام إدارة العمليات اللوجستية والمستودعات المتقدم
-          <span class="en-sub">Advanced Enterprise Logistics & Warehouse Management System (ERP)</span>
+        <h2>نظام تجلى لإدارة العمليات اللوجستية والمستودعات المتقدم
+          <span class="en-sub">Tajalla Enterprise Logistics & Warehouse Management System (ERP)</span>
         </h2>
       </div>
       
       <div class="main-hub-grid">
         
-        <!-- كارت 1: المستودعات والمواد الخام -->
+        <!-- كارت 1: المستودعات والمواد الخام (صورة مستودع مواد خام حقيقي) -->
         <div class="main-hub-card" onclick="openRawMaterialsSection()">
           <div>
             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="المستودعات والمواد الخام" class="card-img">
@@ -294,14 +294,14 @@
           <div class="card-footer-link">استعراض أقسام المستودعات / Explore Warehouses ⬅️</div>
         </div>
 
-        <!-- كارت 2: الـ Welcome Kit والعينات -->
+        <!-- كارت 2: الـ Welcome Kit والعينات (صورة علب فاخرة ومواد عينات) -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
+            <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
             <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit وعينات الاعتماد
               <span class="en-sub">Welcome Kits & Sample Control</span>
             </h2>
-            <p>منظومة حصر وتتبع حزم الترحب المعيارية وعينات النماذج الأولية المعتمدة للمشاريع مع توثيق مواقع التخزين بدقة.
+            <p>منظومة حصر وتتبع حزم الترحيب المعيارية وعينات النماذج الأولية المعتمدة للمشاريع مع توثيق مواقع التخزين بدقة.
               <span class="en-sub">Standardized kit allocation, prototype sample tracking, and precise storage location mapping.</span>
             </p>
           </div>
@@ -324,7 +324,7 @@
 
       </div>
 
-      <!-- 🔒 زر قفل النظام موجود حصرياً هنا في أسفل القائمة الرئيسية -->
+      <!-- 🔒 زر قفل النظام موجود حصرياً في أسفل القائمة الرئيسية -->
       <div class="hub-footer-logout">
         <button class="static-logout-btn" onclick="logout()">
           <span>🔒</span> قفل النظام / Lock System
@@ -346,9 +346,10 @@
 
         <div class="warehouse-grid">
           
+          <!-- مستودع الأخشاب (صورة ألواح وأخشاب صناعية حقيقية) -->
           <div class="warehouse-card wood" onclick="openWoodCategories()">
             <div>
-              <img src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الأخشاب">
+              <img src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الأخشاب الخام">
               <h3 style="color: var(--wood-color);">🪵 مستودع الأخشاب
                 <span class="en-sub">Timber & Wood Raw Materials Warehouse</span>
               </h3>
@@ -359,9 +360,10 @@
             <div class="card-footer-link" style="color: var(--wood-color);">دخول المستودع / Access Warehouse ⬅️</div>
           </div>
 
+          <!-- مستودع الجلود (صورة لفات جلود خام وأقمشة تصنيع) -->
           <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مستودع الجلود والنسيج | Leather & Fabric Warehouse')">
             <div>
-              <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الجلود">
+              <img src="https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="لفات جلود وأقمشة خام">
               <h3 style="color: var(--leather-color);">🥾 مستودع الجلود والنسيج
                 <span class="en-sub">Leather & Textiles Warehouse</span>
               </h3>
@@ -372,6 +374,7 @@
             <div class="card-footer-link" style="color: var(--leather-color);">دخول المستودع / Access Warehouse ⬅️</div>
           </div>
 
+          <!-- مستودع الدهانات -->
           <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مستودع الدهانات والمواد الكيميائية | Paints & Chemicals Warehouse')">
             <div>
               <img src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الدهانات">
@@ -398,7 +401,7 @@
         <div class="warehouse-grid">
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي | Solid Natural Wood')">
             <div>
-              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
+              <img src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
               <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي
                 <span class="en-sub">Solid Natural Wood Logs</span>
               </h3>
@@ -538,7 +541,7 @@
 
   </div>
 
-  <!-- ✏️ 1. نافذة التعديل الكاملة للصنف / 1. Full Edit Modal -->
+  <!-- ✏️ 1. نافذة التعديل الكاملة / 1. Edit Modal -->
   <div id="full-edit-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>✏️ تعديل بيانات الصنف بالكامل <span class="en-sub">Full Item Edit</span></h3>
@@ -571,7 +574,7 @@
     </div>
   </div>
 
-  <!-- 📥 2. نافذة إضافة صنف جديد / 2. Add New Item Modal -->
+  <!-- 📥 2. نافذة إضافة صنف جديد / 2. Add Item Modal -->
   <div id="add-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="add-modal-title">➕ إضافة صنف جديد <span class="en-sub">Add New Item</span></h3>
@@ -604,7 +607,7 @@
     </div>
   </div>
 
-  <!-- 📤 3. نافذة استخراج وصرف كمية / 3. Issue/Extract Stock Modal -->
+  <!-- 📤 3. نافذة استخراج وصرف كمية / 3. Extract Modal -->
   <div id="extract-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>📤 إذن صرف واستخراج صنف <span class="en-sub">Stock Dispatch Voucher</span></h3>
@@ -682,7 +685,7 @@
 
     window.onload = function() { checkExistingSession(); };
 
-    // ⌨️ استماع لضغط زر Backspace في الكيبورد للرجوع للخلف
+    // ⌨️ زر Backspace للرجوع للخلف
     window.addEventListener('keydown', function(event) {
       if (event.key === 'Backspace') {
         const activeElem = document.activeElement;
@@ -911,7 +914,6 @@
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Supabase Error:', error);
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">⚠️ حدث خطأ في الاتصال: ${error.message}</td></tr>`;
         return;
       }
