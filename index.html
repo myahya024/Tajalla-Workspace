@@ -23,10 +23,10 @@
       --gold-color: #eab308;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; min-height: 100vh; position: relative; }
+    body { background-color: var(--bg); color: var(--text); padding: 30px; direction: rtl; min-height: 100vh; position: relative; }
     
     /* English Subtitle Styling */
-    .en-sub { display: block; font-size: 0.82em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 2px; }
+    .en-sub { display: block; font-size: 0.82em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 4px; }
     .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.88em; }
 
     /* شاشة الدخول / Login Screen */
@@ -49,22 +49,9 @@
 
     #main-app { display: none; padding-bottom: 30px; position: relative; min-height: calc(100vh - 50px); }
     
-    /* 📌 الهيدر والعناوين في المنتصف / Header */
-    header { 
-      text-align: center; 
-      margin-bottom: 35px; 
-      padding-bottom: 20px; 
-      border-bottom: 1px solid var(--border); 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    h1 { font-size: 2rem; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; margin-bottom: 5px; }
-    
     /* 🔒 زر قفل النظام الثابت في الأسفل / Lock Button */
     .static-logout-container {
-      margin-top: 40px;
+      margin-top: 50px;
       display: flex;
       justify-content: flex-start;
     }
@@ -73,29 +60,29 @@
       background: rgba(30, 41, 59, 0.85); 
       color: var(--text-muted); 
       border: 1px solid var(--border); 
-      padding: 10px 22px; 
-      border-radius: 10px; 
+      padding: 12px 26px; 
+      border-radius: 12px; 
       cursor: pointer; 
-      font-size: 0.88rem; 
+      font-size: 0.95rem; 
       font-weight: bold; 
       transition: all 0.3s ease; 
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .static-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     /* 📌 الواجهة الرئيسية / Main Hub */
-    .hub-title-section { text-align: center; margin-bottom: 30px; }
-    .hub-title-section h2 { font-size: 1.3rem; color: var(--text-muted); font-weight: 500; }
+    .hub-title-section { text-align: center; margin-bottom: 35px; }
+    .hub-title-section h2 { font-size: 1.5rem; color: var(--text); font-weight: 600; }
 
     .main-hub-grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-      gap: 30px; 
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); 
+      gap: 35px; 
       margin-bottom: 20px; 
-      max-width: 1300px;
+      max-width: 1400px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -103,36 +90,36 @@
       background: var(--card-bg); 
       border-radius: 20px; 
       border: 1px solid var(--border); 
-      padding: 25px;
+      padding: 28px;
       cursor: pointer; 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex; 
       flex-direction: column; 
       justify-content: space-between; 
-      min-height: 400px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      min-height: 480px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
       overflow: hidden;
     }
     .main-hub-card:hover { 
-      transform: translateY(-8px); 
+      transform: translateY(-10px); 
       background: var(--card-hover);
       border-color: var(--accent); 
-      box-shadow: 0 20px 35px rgba(56, 189, 248, 0.15); 
+      box-shadow: 0 22px 40px rgba(56, 189, 248, 0.2); 
     }
     .card-img {
       width: 100%;
-      height: 160px;
+      height: 210px;
       object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
       background-color: #0f172a;
     }
-    .main-hub-card h2 { font-size: 1.35rem; margin-bottom: 12px; }
-    .main-hub-card p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; }
+    .main-hub-card h2 { font-size: 1.5rem; margin-bottom: 12px; }
+    .main-hub-card p { font-size: 0.98rem; color: var(--text-muted); line-height: 1.65; }
     .card-footer-link { 
-      margin-top: 20px; 
-      font-size: 0.9rem; 
+      margin-top: 22px; 
+      font-size: 1rem; 
       color: var(--accent); 
       font-weight: bold; 
       display: flex;
@@ -140,47 +127,86 @@
       gap: 8px;
     }
 
-    /* شبكة المستودعات الفرعية / Sub Warehouse Grid */
-    .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px; }
-    .warehouse-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 25px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-    .warehouse-card:hover { transform: translateY(-4px); }
-    .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
-    .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
-    .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
-    .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
+    /* شبكة المستودعات الفرعية مكبرة ومزودة بصور / Sub Warehouse Grid */
+    .warehouse-header-container {
+      text-align: center;
+      margin-bottom: 35px;
+      position: relative;
+    }
+    .warehouse-header-title {
+      font-size: 1.6rem;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .warehouse-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
+      gap: 30px; 
+      margin-bottom: 30px; 
+    }
+    .warehouse-card { 
+      background: var(--card-bg); 
+      border-radius: 18px; 
+      border: 1px solid var(--border); 
+      padding: 24px; 
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 420px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .warehouse-card:hover { transform: translateY(-8px); background: var(--card-hover); }
+    .warehouse-card.wood { border-top: 6px solid var(--wood-color); }
+    .warehouse-card.leather { border-top: 6px solid var(--leather-color); }
+    .warehouse-card.paint { border-top: 6px solid var(--paint-color); }
+    .warehouse-card.wood-item { border-top: 6px solid var(--wood-color); }
+
+    .sub-card-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .warehouse-card h3 { font-size: 1.35rem; margin-bottom: 10px; }
+    .warehouse-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
 
     /* الأقسام المنفصلة / View Sections */
     .section-view { display: none; margin-top: 10px; }
 
-    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
     .back-btn:hover { background: var(--border); }
-    .add-btn { background: var(--success); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .add-btn { background: var(--success); color: #fff; border: none; padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
 
     /* الجدول / Tables */
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
-    th { background: #111827; color: var(--accent); font-size: 0.95rem; }
+    th, td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.92rem; white-space: nowrap; }
+    th { background: #111827; color: var(--accent); font-size: 1rem; }
     
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    .badge { padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
     /* الأزرار / Buttons */
-    .action-btn { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-left: 3px; }
+    .action-btn { border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.88rem; margin-left: 4px; }
     .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
     .btn-edit { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
     .btn-delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
     .btn-delete:hover { background: var(--danger); color: #fff; }
 
     /* النوافذ المنبثقة / Modals */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10000; }
-    .modal-card { background: var(--card-bg); width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
-    .modal-card h3 { color: var(--accent); margin-bottom: 15px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; outline: none; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 10000; }
+    .modal-card { background: var(--card-bg); width: 90%; max-width: 520px; padding: 28px; border-radius: 14px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
+    .modal-card h3 { color: var(--accent); margin-bottom: 18px; font-size: 1.25rem; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 7px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; font-size: 0.95rem; }
     .required-star { color: var(--danger); }
 
     /* 🔔 التنبيهات / Toast Notifications */
@@ -222,15 +248,12 @@
 
   <!-- التطبيق الرئيسي / Main Application -->
   <div id="main-app">
-    <header>
-      <h1>نظام تجلى | Tajalla Operations Hub</h1>
-    </header>
 
-    <!-- 📌 الواجهة الرئيسية: الكروت بتصميم وصور عصرية / Main Hub View -->
+    <!-- 📌 الواجهة الرئيسية: الكروت بتصميم وصور معتمدة عالمياً / Main Hub View -->
     <div id="home-hub-view">
       <div class="hub-title-section">
-        <h2>اختر القسم المطلوب لإدارته ومتابعة أداء العمليات:
-          <span class="en-sub">Select a department to manage and monitor operational performance:</span>
+        <h2>نظام إدارة العمليات اللوجستية والمستودعات المتقدم
+          <span class="en-sub">Advanced Enterprise Logistics & Warehouse Management System (ERP)</span>
         </h2>
       </div>
       
@@ -239,43 +262,43 @@
         <!-- كارت 1: المستودعات والمواد الخام / Card 1: Raw Materials -->
         <div class="main-hub-card" onclick="openRawMaterialsSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80" alt="المستودعات والمواد الخام" class="card-img">
-            <h2 style="color: var(--accent);">إدارة مواد خام المستودعات
-              <span class="en-sub">Warehouse Raw Materials</span>
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="المستودعات والمواد الخام" class="card-img">
+            <h2 style="color: var(--accent);">إدارة مستودعات المواد الخام
+              <span class="en-sub">Raw Materials Inventory Management</span>
             </h2>
-            <p>سجلات مستودع الأخشاب، الجلد والقماش، والدهانات، مع تطبيق أعلى معايير الجودة والحوكمة.
-              <span class="en-sub">Wood, Leather, and Paint inventory with full quality control standards.</span>
+            <p>نظام شامل لتتبع وإدارة المخزون الاستراتيجي للأخشاب والجلود والدهانات بأساليب الحوكمة المعتمدة والرقابة الرقمية الفورية.
+              <span class="en-sub">Comprehensive tracking and strategic inventory management for wood, leather, and chemical paints with full governance and real-time monitoring.</span>
             </p>
           </div>
-          <div class="card-footer-link">استعراض المصانع والمستودعات / View Warehouses ⬅️</div>
+          <div class="card-footer-link">استعراض أقسام المستودعات / Explore Warehouses ⬅️</div>
         </div>
 
         <!-- كارت 2: الـ Welcome Kit والعينات / Card 2: Welcome Kits -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80" alt="Welcome Kits والعينات" class="card-img">
-            <h2 style="color: var(--gold-color);">جرد الـ Welcome Kit والعينات
-              <span class="en-sub">Welcome Kits & Samples Inventory</span>
+            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
+            <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit وعينات الاعتماد
+              <span class="en-sub">Welcome Kits & Sample Control</span>
             </h2>
-            <p>إدارة حزم الترحيب المعيارية (Welcome Kits) والعينات الاعتمادية ومتابعة مواقع تخزينها.
-              <span class="en-sub">Manage standardized Welcome Kits, sample boxes, and storage locations.</span>
+            <p>منظومة حصر وتتبع حزم الترحب المعيارية وعينات النماذج الأولية المعتمدة للمشاريع مع توثيق مواقع التخزين بدقة.
+              <span class="en-sub">Standardized kit allocation, prototype sample tracking, and precise storage location mapping for project approvals.</span>
             </p>
           </div>
-          <div class="card-footer-link">استعراض العينات والجرد / View Samples ⬅️</div>
+          <div class="card-footer-link">استعراض سجل العينات / Explore Samples ⬅️</div>
         </div>
 
         <!-- كارت 3: السجل والعمليات / Card 3: Daily Transactions -->
         <div class="main-hub-card" onclick="openDailyTransactionsSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="سجل العمليات اليومية" class="card-img">
-            <h2 style="color: var(--wood-color);">سجل العمليات والحركات اليومية
-              <span class="en-sub">Daily Operations Log</span>
+            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" alt="سجل العمليات اليومية" class="card-img">
+            <h2 style="color: var(--wood-color);">سجل الحركة اللوجستية وأذونات الصرف
+              <span class="en-sub">Daily Issuance Log & Operations Audit</span>
             </h2>
-            <p>الرقابة اللوجستية وتوثيق أذونات الصرف والتوريد اليومي فورياً مع الربط بمراكز التكلفة والمشاريع.
-              <span class="en-sub">Real-time logistic control and daily stock issuance tracking for projects.</span>
+            <p>التوثيق الفوري لكافة أذونات التوريد والتصدير والصرف اليومي المرتبطة بمراكز التكلفة وأوامر التشغيل بالمصانع.
+              <span class="en-sub">Real-time audit log tracking material movements, issuance vouchers, and cost-center allocations for active projects.</span>
             </p>
           </div>
-          <div class="card-footer-link">عرض السجل اليومي / View Daily Logs ⬅️</div>
+          <div class="card-footer-link">عرض سجل الحركة اليومية / View Operations Log ⬅️</div>
         </div>
 
       </div>
@@ -284,90 +307,128 @@
     <!-- 1. قسم مواد خام المستودعات / 1. Raw Materials Section -->
     <div id="raw-materials-section" class="section-view">
       
-      <!-- قائمة اختيار المصانع الثلاثة / Main Warehouses Menu -->
+      <!-- قائمة اختيار المستودعات الثلاثة / Main Warehouses Menu -->
       <div id="warehouse-selection-menu">
-        <div class="sub-header">
-          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back to Home</button>
-          <h2 style="font-size: 1.1rem; color: var(--accent);">اختر المصنع/المستودع: <span class="en-inline">(Select Factory/Warehouse)</span></h2>
-          <div></div>
+        
+        <div class="warehouse-header-container">
+          <div class="warehouse-header-title">اختر المستودع</div>
+          <div class="en-sub" style="font-size: 1.1rem; color: var(--text-muted);">(Select Warehouse)</div>
+          <button class="back-btn" onclick="showHomeHub()" style="position: absolute; left: 0; top: 0;">⬅️ العودة للرئيسية / Back</button>
         </div>
+
         <div class="warehouse-grid">
+          
           <div class="warehouse-card wood" onclick="openWoodCategories()">
-            <h3 style="color: var(--wood-color);">🪵 مواد خام مصنع الخشب
-              <span class="en-sub">Wood Factory Raw Materials</span>
-            </h3>
-            <p>سجل الأخشاب، المواد اللاصقة، الحدايد والمعدات
-              <span class="en-sub">Wood logs, adhesives, hardware & tools</span>
-            </p>
+            <div>
+              <img src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الأخشاب">
+              <h3 style="color: var(--wood-color);">🪵 مستودع الأخشاب
+                <span class="en-sub">Timber & Wood Raw Materials Warehouse</span>
+              </h3>
+              <p>سجل مخزون الأخشاب الطبيعية، المسطحات والألواح، المواد اللاصقة، الحدايد والإكسسوارات والمعدات.
+                <span class="en-sub">Inventory records for solid timber, panel sheets, adhesive compounds, hardware fittings, and machinery.</span>
+              </p>
+            </div>
+            <div class="card-footer-link" style="color: var(--wood-color);">دخول المستودع / Access Warehouse ⬅️</div>
           </div>
-          <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مواد خام مصنع الجلد | Leather Factory Materials')">
-            <h3 style="color: var(--leather-color);">🥾 مواد خام مصنع الجلد
-              <span class="en-sub">Leather Factory Raw Materials</span>
-            </h3>
-            <p>أنواع الجلود، الألوان، السماكة والأمتار
-              <span class="en-sub">Leather types, colors, thickness & meters</span>
-            </p>
+
+          <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مستودع الجلود والنسيج | Leather & Fabric Warehouse')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الجلود">
+              <h3 style="color: var(--leather-color);">🥾 مستودع الجلود والنسيج
+                <span class="en-sub">Leather & Textiles Warehouse</span>
+              </h3>
+              <p>إدارة مخزون الجلود الطبيعية والصناعية، درجات الألوان، السماكة، اللفات بالأمتار وأقمشة التبطين.
+                <span class="en-sub">Full management of natural and synthetic leathers, color gradients, thickness specs, and fabric rolls.</span>
+              </p>
+            </div>
+            <div class="card-footer-link" style="color: var(--leather-color);">دخول المستودع / Access Warehouse ⬅️</div>
           </div>
-          <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مواد خام البوية والدهان | Paints & Finishes')">
-            <h3 style="color: var(--paint-color);">🎨 مواد خام البوية والدهان
-              <span class="en-sub">Paints & Chemical Materials</span>
-            </h3>
-            <p>الدهانات، الأكواد، الماركات، والألوان
-              <span class="en-sub">Paint codes, brands, and color shades</span>
-            </p>
+
+          <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مستودع الدهانات والمواد الكيميائية | Paints & Chemicals Warehouse')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الدهانات">
+              <h3 style="color: var(--paint-color);">🎨 مستودع الدهانات والأسطح
+                <span class="en-sub">Paints & Chemical Finishes Warehouse</span>
+              </h3>
+              <p>متابعة مواد الدهان، الأساسيات الكيميائية، الأكواد العالمية (RAL/NCS)، المذيبات والطبقات السطحية.
+                <span class="en-sub">Chemical paint stock control, international color codes (RAL/NCS), thinners, and protective coatings.</span>
+              </p>
+            </div>
+            <div class="card-footer-link" style="color: var(--paint-color);">دخول المستودع / Access Warehouse ⬅️</div>
           </div>
+
         </div>
       </div>
 
-      <!-- قائمة أخشاب المصنع الفرعية / Wood Sub-Categories Menu -->
+      <!-- قائمة تصنيفات الخشب الفرعية / Wood Sub-Categories Menu -->
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
           <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات / Back</button>
-          <h2 style="color: var(--wood-color);">🪵 تصنيف أقسام مصنع الخشب <span class="en-inline">(Wood Factory Categories)</span></h2>
+          <h2 style="color: var(--wood-color); font-size: 1.4rem;">🪵 تصنيفات مستودع الأخشاب <span class="en-inline">(Wood Warehouse Categories)</span></h2>
           <div></div>
         </div>
 
         <div class="warehouse-grid">
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي | Solid Wood')">
-            <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي
-              <span class="en-sub">Solid Wood / Natural Wood</span>
-            </h3>
-            <p>سجل الأخشاب الطبيعية والتكعيب (m³)
-              <span class="en-sub">Natural logs and volume calculation</span>
-            </p>
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي | Solid Natural Wood')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
+              <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي
+                <span class="en-sub">Solid Natural Wood Logs</span>
+              </h3>
+              <p>سجل الأخشاب الصلبة الطبيعية والتكعيب بـ (m³).
+                <span class="en-sub">Natural solid logs and volume cubic meter tracking.</span>
+              </p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح | Wood Panels')">
-            <h3 style="color: var(--wood-color);">📐 المسطحات والألواح
-              <span class="en-sub">Wood Panels & Sheets</span>
-            </h3>
-            <p>ألواح MDF، الأبلكاش، والميلامين
-              <span class="en-sub">MDF, Plywood, and Melamine sheets</span>
-            </p>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح | Wood Panels & Sheets')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المسطحات والألواح">
+              <h3 style="color: var(--wood-color);">📐 المسطحات والألواح
+                <span class="en-sub">Wood Panels & Composite Sheets</span>
+              </h3>
+              <p>ألواح MDF، الأبلكاش، القشرة والميلامين.
+                <span class="en-sub">MDF sheets, plywood, veneers, and melamine boards.</span>
+              </p>
+            </div>
           </div>
+
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'adhesives', '🧪 المواد اللاصقة والغراء | Adhesives & Glues')">
-            <h3 style="color: var(--wood-color);">🧪 المواد اللاصقة والغراء
-              <span class="en-sub">Adhesives & Glues</span>
-            </h3>
-            <p>غراء الخشب، الغراء الحراري، والسيليكون
-              <span class="en-sub">Wood glue, hot melt glue, silicon</span>
-            </p>
+            <div>
+              <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المواد اللاصقة">
+              <h3 style="color: var(--wood-color);">🧪 المواد اللاصقة والغراء
+                <span class="en-sub">Industrial Adhesives & Glues</span>
+              </h3>
+              <p>غراء الخشب الحراري، السيليكون، والركائز.
+                <span class="en-sub">Hot-melt glues, wood adhesives, and bonding silicones.</span>
+              </p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'hardware', '🔩 الحدايد والإكسسوارات | Hardware & Fittings')">
-            <h3 style="color: var(--wood-color);">🔩 الحدايد والإكسسوارات
-              <span class="en-sub">Hardware & Accessories</span>
-            </h3>
-            <p>المفصلات، السكك، المسامير، والمقابض
-              <span class="en-sub">Hinges, slides, screws, and handles</span>
-            </p>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'hardware', '🔩 الحدايد والإكسسوارات | Hardware & Accessories')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الحدايد">
+              <h3 style="color: var(--wood-color);">🔩 الحدايد والإكسسوارات
+                <span class="en-sub">Hardware Fittings & Accessories</span>
+              </h3>
+              <p>المفصلات، مجاري الأدراج، السكك، والمقابض.
+                <span class="en-sub">Hinges, drawer slides, screws, and architectural handles.</span>
+              </p>
+            </div>
           </div>
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات ومعدات التشغيل | Tools & Machinery')">
-            <h3 style="color: var(--wood-color);">🛠️ المعدات ومعدات التشغيل
-              <span class="en-sub">Tools & Machinery</span>
-            </h3>
-            <p>ريش القص، أدوات النجارة، والصيانة
-              <span class="en-sub">Blades, carpentry tools & equipment</span>
-            </p>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات وقطع الغيار | Tools & Equipment')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المعدات">
+              <h3 style="color: var(--wood-color);">🛠️ المعدات وقطع الغيار
+                <span class="en-sub">Machinery Tools & Spare Parts</span>
+              </h3>
+              <p>ريش القص، أقراص المنشار، أدوات الصيانة.
+                <span class="en-sub">Saw blades, CNC router bits, and carpentry power tools.</span>
+              </p>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -395,8 +456,8 @@
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
         <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back to Home</button>
-        <h2 style="font-size: 1.1rem; color: var(--gold-color);">جرد الـ Welcome Kit والعينات <span class="en-inline">(Welcome Kits & Samples Inventory)</span></h2>
-        <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / Add Kit</button>
+        <h2 style="font-size: 1.3rem; color: var(--gold-color);">جرد الـ Welcome Kit والعينات الاعتمادية <span class="en-inline">(Welcome Kits & Samples Inventory)</span></h2>
+        <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة / Add Kit</button>
       </div>
       <div class="table-container">
         <table>
@@ -404,7 +465,7 @@
             <tr>
               <th>كود الصنف<br><span class="en-sub">SKU Code</span></th>
               <th>المشروع / العميل<br><span class="en-sub">Project / Client</span></th>
-              <th>الصنف<br><span class="en-sub">Item Name</span></th>
+              <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
               <th>التفاصيل وخامة الصنع<br><span class="en-sub">Details & Material</span></th>
               <th>الكمية<br><span class="en-sub">Quantity</span></th>
               <th>موقع التخزين<br><span class="en-sub">Location</span></th>
@@ -421,8 +482,8 @@
     <div id="daily-transactions-section" class="section-view">
       <div class="sub-header">
         <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back to Home</button>
-        <h2 style="font-size: 1.1rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية <span class="en-inline">(Daily Issuance & Dispatch Log)</span></h2>
-        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل / Refresh</button>
+        <h2 style="font-size: 1.3rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية <span class="en-inline">(Daily Issuance & Dispatch Log)</span></h2>
+        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل / Refresh Log</button>
       </div>
       <div class="table-container">
         <table>
@@ -541,7 +602,7 @@
 
       <div class="form-group">
         <label>اسم المستلم / الجهة <span class="en-inline">(Recipient Name / Dept)</span>:</label>
-        <input type="text" id="ext-recipient" placeholder="Technician / اسم النجار أو القسم">
+        <input type="text" id="ext-recipient" placeholder="Technician / اسم الفني أو القسم">
       </div>
 
       <div class="form-group">
@@ -591,8 +652,34 @@
 
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
+    let currentView = 'home'; // لتتبع الصفحة الحالية لدعم زر Backspace
 
     window.onload = function() { checkExistingSession(); };
+
+    // ⌨️ استماع لضغط زر Backspace في الكيبورد للرجوع للخلف
+    window.addEventListener('keydown', function(event) {
+      if (event.key === 'Backspace') {
+        // تأكد من أن المستخدم لا يكتب حالياً داخل حقل إدخال نصي
+        const activeElem = document.activeElement;
+        const isInputField = activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA' || activeElem.tagName === 'SELECT');
+        
+        if (!isInputField) {
+          event.preventDefault(); // منع الصفحة من السلوك الافتراضي المتصفح
+          navigateBackSmartly();
+        }
+      }
+    });
+
+    // دالة الذكاء في التنقل للرجوع بالـ Backspace
+    function navigateBackSmartly() {
+      if (document.getElementById('sub-warehouse-container').style.display === 'block') {
+        backFromTable();
+      } else if (document.getElementById('wood-categories-menu').style.display === 'block') {
+        backToMainWarehouses();
+      } else if (currentView !== 'home') {
+        showHomeHub();
+      }
+    }
 
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast-notification');
@@ -639,11 +726,13 @@
 
     function showHomeHub() {
       hideAllSections();
+      currentView = 'home';
       document.getElementById('home-hub-view').style.display = 'block';
     }
 
     function openRawMaterialsSection() {
       hideAllSections();
+      currentView = 'raw_materials';
       document.getElementById('raw-materials-section').style.display = 'block';
       document.getElementById('warehouse-selection-menu').style.display = 'block';
       document.getElementById('wood-categories-menu').style.display = 'none';
@@ -652,12 +741,14 @@
 
     function openWelcomeKitSection() {
       hideAllSections();
+      currentView = 'welcome_kit';
       document.getElementById('general-inventory-section').style.display = 'block';
       fetchWelcomeKits();
     }
 
     function openDailyTransactionsSection() {
       hideAllSections();
+      currentView = 'daily_logs';
       document.getElementById('daily-transactions-section').style.display = 'block';
       fetchDailyLogs();
     }
