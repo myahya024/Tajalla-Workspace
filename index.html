@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة تجلى | Tajalla Operations Hub</title>
+  <title>نظام تجلى | Tajalla Operations Hub</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
+      --bg: #0b0f19;
+      --card-bg: #151e32;
+      --card-hover: #1c2945;
       --accent: #38bdf8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #334155;
+      --border: #23324d;
       --success: #22c55e;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --wood-color: #f59e0b;
-      --leather-color: #a855f7;
-      --paint-color: #ec4899;
-      --gold-color: #c59b27;
+      --wood-color: #fbbf24;
+      --leather-color: #c084fc;
+      --paint-color: #f472b6;
+      --gold-color: #eab308;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; }
+    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; min-height: 100vh; position: relative; }
     
     /* شاشة الدخول */
     #login-overlay {
@@ -42,45 +43,90 @@
     .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7; }
     .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-    #main-app { display: none; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 15px; }
-    h1 { font-size: 1.6rem; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
-    .logout-btn { background: #334155; color: var(--text-muted); border: 1px solid var(--border); padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s; }
-    .logout-btn:hover { background: var(--danger); color: #fff; }
+    #main-app { display: none; padding-bottom: 80px; }
+    
+    /* 📌 الهيدر والعناوين في المنتصف */
+    header { 
+      text-align: center; 
+      margin-bottom: 35px; 
+      padding-bottom: 20px; 
+      border-bottom: 1px solid var(--border); 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 { font-size: 2rem; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; margin-bottom: 12px; }
+    
+    /* 🔒 زر قفل النظام العائم في الأسفل اليسار */
+    .floating-logout-btn { 
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background: rgba(30, 41, 59, 0.85); 
+      color: var(--text-muted); 
+      border: 1px solid var(--border); 
+      padding: 10px 20px; 
+      border-radius: 30px; 
+      cursor: pointer; 
+      font-size: 0.85rem; 
+      font-weight: bold; 
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .floating-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); transform: translateY(-3px); }
 
-    /* 📌 تحسين وتكبير الكروت الرئيسية الثلاث */
-    .hub-title-section { margin-bottom: 20px; }
-    .hub-title-section h2 { font-size: 1.25rem; color: var(--text-muted); }
+    /* 📌 الواجهة الرئيسية والتنسيق الممركز */
+    .hub-title-section { text-align: center; margin-bottom: 30px; }
+    .hub-title-section h2 { font-size: 1.3rem; color: var(--text-muted); font-weight: 500; }
 
     .main-hub-grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
       gap: 30px; 
       margin-bottom: 40px; 
+      max-width: 1300px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .main-hub-card {
       background: var(--card-bg); 
-      border-radius: 18px; 
+      border-radius: 20px; 
       border: 1px solid var(--border); 
-      padding: 40px 30px;
+      padding: 25px;
       cursor: pointer; 
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex; 
       flex-direction: column; 
       justify-content: space-between; 
-      min-height: 280px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      min-height: 380px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
     }
     .main-hub-card:hover { 
       transform: translateY(-8px); 
+      background: var(--card-hover);
       border-color: var(--accent); 
-      box-shadow: 0 15px 30px rgba(56, 189, 248, 0.15); 
+      box-shadow: 0 20px 35px rgba(56, 189, 248, 0.15); 
     }
-    .main-hub-card h2 { font-size: 1.4rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-    .main-hub-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+    .card-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .main-hub-card h2 { font-size: 1.35rem; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .main-hub-card p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; }
     .card-footer-link { 
-      margin-top: 25px; 
-      font-size: 0.95rem; 
+      margin-top: 20px; 
+      font-size: 0.9rem; 
       color: var(--accent); 
       font-weight: bold; 
       display: flex;
@@ -131,7 +177,7 @@
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; outline: none; }
     .required-star { color: var(--danger); }
 
-    /* 🔔 تصميم التنبيهات المنبثقة الراقية (Toast Notification) */
+    /* 🔔 التنبيهات */
     #toast-notification {
       position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: var(--card-bg); border: 1px solid var(--accent); color: #fff;
@@ -166,43 +212,52 @@
   <!-- التطبيق الرئيسي -->
   <div id="main-app">
     <header>
-      <h1>🏛️ منصة تجلى | Tajalla Operations Hub</h1>
-      <button class="logout-btn" onclick="logout()">قفل النظام 🔒</button>
+      <h1>نظام تجلى | Tajalla Operations Hub</h1>
     </header>
 
-    <!-- 📌 الواجهة الرئيسية: 3 بطاقات كبيرة ومطولة -->
+    <!-- 🔒 زر قفل النظام (مخفي وأنيق أسفل اليسار) -->
+    <button class="floating-logout-btn" onclick="logout()">
+      <span>🔒</span> قفل النظام
+    </button>
+
+    <!-- 📌 الواجهة الرئيسية: الكروت بتصميم وصور عصرية -->
     <div id="home-hub-view">
       <div class="hub-title-section">
         <h2>اختر القسم المطلوب لإدارته ومتابعة أداء العمليات:</h2>
       </div>
       
       <div class="main-hub-grid">
-        <!-- كارت 1 -->
+        
+        <!-- كارت 1: المستودعات والمواد الخام -->
         <div class="main-hub-card" onclick="openRawMaterialsSection()">
           <div>
-            <h2 style="color: var(--accent);">📦 إدارة مواد خام المستودعات</h2>
-            <p>سجلات مستودعات الأخشاب، الجلود، والدهانات، مع تصنيف المواد الخام وإجراءات الصرف والجرد التفصيلية.</p>
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80" alt="المستودعات والمواد الخام" class="card-img">
+            <h2 style="color: var(--accent);">إدارة مواد خام المستودعات</h2>
+            <p>سجلات مستودع الأخشاب، الجلد والقماش، والدهانات، مع تطبيق أعلى معايير الجودة والحوكمة العالمية في التخزين والجرد.</p>
           </div>
           <div class="card-footer-link">استعراض المصانع والمستودعات ⬅️</div>
         </div>
 
-        <!-- كارت 2 -->
+        <!-- كارت 2: الـ Welcome Kit والعينات -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
-            <h2 style="color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات</h2>
-            <p>قائمة العينات العالمية والـ Welcome Kits والمشاريع التابعة لها ومواقع تخزينها في المستودعات.</p>
+            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80" alt="Welcome Kits والعينات" class="card-img">
+            <h2 style="color: var(--gold-color);">جرد الـ Welcome Kit والعينات</h2>
+            <p>إدارة حزم الترحيب المعيارية (Welcome Kits) والعينات الاعتمادية، ومتابعة مواقع تخزينها بالمستودعات وفق نظام تتبع دقيق.</p>
           </div>
           <div class="card-footer-link">استعراض العينات والجرد ⬅️</div>
         </div>
 
-        <!-- كارت 3 -->
+        <!-- كارت 3: السجل والعمليات -->
         <div class="main-hub-card" onclick="openDailyTransactionsSection()">
           <div>
-            <h2 style="color: var(--wood-color);">📋 سجل العمليات والحركات اليومية</h2>
-            <p>متابعة كافة أذونات الصرف والاستخراج المسجلة فورياً مع تفاصيل المسؤولين والمشاريع وأسباب الاستخراج.</p>
+            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="سجل العمليات اليومية" class="card-img">
+            <h2 style="color: var(--wood-color);">سجل العمليات والحركات اليومية</h2>
+            <p>الرقابة اللوجستية وتوثيق أذونات الصرف والتورد اليومي فورياً مع الربط بمراكز التكلفة والمشاريع الحيوية.</p>
           </div>
           <div class="card-footer-link">عرض السجل اليومي ⬅️</div>
         </div>
+
       </div>
     </div>
 
@@ -288,7 +343,7 @@
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
         <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية</button>
-        <h2 style="font-size: 1.1rem; color: var(--gold-color);">🎁 جرد الـ Welcome Kit والعينات العالمية:</h2>
+        <h2 style="font-size: 1.1rem; color: var(--gold-color);">جرد הـ Welcome Kit والعينات:</h2>
         <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / Kit</button>
       </div>
       <div class="table-container">
@@ -365,7 +420,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmFullEdit()">حفظ التعديلات 💾</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('full-edit-modal')">إلغاء</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('full-edit-modal')">إلغاء</button>
       </div>
     </div>
   </div>
@@ -398,7 +453,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmAddItem()">تأكيد الإضافة ✨</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('add-modal')">إلغاء</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('add-modal')">إلغاء</button>
       </div>
     </div>
   </div>
@@ -446,7 +501,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد واستخراج 📤</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('extract-modal')">إلغاء</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('extract-modal')">إلغاء</button>
       </div>
     </div>
   </div>
@@ -459,7 +514,7 @@
       <input type="hidden" id="delete-id">
       <div style="display: flex; gap: 10px;">
         <button class="action-btn btn-delete" style="flex:1; padding: 10px; justify-content: center;" onclick="confirmDelete()">نعم، احذف 🗑️</button>
-        <button class="logout-btn" style="flex:1;" onclick="closeModal('delete-modal')">إلغاء</button>
+        <button class="back-btn" style="flex:1;" onclick="closeModal('delete-modal')">إلغاء</button>
       </div>
     </div>
   </div>
@@ -477,7 +532,6 @@
 
     window.onload = function() { checkExistingSession(); };
 
-    /* 🔔 دالة إشعارات التنبيه الراقية */
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast-notification');
       toast.innerText = message;
@@ -670,7 +724,6 @@
       });
     }
 
-    /* 📋 دالة جلب سجل العمليات أونلاين بعد التعديل لقرائتها فوراً من Supabase */
     async function fetchDailyLogs() {
       const tbody = document.getElementById('daily-logs-table-body');
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب سجل العمليات أونلاين...</td></tr>';
@@ -786,7 +839,6 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    /* 📤 تأكيد عملية الصرف وإرسالها أونلاين فوراً لجدول daily_transactions */
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
@@ -812,14 +864,12 @@
         return;
       }
 
-      // 1. تحديث الكمية في مخزن المستودع أونلاين
       const { error: updateErr } = await supabaseClient.from('materials').update({ quantity: curQty - extQty }).eq('id', id);
       if (updateErr) {
         showToast('❌ خطأ في تحديث كمية المخزن: ' + updateErr.message, 'error');
         return;
       }
 
-      // 2. إرسال إذن الصرف لقاعدة البيانات السحابية فوراً ليراها المدير
       const { error: insertErr } = await supabaseClient.from('daily_transactions').insert([{
         item_id: parseInt(id) || null,
         item_title: itemTitle,
@@ -836,10 +886,7 @@
       }
 
       closeModal('extract-modal');
-      
-      // 🔔 إشعار نجاح الصرف
       showToast(`📦 تم صرف (${extQty}) من ${itemTitle} بنجاح!`, 'success');
-
       fetchMaterialsFromDatabase();
     }
 
