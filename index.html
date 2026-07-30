@@ -252,7 +252,7 @@
     <!-- الواجهة الرئيسية -->
     <div id="home-hub-view">
       
-      <!-- العنوان الرئيسي بالعربي والإنجليزي -->
+      <!-- العنوان الرئيسي -->
       <div class="hub-title-section">
         <h1>نظام تجلى | Tajalla System</h1>
       </div>
@@ -273,18 +273,18 @@
           <div class="card-footer-link">استعراض أقسام المستودعات ⬅️</div>
         </div>
 
-        <!-- كارت 2: الـ Welcome Kit والعينات -->
+        <!-- كارت 2: الـ Welcome Kit والمخزون وعينات الاعتماد (تم التعديل) -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
             <img src="https://i.postimg.cc/Dyj8RKRn/wylkm-kt.webp" alt="Welcome Kits والعينات" class="card-img">
-            <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit وعينات الاعتماد
-              <span class="en-sub">Welcome Kits & Sample Control</span>
+            <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit والمخزون وعينات الاعتماد
+              <span class="en-sub">Welcome Kits, Inventory & Sample Control</span>
             </h2>
-            <p>تتبع حزم الترحيب وعينات النماذج الأولية المعتمدة للمشاريع.
-              <span class="en-sub">Standardized kit allocation and prototype sample tracking.</span>
+            <p>تتبع حزم الترحيب والمخزون وعينات النماذج الأولية المعتمدة للمشاريع.
+              <span class="en-sub">Standardized kit allocation, inventory, and prototype sample tracking.</span>
             </p>
           </div>
-          <div class="card-footer-link">استعراض سجل العينات ⬅️</div>
+          <div class="card-footer-link">استعراض سجل العينات والمخزون ⬅️</div>
         </div>
 
         <!-- كارت 3: السجل والعمليات -->
@@ -460,12 +460,12 @@
 
     </div>
 
-    <!-- 2. قسم الـ Welcome Kit والعينات -->
+    <!-- 2. قسم الـ Welcome Kit والمخزون والعينات (تم التعديل) -->
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
-        <h2 style="font-size: 1.2rem; color: var(--gold-color);">جرد الـ Welcome Kit والعينات الاعتمادية <span class="en-inline">(Welcome Kits & Samples)</span></h2>
+        <h2 style="font-size: 1.2rem; color: var(--gold-color);">إدارة الـ Welcome Kit والمخزون وعينات الاعتماد <span class="en-inline">(Welcome Kits, Inventory & Samples)</span></h2>
         <div style="display: flex; gap: 10px;">
-          <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة</button>
+          <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة / عنصر مخزون جديد</button>
           <button class="back-btn" onclick="showHomeHub()">⬅️ الرئيسية</button>
         </div>
       </div>
@@ -855,7 +855,7 @@
       let { data } = await supabaseClient.from('welcome_kits').select('*');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عينات مسجلة.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عينات أو عناصر مخزون مسجلة.</td></tr>';
         return;
       }
 
