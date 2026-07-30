@@ -137,21 +137,23 @@
     .form-group input[readonly] { background: #0b1329; border-color: var(--accent); color: var(--accent); font-weight: bold; }
     .required-star { color: var(--danger); font-weight: bold; }
 
+    /* تحسين الشعار المنبثق للإشعار وإضافة إمكانية النقر */
     #toast-notification {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: var(--card-bg); border: 1px solid var(--accent); color: #fff;
       padding: 12px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99999; opacity: 0;
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); pointer-events: none; text-align: center;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); cursor: pointer; text-align: center;
     }
-    #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+    #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast-notification.success { border-color: var(--success); color: var(--success); }
     #toast-notification.error { border-color: var(--danger); color: var(--danger); }
   </style>
 </head>
 <body>
 
-  <div id="toast-notification"></div>
+  <!-- الشعار المنبثق عند الخصم الصرف -->
+  <div id="toast-notification" onclick="handleToastClick()"></div>
 
   <!-- شاشة الدخول -->
   <div id="login-overlay">
@@ -595,6 +597,7 @@
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
     let currentView = 'home';
+    let toastTimeout = null;
 
     window.onload = function() { checkExistingSession(); };
 
@@ -602,7 +605,15 @@
       const toast = document.getElementById('toast-notification');
       toast.innerHTML = message;
       toast.className = `show ${type}`;
-      setTimeout(() => { toast.className = ''; }, 4500);
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => { toast.className = ''; }, 6000);
+    }
+
+    // دالة الانتقال عند النقر على الشعار المنبثق
+    function handleToastClick() {
+      const toast = document.getElementById('toast-notification');
+      toast.className = '';
+      openDailyTransactionsSection();
     }
 
     function checkPin() {
@@ -879,10 +890,16 @@
       data.forEach(log => {
         const tr = document.createElement('tr');
         const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
+        
+        let qtyDisplay = log.quantity;
+        if (log.details && log.details.includes('وحدة الصرف:')) {
+           qtyDisplay += ` (${log.details})`;
+        }
+
         tr.innerHTML = `
           <td>${formattedDate}</td>
           <td><strong>${log.item_title || log.title || '-'}</strong></td>
-          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
+          <td><span style="color:var(--warning); font-weight:bold;">${qtyDisplay || 0}</span></td>
           <td>${log.issuer_name || '-'}</td>
           <td>${log.recipient_name || '-'}</td>
           <td>${log.project_code || '-'}</td>
@@ -1205,7 +1222,8 @@
 
       let newQty = curQty;
       let newBoards = curBoards;
-      let logQtyDisplay = "";
+      let numericIssuedQty = 0; // كمية رقمية فقط لقاعدة البيانات
+      let extraNoteDetails = "";
 
       const updateData = {};
 
@@ -1224,7 +1242,8 @@
             return;
           }
           newQty = curQty - cubicVal;
-          logQtyDisplay = `${cubicVal} m³`;
+          numericIssuedQty = cubicVal;
+          extraNoteDetails = "وحدة الصرف: m³";
         } else if (boardsVal > 0) {
           if (curBoards > 0 && boardsVal > curBoards) {
             showToast('❌ عدد الألواح المطلوب أكبر من المتوفر!', 'error');
@@ -1235,7 +1254,9 @@
 
           newQty = Math.max(0, curQty - deductedCubic);
           newBoards = Math.max(0, curBoards - boardsVal);
-          logQtyDisplay = `${boardsVal} لوح (${deductedCubic.toFixed(3)} m³)`;
+          
+          numericIssuedQty = boardsVal; 
+          extraNoteDetails = `وحدة الصرف: ألواح (${deductedCubic.toFixed(3)} m³)`;
         }
         updateData.quantity = newQty;
         updateData.boards_count = newBoards;
@@ -1250,10 +1271,11 @@
           return;
         }
         newQty = curQty - extInputQty;
-        logQtyDisplay = `${extInputQty}`;
+        numericIssuedQty = extInputQty;
         updateData.quantity = newQty;
       }
 
+      // 1. تحديث الكميات في جدول المواد
       const { error: updateErr } = await supabaseClient.from('materials').update(updateData).eq('id', id);
 
       if (updateErr) {
@@ -1261,10 +1283,12 @@
         return;
       }
 
+      // 2. إدراج عملية الصرف بنجاح بدون تعارض أنواع البيانات (الكمية رقم مجرد)
       const { error: insertErr } = await supabaseClient.from('daily_transactions').insert([{
         item_id: parseInt(id) || null,
         item_title: itemTitle,
-        quantity: logQtyDisplay,
+        quantity: numericIssuedQty,
+        details: extraNoteDetails,
         project_code: projectCode,
         issuer_name: issuerName,
         recipient_name: recipientName,
@@ -1277,7 +1301,9 @@
       }
 
       closeModal('extract-modal');
-      showToast(`📦 تم صرف (${logQtyDisplay}) من ${itemTitle} بنجاح!`, 'success');
+      
+      // إظهار الإشعار وقابليته للنقر مع التذكير
+      showToast(`📦 تم الصرف بنجاح! اضغط هنا للانتقال إلى جدول الحركة اليومية ⬅️`, 'success');
       fetchMaterialsFromDatabase();
     }
 
