@@ -119,11 +119,9 @@
     th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
     th { background: #111827; color: var(--accent); font-size: 0.92rem; }
     
-    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; display: inline-block; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; }
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-    .badge-info { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
 
     .action-btn { border: none; padding: 6px 12px; border-radius: 7px; cursor: pointer; font-weight: bold; font-size: 0.82rem; margin-left: 3px; }
     .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
@@ -298,11 +296,11 @@
             </div>
           </div>
 
-          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات وأدوات الورشة | Tools & Workshop Equipment')">
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات وقطع الغيار | Tools & Equipment')">
             <div>
               <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المعدات">
-              <h3 style="color: var(--wood-color);">🛠️ المعدات وأدوات الورشة<span class="en-sub">Machinery, Power Tools & Hand Tools</span></h3>
-              <p>معدات التشغيل بالورشة ومخزون الآلات والدباسات والمناشير وصيانتها.</p>
+              <h3 style="color: var(--wood-color);">🛠️ المعدات وقطع الغيار<span class="en-sub">Machinery Tools & Spare Parts</span></h3>
+              <p>أقراص المنشار وأدوات الصيانة.</p>
             </div>
           </div>
         </div>
@@ -397,27 +395,6 @@
         <input type="text" id="edit-item-title" required>
       </div>
 
-      <!-- مدخلات مخصصة للمعدات والأدوات -->
-      <div id="edit-tools-fields" style="display: none;">
-        <div class="form-group">
-          <label>المواصفات والماركة (مثل: Makita 1200W, DeWalt 18V, Stanley):</label>
-          <input type="text" id="edit-tool-specs" placeholder="المواصفات الفنية أو الماركة">
-        </div>
-        <div class="form-group">
-          <label>الرقم التسلسلي / كود المعدة (Serial No. / Tag ID):</label>
-          <input type="text" id="edit-tool-sn" placeholder="مثل: SN-90821">
-        </div>
-        <div class="form-group">
-          <label>حالة التشغيل وصلاحية المعدة: <span class="required-star">*</span></label>
-          <select id="edit-tool-status">
-            <option value="شغالة / سليمة">🟢 شغالة / سليمة (Operational)</option>
-            <option value="تحتاج صيانة">🟡 تحتاج صيانة (Under Maintenance)</option>
-            <option value="تالفة / خارج الخدمة">🔴 تالفة / خارج الخدمة (Out of Service)</option>
-            <option value="مخزون جديد">🔵 مخزون جديد (New In Stock)</option>
-          </select>
-        </div>
-      </div>
-
       <!-- مدخلات مخصصة للحدايد والإكسسوارات العالمية -->
       <div id="edit-hardware-fields" style="display: none;">
         <div class="form-group">
@@ -486,8 +463,8 @@
       </div>
 
       <div class="form-group">
-        <label>موقع التواجد / التخزين: <span class="required-star">*</span></label>
-        <input type="text" id="edit-item-location" placeholder="مثال: ورشة التشغيل، الرف A2..." required>
+        <label>موقع التخزين: <span class="required-star">*</span></label>
+        <input type="text" id="edit-item-location" required>
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -506,27 +483,6 @@
       <div class="form-group">
         <label id="add-title-label">اسم الصنف: <span class="required-star">*</span></label>
         <input type="text" id="add-title" required>
-      </div>
-
-      <!-- حقول المعدات والأدوات المخصصة -->
-      <div id="tools-fields" style="display: none;">
-        <div class="form-group">
-          <label>المواصفات والماركة (Specs & Brand):</label>
-          <input type="text" id="add-tool-specs" placeholder="مثال: Makita 1200W, DeWalt 18V, Stanley">
-        </div>
-        <div class="form-group">
-          <label>الرقم التسلسلي / كود المعدة (Serial No. / Tag ID):</label>
-          <input type="text" id="add-tool-sn" placeholder="مثال: SN-90821">
-        </div>
-        <div class="form-group">
-          <label>حالة التشغيل وصلاحية المعدة: <span class="required-star">*</span></label>
-          <select id="add-tool-status">
-            <option value="شغالة / سليمة">🟢 شغالة / سليمة (Operational)</option>
-            <option value="تحتاج صيانة">🟡 تحتاج صيانة (Under Maintenance)</option>
-            <option value="تالفة / خارج الخدمة">🔴 تالفة / خارج الخدمة (Out of Service)</option>
-            <option value="مخزون جديد">🔵 مخزون جديد (New In Stock)</option>
-          </select>
-        </div>
       </div>
 
       <!-- حقول الحدايد والإكسسوارات المخصصة -->
@@ -616,8 +572,8 @@
       </div>
 
       <div class="form-group">
-        <label>موقع التواجد / التخزين: <span class="required-star">*</span></label>
-        <input type="text" id="add-location" placeholder="مثال: ورشة التشغيل، الرف A1..." required>
+        <label>موقع التخزين: <span class="required-star">*</span></label>
+        <input type="text" id="add-location" required>
       </div>
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -684,7 +640,6 @@
         <select id="ext-reason" required>
           <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع</option>
           <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة</option>
-
           <option value="حدث / Event">🎉 حدث / Event</option>
           <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك</option>
         </select>
@@ -968,15 +923,6 @@
             <th>موقع التخزين<br><span class="en-sub">Location</span></th>
             <th>الحالة<br><span class="en-sub">Status</span></th>
             <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
-        } else if (currentSubUnit === 'tools') {
-          tr.innerHTML = `
-            <th>اسم / نوع المعدة<br><span class="en-sub">Machine / Tool Name</span></th>
-            <th>المواصفات والماركة<br><span class="en-sub">Specs & Brand</span></th>
-            <th>الكود / Serial No.<br><span class="en-sub">Tag / Serial ID</span></th>
-            <th>الكمية<br><span class="en-sub">Qty</span></th>
-            <th>موقع التواجد<br><span class="en-sub">Location</span></th>
-            <th>حالة المعدة<br><span class="en-sub">Operating Status</span></th>
-            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
         } else {
           tr.innerHTML = `
             <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
@@ -1089,29 +1035,6 @@
               <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
             </td>
           `;
-        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-          let toolStatusBadge = '<span class="badge badge-success">🟢 شغالة / سليمة</span>';
-          if (item.thickness === 'تحتاج صيانة') {
-            toolStatusBadge = '<span class="badge badge-warning">🟡 تحتاج صيانة</span>';
-          } else if (item.thickness === 'تالفة / خارج الخدمة') {
-            toolStatusBadge = '<span class="badge badge-danger">🔴 خارج الخدمة</span>';
-          } else if (item.thickness === 'مخزون جديد') {
-            toolStatusBadge = '<span class="badge badge-info">🔵 مخزون جديد</span>';
-          }
-
-          tr.innerHTML = `
-            <td><strong>${titleName}</strong></td>
-            <td>${item.size || '-'}</td>
-            <td><code>${item.description || '-'}</code></td>
-            <td><strong style="color:var(--accent); font-size:1.05rem;">${qty}</strong></td>
-            <td>${item.location || '-'}</td>
-            <td>${toolStatusBadge}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 تسليم/صرف</button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
-            </td>
-          `;
         } else {
           const specInfo = item.size || item.thickness || '-';
           tr.innerHTML = `
@@ -1220,14 +1143,11 @@
       document.getElementById('add-location').value = '';
       document.getElementById('add-hw-size').value = '';
       document.getElementById('add-hw-color').value = '';
-      document.getElementById('add-tool-specs').value = '';
-      document.getElementById('add-tool-sn').value = '';
 
       const welcomeKitFields = document.getElementById('welcome-kit-fields');
       const materialsFields = document.getElementById('materials-fields');
       const adhesivesFields = document.getElementById('adhesives-fields');
       const hardwareFields = document.getElementById('hardware-fields');
-      const toolsFields = document.getElementById('tools-fields');
       const addSizeGroup = document.getElementById('add-size-group');
       const addSizeSelect = document.getElementById('add-size-select');
       const addSizeInput = document.getElementById('add-size-input');
@@ -1240,7 +1160,6 @@
         materialsFields.style.display = 'none';
         adhesivesFields.style.display = 'none';
         hardwareFields.style.display = 'none';
-        toolsFields.style.display = 'none';
         addBoardsGroup.style.display = 'none';
         document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
         document.getElementById('add-qty-label').innerHTML = 'الكمية: <span class="required-star">*</span>';
@@ -1252,7 +1171,6 @@
           materialsFields.style.display = 'block';
           adhesivesFields.style.display = 'none';
           hardwareFields.style.display = 'none';
-          toolsFields.style.display = 'none';
           document.getElementById('add-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
           document.getElementById('add-qty-label').innerHTML = 'الكمية بالتكعيب (m³): <span class="required-star">*</span>';
           addSizeGroup.style.display = 'none';
@@ -1262,7 +1180,6 @@
           materialsFields.style.display = 'block';
           adhesivesFields.style.display = 'none';
           hardwareFields.style.display = 'none';
-          toolsFields.style.display = 'none';
           document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
           document.getElementById('add-size-label').innerHTML = 'المقاس: <span class="required-star">*</span>';
           document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
@@ -1275,7 +1192,6 @@
         } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
           materialsFields.style.display = 'none';
           hardwareFields.style.display = 'none';
-          toolsFields.style.display = 'none';
           adhesivesFields.style.display = 'block';
           document.getElementById('add-title-label').innerHTML = 'اسم مادة الغراء/اللاصق: <span class="required-star">*</span>';
           document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
@@ -1283,24 +1199,14 @@
         } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
           materialsFields.style.display = 'none';
           adhesivesFields.style.display = 'none';
-          toolsFields.style.display = 'none';
           hardwareFields.style.display = 'block';
-          document.getElementById('add-title-label').innerHTML = 'اسم الصنف / النوع (مثل: مسامير، مفصلات، دباسة T): <span class="required-star">*</span>';
-          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
-          addBoardsGroup.style.display = 'none';
-        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-          materialsFields.style.display = 'none';
-          adhesivesFields.style.display = 'none';
-          hardwareFields.style.display = 'none';
-          toolsFields.style.display = 'block';
-          document.getElementById('add-title-label').innerHTML = 'اسم / نوع المعدة (مثل: راوتر، فارة خشب، منشار ديسك، مفكات...): <span class="required-star">*</span>';
+          document.getElementById('add-title-label').innerHTML = 'اسم الصنف / النوع (مثل: مسامير سن صاج، مفصلات ألياف، مسامير دباسة T): <span class="required-star">*</span>';
           document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
           addBoardsGroup.style.display = 'none';
         } else {
           materialsFields.style.display = 'block';
           adhesivesFields.style.display = 'none';
           hardwareFields.style.display = 'none';
-          toolsFields.style.display = 'none';
           document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
           document.getElementById('add-size-label').innerHTML = 'المواصفات والترتيب: <span class="required-star">*</span>';
           document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
@@ -1379,10 +1285,6 @@
           payload.size = document.getElementById('add-hw-size').value.trim();
           payload.description = document.getElementById('add-hw-color').value.trim();
           payload.thickness = document.getElementById('add-hw-unit').value;
-        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-          payload.size = document.getElementById('add-tool-specs').value.trim();
-          payload.description = document.getElementById('add-tool-sn').value.trim();
-          payload.thickness = document.getElementById('add-tool-status').value;
         } else {
           payload.size = document.getElementById('add-size-input').value.trim();
         }
@@ -1414,7 +1316,6 @@
       const editBoardsGroup = document.getElementById('edit-boards-group');
       const editAdhesivesFields = document.getElementById('edit-adhesives-fields');
       const editHardwareFields = document.getElementById('edit-hardware-fields');
-      const editToolsFields = document.getElementById('edit-tools-fields');
 
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         document.getElementById('edit-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
@@ -1423,7 +1324,6 @@
         editExtraGroup.style.display = 'none';
         editAdhesivesFields.style.display = 'none';
         editHardwareFields.style.display = 'none';
-        editToolsFields.style.display = 'none';
         editBoardsGroup.style.display = 'block';
       } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
         document.getElementById('edit-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
@@ -1436,7 +1336,6 @@
         editExtraGroup.style.display = 'block';
         editAdhesivesFields.style.display = 'none';
         editHardwareFields.style.display = 'none';
-        editToolsFields.style.display = 'none';
         document.getElementById('edit-item-extra').value = item.thickness || '';
         editBoardsGroup.style.display = 'none';
       } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
@@ -1446,7 +1345,6 @@
         editExtraGroup.style.display = 'none';
         editBoardsGroup.style.display = 'none';
         editHardwareFields.style.display = 'none';
-        editToolsFields.style.display = 'none';
         editAdhesivesFields.style.display = 'block';
         document.getElementById('edit-item-desc').value = item.description || '';
         document.getElementById('edit-item-unit').value = item.thickness || 'علبة';
@@ -1457,23 +1355,10 @@
         editExtraGroup.style.display = 'none';
         editBoardsGroup.style.display = 'none';
         editAdhesivesFields.style.display = 'none';
-        editToolsFields.style.display = 'none';
         editHardwareFields.style.display = 'block';
         document.getElementById('edit-hw-size').value = item.size || '';
         document.getElementById('edit-hw-color').value = item.description || '';
         document.getElementById('edit-hw-unit').value = item.thickness || 'علبة';
-      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-        document.getElementById('edit-title-label').innerHTML = 'اسم / نوع المعدة: <span class="required-star">*</span>';
-        document.getElementById('edit-qty-label').innerHTML = 'الكمية: <span class="required-star">*</span>';
-        editSizeGroup.style.display = 'none';
-        editExtraGroup.style.display = 'none';
-        editBoardsGroup.style.display = 'none';
-        editAdhesivesFields.style.display = 'none';
-        editHardwareFields.style.display = 'none';
-        editToolsFields.style.display = 'block';
-        document.getElementById('edit-tool-specs').value = item.size || '';
-        document.getElementById('edit-tool-sn').value = item.description || '';
-        document.getElementById('edit-tool-status').value = item.thickness || 'شغالة / سليمة';
       } else {
         document.getElementById('edit-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
         document.getElementById('edit-size-label').innerHTML = 'المواصفات والترتيب: <span class="required-star">*</span>';
@@ -1486,7 +1371,6 @@
         editBoardsGroup.style.display = 'none';
         editAdhesivesFields.style.display = 'none';
         editHardwareFields.style.display = 'none';
-        editToolsFields.style.display = 'none';
       }
 
       document.getElementById('full-edit-modal').style.display = 'flex';
@@ -1525,10 +1409,6 @@
         payload.size = document.getElementById('edit-hw-size').value.trim();
         payload.description = document.getElementById('edit-hw-color').value.trim();
         payload.thickness = document.getElementById('edit-hw-unit').value;
-      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-        payload.size = document.getElementById('edit-tool-specs').value.trim();
-        payload.description = document.getElementById('edit-tool-sn').value.trim();
-        payload.thickness = document.getElementById('edit-tool-status').value;
       } else {
         payload.size = document.getElementById('edit-item-size-input').value.trim();
       }
@@ -1584,12 +1464,6 @@
         naturalWoodInputs.style.display = 'none';
         standardInput.style.display = 'block';
         document.getElementById('ext-qty-label').innerHTML = `الكمية المراد صرفها (بـ ${item.thickness || 'حبة'}): <span class="required-star">*</span>`;
-      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
-        panelDetailsDiv.style.display = 'block';
-        document.getElementById('ext-panel-info').value = `المواصفات: ${item.size || '-'} | الحالة: ${item.thickness || 'شغالة / سليمة'}`;
-        naturalWoodInputs.style.display = 'none';
-        standardInput.style.display = 'block';
-        document.getElementById('ext-qty-label').innerHTML = 'الكمية المراد تسليمها/صرفها: <span class="required-star">*</span>';
       } else {
         panelDetailsDiv.style.display = 'none';
         naturalWoodInputs.style.display = 'none';
