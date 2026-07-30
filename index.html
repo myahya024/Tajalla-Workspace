@@ -43,7 +43,7 @@
     .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7; }
     .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-    #main-app { display: none; padding-bottom: 80px; }
+    #main-app { display: none; padding-bottom: 30px; position: relative; min-height: calc(100vh - 50px); }
     
     /* 📌 الهيدر والعناوين في المنتصف */
     header { 
@@ -58,28 +58,29 @@
     }
     h1 { font-size: 2rem; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; margin-bottom: 12px; }
     
-    /* 🔒 زر قفل النظام العائم في الأسفل اليسار */
-    .floating-logout-btn { 
-      position: fixed;
-      bottom: 25px;
-      left: 25px;
+    /* 🔒 زر قفل النظام الثابت في الأسفل */
+    .static-logout-container {
+      margin-top: 40px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .static-logout-btn { 
       background: rgba(30, 41, 59, 0.85); 
       color: var(--text-muted); 
       border: 1px solid var(--border); 
-      padding: 10px 20px; 
-      border-radius: 30px; 
+      padding: 10px 22px; 
+      border-radius: 10px; 
       cursor: pointer; 
-      font-size: 0.85rem; 
+      font-size: 0.88rem; 
       font-weight: bold; 
-      backdrop-filter: blur(10px);
       transition: all 0.3s ease; 
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .floating-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); transform: translateY(-3px); }
+    .static-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     /* 📌 الواجهة الرئيسية والتنسيق الممركز */
     .hub-title-section { text-align: center; margin-bottom: 30px; }
@@ -89,7 +90,7 @@
       display: grid; 
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
       gap: 30px; 
-      margin-bottom: 40px; 
+      margin-bottom: 20px; 
       max-width: 1300px;
       margin-left: auto;
       margin-right: auto;
@@ -215,11 +216,6 @@
       <h1>نظام تجلى | Tajalla Operations Hub</h1>
     </header>
 
-    <!-- 🔒 زر قفل النظام (مخفي وأنيق أسفل اليسار) -->
-    <button class="floating-logout-btn" onclick="logout()">
-      <span>🔒</span> قفل النظام
-    </button>
-
     <!-- 📌 الواجهة الرئيسية: الكروت بتصميم وصور عصرية -->
     <div id="home-hub-view">
       <div class="hub-title-section">
@@ -241,7 +237,8 @@
         <!-- كارت 2: الـ Welcome Kit والعينات -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80" alt="Welcome Kits والعينات" class="card-img">
+            <!-- تم استبدال الصورة بصورة صندوق هدايا وعينات فاخر وأنيق متناسق مع الداكن -->
+            <img src="https://images.unsplash.com/photo-151388504200d-88e781622661?auto=format&fit=crop&w=600&q=80" alt="Welcome Kits والعينات" class="card-img">
             <h2 style="color: var(--gold-color);">جرد الـ Welcome Kit والعينات</h2>
             <p>إدارة حزم الترحيب المعيارية (Welcome Kits) والعينات الاعتمادية، ومتابعة مواقع تخزينها بالمستودعات وفق نظام تتبع دقيق.</p>
           </div>
@@ -388,6 +385,13 @@
           <tbody id="daily-logs-table-body"></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- 🔒 زر قفل النظام (ثابت في الأسفل وغير متحرّك مع تمرير الشاشة) -->
+    <div class="static-logout-container">
+      <button class="static-logout-btn" onclick="logout()">
+        <span>🔒</span> قفل النظام
+      </button>
     </div>
 
   </div>
