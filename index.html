@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام تجلى</title>
+  <title>نظام تجلى | Tajalla System</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -70,7 +70,7 @@
     }
     .static-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-    /* العنوان الرئيسي المباشر */
+    /* العنوان الرئيسي - عربي وإنقليزي */
     .hub-title-section { text-align: center; margin-bottom: 28px; }
     .hub-title-section h1 { font-size: 2rem; color: var(--accent); font-weight: 800; letter-spacing: 1px; }
 
@@ -106,7 +106,7 @@
     
     .card-img, .sub-card-img {
       width: 100%;
-      height: 150px;
+      height: 160px;
       object-fit: cover;
       border-radius: 10px;
       margin-bottom: 14px;
@@ -231,7 +231,7 @@
   <!-- شاشة الدخول -->
   <div id="login-overlay">
     <div class="login-box">
-      <h2>🔒 نظام تجلى</h2>
+      <h2>🔒 نظام تجلى | Tajalla System</h2>
       <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px; margin-top: 8px;">
         أدخل كلمة السر للوصول
       </p>
@@ -252,9 +252,9 @@
     <!-- الواجهة الرئيسية -->
     <div id="home-hub-view">
       
-      <!-- العنوان المطلوب بالضبط دون أي إضافات -->
+      <!-- العنوان الرئيسي بالعربي والإنجليزي -->
       <div class="hub-title-section">
-        <h1>نظام تجلى</h1>
+        <h1>نظام تجلى | Tajalla System</h1>
       </div>
       
       <div class="main-hub-grid">
@@ -273,10 +273,10 @@
           <div class="card-footer-link">استعراض أقسام المستودعات ⬅️</div>
         </div>
 
-        <!-- كارت 2: الـ Welcome Kit والعينات -->
+        <!-- كارت 2: الـ Welcome Kit والعينات (تم إصلاح الصورة) -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
-            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd34?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
+            <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
             <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit وعينات الاعتماد
               <span class="en-sub">Welcome Kits & Sample Control</span>
             </h2>
@@ -325,7 +325,7 @@
           <!-- مستودع الأخشاب - صورة خشب وألواح مؤكدة -->
           <div class="warehouse-card wood" onclick="openWoodCategories()">
             <div>
-              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الأخشاب">
+              <img src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الأخشاب">
               <h3 style="color: var(--wood-color);">🪵 مستودع الأخشاب
                 <span class="en-sub">Timber & Wood Raw Materials Warehouse</span>
               </h3>
@@ -336,10 +336,10 @@
             <div class="card-footer-link" style="color: var(--wood-color);">دخول المستودع ⬅️</div>
           </div>
 
-          <!-- مستودع الجلود - صورة لفات جلود خياطة وتصنيع مؤكدة -->
+          <!-- مستودع الجلود - صورة جلد خام تصنيع حقيقي مؤكدة -->
           <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مستودع الجلود والنسيج | Leather & Fabric Warehouse')">
             <div>
-              <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الجلود">
+              <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الجلود">
               <h3 style="color: var(--leather-color);">🥾 مستودع الجلود والنسيج
                 <span class="en-sub">Leather & Textiles Warehouse</span>
               </h3>
@@ -350,10 +350,10 @@
             <div class="card-footer-link" style="color: var(--leather-color);">دخول المستودع ⬅️</div>
           </div>
 
-          <!-- مستودع الدهانات - صورة علب دهانات وألوان حقيقية مؤكدة -->
+          <!-- مستودع الدهانات - صورة فرش وبويات وألوان حقيقية مؤكدة -->
           <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مستودع الدهانات والمواد الكيميائية | Paints & Chemicals Warehouse')">
             <div>
-              <img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الدهانات">
+              <img src="https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=800&q=80" class="sub-card-img" alt="مستودع الدهانات">
               <h3 style="color: var(--paint-color);">🎨 مستودع الدهانات والأسطح
                 <span class="en-sub">Paints & Chemical Finishes Warehouse</span>
               </h3>
@@ -377,7 +377,7 @@
         <div class="warehouse-grid">
           <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي | Solid Natural Wood')">
             <div>
-              <img src="https://images.unsplash.com/photo-1546484475-7f7bd55792da?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
+              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
               <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي
                 <span class="en-sub">Solid Natural Wood Logs</span>
               </h3>
