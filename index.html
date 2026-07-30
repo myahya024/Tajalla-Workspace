@@ -23,11 +23,11 @@
       --gold-color: #eab308;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 30px; direction: rtl; min-height: 100vh; position: relative; }
+    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; min-height: 100vh; position: relative; }
     
     /* English Subtitle Styling */
-    .en-sub { display: block; font-size: 0.82em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 4px; }
-    .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.88em; }
+    .en-sub { display: block; font-size: 0.8em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 3px; }
+    .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.85em; }
 
     /* شاشة الدخول / Login Screen */
     #login-overlay {
@@ -35,166 +35,187 @@
       background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
     }
     .login-box {
-      background: var(--card-bg); padding: 35px; border-radius: 14px; border: 1px solid var(--border);
-      text-align: center; max-width: 420px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      background: var(--card-bg); padding: 30px; border-radius: 14px; border: 1px solid var(--border);
+      text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
-    .login-box h2 { margin-bottom: 10px; color: var(--accent); font-size: 1.4rem; }
+    .login-box h2 { margin-bottom: 10px; color: var(--accent); font-size: 1.3rem; }
     .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
     .password-wrapper input {
-      width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid var(--border);
-      border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; outline: none; direction: ltr;
+      width: 100%; padding: 11px 40px 11px 11px; background: #0f172a; border: 1px solid var(--border);
+      border-radius: 8px; color: #fff; text-align: center; font-size: 1rem; outline: none; direction: ltr;
     }
-    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; opacity: 0.7; }
-    .login-box button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none; opacity: 0.7; }
+    .login-box button { width: 100%; padding: 11px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
 
-    #main-app { display: none; padding-bottom: 30px; position: relative; min-height: calc(100vh - 50px); }
+    #main-app { display: none; padding-bottom: 20px; position: relative; min-height: calc(100vh - 40px); }
     
-    /* 🔒 زر قفل النظام الثابت في الأسفل / Lock Button */
-    .static-logout-container {
-      margin-top: 50px;
+    /* 🔒 زر قفل النظام المخصص فقط للقائمة الرئيسية / Lock Button for Main Hub */
+    .hub-footer-logout {
+      margin-top: 35px;
       display: flex;
-      justify-content: flex-start;
+      justify-content: center;
     }
 
     .static-logout-btn { 
-      background: rgba(30, 41, 59, 0.85); 
-      color: var(--text-muted); 
-      border: 1px solid var(--border); 
-      padding: 12px 26px; 
-      border-radius: 12px; 
+      background: rgba(239, 68, 68, 0.1); 
+      color: var(--danger); 
+      border: 1px solid rgba(239, 68, 68, 0.3); 
+      padding: 10px 22px; 
+      border-radius: 20px; 
       cursor: pointer; 
-      font-size: 0.95rem; 
+      font-size: 0.88rem; 
       font-weight: bold; 
       transition: all 0.3s ease; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .static-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     /* 📌 الواجهة الرئيسية / Main Hub */
-    .hub-title-section { text-align: center; margin-bottom: 35px; }
-    .hub-title-section h2 { font-size: 1.5rem; color: var(--text); font-weight: 600; }
+    .hub-title-section { text-align: center; margin-bottom: 28px; }
+    .hub-title-section h2 { font-size: 1.35rem; color: var(--text); font-weight: 600; }
 
     .main-hub-grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); 
-      gap: 35px; 
-      margin-bottom: 20px; 
-      max-width: 1400px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); 
+      gap: 22px; 
+      margin-bottom: 15px; 
+      max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
     }
     .main-hub-card {
       background: var(--card-bg); 
-      border-radius: 20px; 
+      border-radius: 16px; 
       border: 1px solid var(--border); 
-      padding: 28px;
+      padding: 20px;
       cursor: pointer; 
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex; 
       flex-direction: column; 
       justify-content: space-between; 
-      min-height: 480px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+      min-height: 360px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
       overflow: hidden;
     }
     .main-hub-card:hover { 
-      transform: translateY(-10px); 
+      transform: translateY(-6px); 
       background: var(--card-hover);
       border-color: var(--accent); 
-      box-shadow: 0 22px 40px rgba(56, 189, 248, 0.2); 
+      box-shadow: 0 15px 30px rgba(56, 189, 248, 0.18); 
     }
-    .card-img {
+    
+    /* 🖼️ منع ظهور علامات الأدوات المتصفح فوق الصور / Remove lens icon */
+    .card-img, .sub-card-img {
       width: 100%;
-      height: 210px;
+      height: 150px;
       object-fit: cover;
-      border-radius: 14px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      margin-bottom: 14px;
       border: 1px solid rgba(255,255,255,0.08);
       background-color: #0f172a;
+      pointer-events: none; /* يمنع أيقونة عدسة المتصفح */
+      user-select: none;
+      -webkit-user-drag: none;
     }
-    .main-hub-card h2 { font-size: 1.5rem; margin-bottom: 12px; }
-    .main-hub-card p { font-size: 0.98rem; color: var(--text-muted); line-height: 1.65; }
+
+    .main-hub-card h2 { font-size: 1.2rem; margin-bottom: 8px; }
+    .main-hub-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
     .card-footer-link { 
-      margin-top: 22px; 
-      font-size: 1rem; 
+      margin-top: 15px; 
+      font-size: 0.9rem; 
       color: var(--accent); 
       font-weight: bold; 
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    /* شبكة المستودعات الفرعية مكبرة ومزودة بصور / Sub Warehouse Grid */
+    /* شبكة المستودعات الفرعية متناسقة / Sub Warehouse Grid */
     .warehouse-header-container {
       text-align: center;
-      margin-bottom: 35px;
+      margin-bottom: 25px;
       position: relative;
     }
     .warehouse-header-title {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       color: var(--accent);
       font-weight: 700;
-      margin-bottom: 5px;
+      margin-bottom: 3px;
     }
     .warehouse-grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-      gap: 30px; 
-      margin-bottom: 30px; 
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); 
+      gap: 22px; 
+      margin-bottom: 20px; 
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .warehouse-card { 
       background: var(--card-bg); 
-      border-radius: 18px; 
+      border-radius: 15px; 
       border: 1px solid var(--border); 
-      padding: 24px; 
+      padding: 18px; 
       cursor: pointer; 
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 420px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      min-height: 330px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
     }
-    .warehouse-card:hover { transform: translateY(-8px); background: var(--card-hover); }
-    .warehouse-card.wood { border-top: 6px solid var(--wood-color); }
-    .warehouse-card.leather { border-top: 6px solid var(--leather-color); }
-    .warehouse-card.paint { border-top: 6px solid var(--paint-color); }
-    .warehouse-card.wood-item { border-top: 6px solid var(--wood-color); }
+    .warehouse-card:hover { transform: translateY(-5px); background: var(--card-hover); }
+    .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
+    .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
+    .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
+    .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
 
-    .sub-card-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .warehouse-card h3 { font-size: 1.35rem; margin-bottom: 10px; }
-    .warehouse-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+    .warehouse-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+    .warehouse-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
     /* الأقسام المنفصلة / View Sections */
-    .section-view { display: none; margin-top: 10px; }
+    .section-view { display: none; margin-top: 5px; }
 
-    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-    .back-btn:hover { background: var(--border); }
-    .add-btn { background: var(--success); color: #fff; border: none; padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+
+    /* ✨ تصميم جديد وأنيق لزر العودة للرئيسية / Premium Back-to-Home Button */
+    .back-btn { 
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid var(--border); 
+      color: var(--accent); 
+      padding: 8px 18px; 
+      border-radius: 20px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: 0.88rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover { 
+      background: rgba(56, 189, 248, 0.15); 
+      border-color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    .add-btn { background: var(--success); color: #fff; border: none; padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
 
     /* الجدول / Tables */
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); }
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th, td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.92rem; white-space: nowrap; }
-    th { background: #111827; color: var(--accent); font-size: 1rem; }
+    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
+    th { background: #111827; color: var(--accent); font-size: 0.92rem; }
     
-    .badge { padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; }
     .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
     /* الأزرار / Buttons */
-    .action-btn { border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.88rem; margin-left: 4px; }
+    .action-btn { border: none; padding: 6px 12px; border-radius: 7px; cursor: pointer; font-weight: bold; font-size: 0.82rem; margin-left: 3px; }
     .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
     .btn-edit { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
     .btn-delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
@@ -202,18 +223,18 @@
 
     /* النوافذ المنبثقة / Modals */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 10000; }
-    .modal-card { background: var(--card-bg); width: 90%; max-width: 520px; padding: 28px; border-radius: 14px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
-    .modal-card h3 { color: var(--accent); margin-bottom: 18px; font-size: 1.25rem; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 7px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; font-size: 0.95rem; }
+    .modal-card { background: var(--card-bg); width: 90%; max-width: 500px; padding: 25px; border-radius: 14px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
+    .modal-card h3 { color: var(--accent); margin-bottom: 16px; font-size: 1.15rem; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
     .required-star { color: var(--danger); }
 
     /* 🔔 التنبيهات / Toast Notifications */
     #toast-notification {
-      position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: var(--card-bg); border: 1px solid var(--accent); color: #fff;
-      padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 0.95rem;
+      padding: 12px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99999; opacity: 0;
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); pointer-events: none; text-align: center;
     }
@@ -231,7 +252,7 @@
   <div id="login-overlay">
     <div class="login-box">
       <h2>🔒 دخول آمن للنظام <span class="en-sub">Secure System Access</span></h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">
+      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px;">
         أدخل الرقم السري للوصول للبيانات
         <span class="en-sub">Enter password to access data</span>
       </p>
@@ -240,7 +261,7 @@
         <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
       </div>
       <button onclick="checkPin()">دخول النظام / Login</button>
-      <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">
+      <p id="login-error" style="color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none;">
         الرمز السري خاطئ! <span class="en-inline">(Incorrect PIN!)</span>
       </p>
     </div>
@@ -249,7 +270,7 @@
   <!-- التطبيق الرئيسي / Main Application -->
   <div id="main-app">
 
-    <!-- 📌 الواجهة الرئيسية: الكروت بتصميم وصور معتمدة عالمياً / Main Hub View -->
+    <!-- 📌 الواجهة الرئيسية / Main Hub View -->
     <div id="home-hub-view">
       <div class="hub-title-section">
         <h2>نظام إدارة العمليات اللوجستية والمستودعات المتقدم
@@ -259,7 +280,7 @@
       
       <div class="main-hub-grid">
         
-        <!-- كارت 1: المستودعات والمواد الخام / Card 1: Raw Materials -->
+        <!-- كارت 1: المستودعات والمواد الخام -->
         <div class="main-hub-card" onclick="openRawMaterialsSection()">
           <div>
             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="المستودعات والمواد الخام" class="card-img">
@@ -267,13 +288,13 @@
               <span class="en-sub">Raw Materials Inventory Management</span>
             </h2>
             <p>نظام شامل لتتبع وإدارة المخزون الاستراتيجي للأخشاب والجلود والدهانات بأساليب الحوكمة المعتمدة والرقابة الرقمية الفورية.
-              <span class="en-sub">Comprehensive tracking and strategic inventory management for wood, leather, and chemical paints with full governance and real-time monitoring.</span>
+              <span class="en-sub">Comprehensive tracking and strategic inventory management for wood, leather, and chemical paints.</span>
             </p>
           </div>
           <div class="card-footer-link">استعراض أقسام المستودعات / Explore Warehouses ⬅️</div>
         </div>
 
-        <!-- كارت 2: الـ Welcome Kit والعينات / Card 2: Welcome Kits -->
+        <!-- كارت 2: الـ Welcome Kit والعينات -->
         <div class="main-hub-card" onclick="openWelcomeKitSection()">
           <div>
             <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80" alt="Welcome Kits والعينات" class="card-img">
@@ -281,13 +302,13 @@
               <span class="en-sub">Welcome Kits & Sample Control</span>
             </h2>
             <p>منظومة حصر وتتبع حزم الترحب المعيارية وعينات النماذج الأولية المعتمدة للمشاريع مع توثيق مواقع التخزين بدقة.
-              <span class="en-sub">Standardized kit allocation, prototype sample tracking, and precise storage location mapping for project approvals.</span>
+              <span class="en-sub">Standardized kit allocation, prototype sample tracking, and precise storage location mapping.</span>
             </p>
           </div>
           <div class="card-footer-link">استعراض سجل العينات / Explore Samples ⬅️</div>
         </div>
 
-        <!-- كارت 3: السجل والعمليات / Card 3: Daily Transactions -->
+        <!-- كارت 3: السجل والعمليات -->
         <div class="main-hub-card" onclick="openDailyTransactionsSection()">
           <div>
             <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" alt="سجل العمليات اليومية" class="card-img">
@@ -295,12 +316,19 @@
               <span class="en-sub">Daily Issuance Log & Operations Audit</span>
             </h2>
             <p>التوثيق الفوري لكافة أذونات التوريد والتصدير والصرف اليومي المرتبطة بمراكز التكلفة وأوامر التشغيل بالمصانع.
-              <span class="en-sub">Real-time audit log tracking material movements, issuance vouchers, and cost-center allocations for active projects.</span>
+              <span class="en-sub">Real-time audit log tracking material movements, issuance vouchers, and cost-center allocations.</span>
             </p>
           </div>
           <div class="card-footer-link">عرض سجل الحركة اليومية / View Operations Log ⬅️</div>
         </div>
 
+      </div>
+
+      <!-- 🔒 زر قفل النظام موجود حصرياً هنا في أسفل القائمة الرئيسية -->
+      <div class="hub-footer-logout">
+        <button class="static-logout-btn" onclick="logout()">
+          <span>🔒</span> قفل النظام / Lock System
+        </button>
       </div>
     </div>
 
@@ -311,9 +339,9 @@
       <div id="warehouse-selection-menu">
         
         <div class="warehouse-header-container">
+          <button class="back-btn" onclick="showHomeHub()" style="position: absolute; left: 0; top: 0;">⬅️ العودة للرئيسية / Home</button>
           <div class="warehouse-header-title">اختر المستودع</div>
-          <div class="en-sub" style="font-size: 1.1rem; color: var(--text-muted);">(Select Warehouse)</div>
-          <button class="back-btn" onclick="showHomeHub()" style="position: absolute; left: 0; top: 0;">⬅️ العودة للرئيسية / Back</button>
+          <div class="en-sub" style="font-size: 1rem; color: var(--text-muted);">(Select Warehouse)</div>
         </div>
 
         <div class="warehouse-grid">
@@ -325,7 +353,7 @@
                 <span class="en-sub">Timber & Wood Raw Materials Warehouse</span>
               </h3>
               <p>سجل مخزون الأخشاب الطبيعية، المسطحات والألواح، المواد اللاصقة، الحدايد والإكسسوارات والمعدات.
-                <span class="en-sub">Inventory records for solid timber, panel sheets, adhesive compounds, hardware fittings, and machinery.</span>
+                <span class="en-sub">Solid timber, panel sheets, adhesive compounds, hardware fittings, and machinery.</span>
               </p>
             </div>
             <div class="card-footer-link" style="color: var(--wood-color);">دخول المستودع / Access Warehouse ⬅️</div>
@@ -338,7 +366,7 @@
                 <span class="en-sub">Leather & Textiles Warehouse</span>
               </h3>
               <p>إدارة مخزون الجلود الطبيعية والصناعية، درجات الألوان، السماكة، اللفات بالأمتار وأقمشة التبطين.
-                <span class="en-sub">Full management of natural and synthetic leathers, color gradients, thickness specs, and fabric rolls.</span>
+                <span class="en-sub">Natural and synthetic leathers, color gradients, thickness specs, and fabric rolls.</span>
               </p>
             </div>
             <div class="card-footer-link" style="color: var(--leather-color);">دخول المستودع / Access Warehouse ⬅️</div>
@@ -351,7 +379,7 @@
                 <span class="en-sub">Paints & Chemical Finishes Warehouse</span>
               </h3>
               <p>متابعة مواد الدهان، الأساسيات الكيميائية، الأكواد العالمية (RAL/NCS)، المذيبات والطبقات السطحية.
-                <span class="en-sub">Chemical paint stock control, international color codes (RAL/NCS), thinners, and protective coatings.</span>
+                <span class="en-sub">Chemical paint stock control, international color codes (RAL/NCS), and thinners.</span>
               </p>
             </div>
             <div class="card-footer-link" style="color: var(--paint-color);">دخول المستودع / Access Warehouse ⬅️</div>
@@ -363,9 +391,8 @@
       <!-- قائمة تصنيفات الخشب الفرعية / Wood Sub-Categories Menu -->
       <div id="wood-categories-menu" style="display: none;">
         <div class="sub-header">
+          <h2 style="color: var(--wood-color); font-size: 1.25rem;">🪵 تصنيفات مستودع الأخشاب <span class="en-inline">(Wood Warehouse Categories)</span></h2>
           <button class="back-btn" onclick="backToMainWarehouses()">⬅️ العودة للمستودعات / Back</button>
-          <h2 style="color: var(--wood-color); font-size: 1.4rem;">🪵 تصنيفات مستودع الأخشاب <span class="en-inline">(Wood Warehouse Categories)</span></h2>
-          <div></div>
         </div>
 
         <div class="warehouse-grid">
@@ -412,7 +439,7 @@
                 <span class="en-sub">Hardware Fittings & Accessories</span>
               </h3>
               <p>المفصلات، مجاري الأدراج، السكك، والمقابض.
-                <span class="en-sub">Hinges, drawer slides, screws, and architectural handles.</span>
+                <span class="en-sub">Hinges, drawer slides, screws, and handles.</span>
               </p>
             </div>
           </div>
@@ -424,7 +451,7 @@
                 <span class="en-sub">Machinery Tools & Spare Parts</span>
               </h3>
               <p>ريش القص، أقراص المنشار، أدوات الصيانة.
-                <span class="en-sub">Saw blades, CNC router bits, and carpentry power tools.</span>
+                <span class="en-sub">Saw blades, CNC router bits, and carpentry tools.</span>
               </p>
             </div>
           </div>
@@ -435,9 +462,11 @@
       <!-- الجدول الديناميكي / Dynamic Materials Table -->
       <div id="sub-warehouse-container" style="display: none;">
         <div class="sub-header">
-          <button class="back-btn" onclick="backFromTable()">⬅️ رجوع / Back</button>
           <h2 id="current-warehouse-title">المستودع / Warehouse</h2>
-          <button class="add-btn" onclick="openAddModal()">+ إضافة صنف جديد / Add Item</button>
+          <div style="display: flex; gap: 10px;">
+            <button class="add-btn" onclick="openAddModal()">+ إضافة صنف جديد / Add Item</button>
+            <button class="back-btn" onclick="backFromTable()">⬅️ رجوع / Back</button>
+          </div>
         </div>
 
         <div class="table-container">
@@ -455,9 +484,11 @@
     <!-- 2. قسم الـ Welcome Kit والعينات / 2. Welcome Kit & Samples Section -->
     <div id="general-inventory-section" class="section-view">
       <div class="sub-header">
-        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back to Home</button>
-        <h2 style="font-size: 1.3rem; color: var(--gold-color);">جرد الـ Welcome Kit والعينات الاعتمادية <span class="en-inline">(Welcome Kits & Samples Inventory)</span></h2>
-        <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة / Add Kit</button>
+        <h2 style="font-size: 1.2rem; color: var(--gold-color);">جرد الـ Welcome Kit والعينات الاعتمادية <span class="en-inline">(Welcome Kits & Samples Inventory)</span></h2>
+        <div style="display: flex; gap: 10px;">
+          <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة / Add Kit</button>
+          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Home</button>
+        </div>
       </div>
       <div class="table-container">
         <table>
@@ -481,9 +512,11 @@
     <!-- 3. قسم سجل العمليات اليومية / 3. Daily Log Section -->
     <div id="daily-transactions-section" class="section-view">
       <div class="sub-header">
-        <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Back to Home</button>
-        <h2 style="font-size: 1.3rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية <span class="en-inline">(Daily Issuance & Dispatch Log)</span></h2>
-        <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل / Refresh Log</button>
+        <h2 style="font-size: 1.2rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية <span class="en-inline">(Daily Issuance & Dispatch Log)</span></h2>
+        <div style="display: flex; gap: 10px;">
+          <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث السجل / Refresh</button>
+          <button class="back-btn" onclick="showHomeHub()">⬅️ العودة للرئيسية / Home</button>
+        </div>
       </div>
       <div class="table-container">
         <table>
@@ -501,13 +534,6 @@
           <tbody id="daily-logs-table-body"></tbody>
         </table>
       </div>
-    </div>
-
-    <!-- 🔒 زر قفل النظام الثابت في الأسفل / Lock System Button -->
-    <div class="static-logout-container">
-      <button class="static-logout-btn" onclick="logout()">
-        <span>🔒</span> قفل النظام / Lock System
-      </button>
     </div>
 
   </div>
@@ -540,7 +566,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmFullEdit()">حفظ التعديلات / Save 💾</button>
-        <button class="back-btn" style="flex:1;" onclick="closeModal('full-edit-modal')">إلغاء / Cancel</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('full-edit-modal')">إلغاء / Cancel</button>
       </div>
     </div>
   </div>
@@ -573,7 +599,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmAddItem()">تأكيد الإضافة / Add ✨</button>
-        <button class="back-btn" style="flex:1;" onclick="closeModal('add-modal')">إلغاء / Cancel</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('add-modal')">إلغاء / Cancel</button>
       </div>
     </div>
   </div>
@@ -621,7 +647,7 @@
 
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد واستخراج / Dispatch 📤</button>
-        <button class="back-btn" style="flex:1;" onclick="closeModal('extract-modal')">إلغاء / Cancel</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('extract-modal')">إلغاء / Cancel</button>
       </div>
     </div>
   </div>
@@ -630,14 +656,14 @@
   <div id="delete-modal" class="modal-overlay">
     <div class="modal-card" style="border-color: var(--danger);">
       <h3 style="color: var(--danger);">🗑️ تأكيد حذف الصنف <span class="en-sub">Confirm Item Deletion</span></h3>
-      <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">
+      <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.88rem;">
         هل أنت تأكد من رغبتك في حذف هذا الصنف نهائياً من قاعدة البيانات أونلاين؟
         <span class="en-sub">Are you sure you want to permanently delete this item from online database?</span>
       </p>
       <input type="hidden" id="delete-id">
       <div style="display: flex; gap: 10px;">
         <button class="action-btn btn-delete" style="flex:1; padding: 10px; justify-content: center;" onclick="confirmDelete()">نعم، احذف / Yes, Delete 🗑️</button>
-        <button class="back-btn" style="flex:1;" onclick="closeModal('delete-modal')">إلغاء / Cancel</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('delete-modal')">إلغاء / Cancel</button>
       </div>
     </div>
   </div>
@@ -652,25 +678,23 @@
 
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
-    let currentView = 'home'; // لتتبع الصفحة الحالية لدعم زر Backspace
+    let currentView = 'home';
 
     window.onload = function() { checkExistingSession(); };
 
     // ⌨️ استماع لضغط زر Backspace في الكيبورد للرجوع للخلف
     window.addEventListener('keydown', function(event) {
       if (event.key === 'Backspace') {
-        // تأكد من أن المستخدم لا يكتب حالياً داخل حقل إدخال نصي
         const activeElem = document.activeElement;
         const isInputField = activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA' || activeElem.tagName === 'SELECT');
         
         if (!isInputField) {
-          event.preventDefault(); // منع الصفحة من السلوك الافتراضي المتصفح
+          event.preventDefault();
           navigateBackSmartly();
         }
       }
     });
 
-    // دالة الذكاء في التنقل للرجوع بالـ Backspace
     function navigateBackSmartly() {
       if (document.getElementById('sub-warehouse-container').style.display === 'block') {
         backFromTable();
@@ -834,7 +858,7 @@
         tr.innerHTML = `
           <td><strong>${titleName}</strong></td>
           <td>${sizeInfo}</td>
-          <td><strong style="color:var(--accent); font-size:1.1rem;">${qty}</strong></td>
+          <td><strong style="color:var(--accent); font-size:1.05rem;">${qty}</strong></td>
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
           <td style="text-align: center;">
