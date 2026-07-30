@@ -2,348 +2,1757 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>نظام إدارة المخزون والمعدات</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام تجلى | Tajalla System</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0d1117;
-      color: #c9d1d9;
-      margin: 0;
-      padding: 20px;
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151e32;
+      --card-hover: #1c2945;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #23324d;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --wood-color: #fbbf24;
+      --leather-color: #c084fc;
+      --paint-color: #f472b6;
+      --gold-color: #eab308;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; min-height: 100vh; position: relative; }
+    
+    .en-sub { display: block; font-size: 0.8em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 3px; }
+    .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.85em; }
+
+    #login-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
+    }
+    .login-box {
+      background: var(--card-bg); padding: 30px; border-radius: 14px; border: 1px solid var(--border);
+      text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .login-box h2 { margin-bottom: 10px; color: var(--accent); font-size: 1.3rem; }
+    .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+    .password-wrapper input {
+      width: 100%; padding: 11px 40px 11px 11px; background: #0f172a; border: 1px solid var(--border);
+      border-radius: 8px; color: #fff; text-align: center; font-size: 1rem; outline: none; direction: ltr;
+    }
+    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none; opacity: 0.7; }
+    .login-box button { width: 100%; padding: 11px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+
+    #main-app { display: none; padding-bottom: 20px; position: relative; min-height: calc(100vh - 40px); }
+    .hub-footer-logout { margin-top: 35px; display: flex; justify-content: center; }
+
+    .static-logout-btn { 
+      background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); 
+      padding: 10px 22px; border-radius: 20px; cursor: pointer; font-size: 0.88rem; font-weight: bold; 
+      transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .static-logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    .hub-title-section { text-align: center; margin-bottom: 28px; }
+    .hub-title-section h1 { font-size: 2rem; color: var(--accent); font-weight: 800; letter-spacing: 1px; }
+
+    .main-hub-grid { 
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); 
+      gap: 22px; margin-bottom: 15px; max-width: 1200px; margin-left: auto; margin-right: auto;
+    }
+    .main-hub-card {
+      background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); padding: 20px;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column; justify-content: space-between; min-height: 360px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35); overflow: hidden;
+    }
+    .main-hub-card:hover { 
+      transform: translateY(-6px); background: var(--card-hover);
+      border-color: var(--accent); box-shadow: 0 15px 30px rgba(56, 189, 248, 0.18); 
+    }
+    
+    .card-img, .sub-card-img {
+      width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,0.08); background-color: #0f172a; pointer-events: none; user-select: none;
     }
 
-    /* تنسيق النصوص ثنائية اللغة */
-    .bilingual-label {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
+    .main-hub-card h2 { font-size: 1.2rem; margin-bottom: 8px; }
+    .main-hub-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+    .card-footer-link { margin-top: 15px; font-size: 0.9rem; color: var(--accent); font-weight: bold; display: flex; align-items: center; gap: 6px; }
 
-    .lang-ar {
-      font-size: 14px;
-      font-weight: 600;
-      color: #c9d1d9;
+    .warehouse-header-container { text-align: center; margin-bottom: 25px; position: relative; }
+    .warehouse-header-title { font-size: 1.4rem; color: var(--accent); font-weight: 700; margin-bottom: 3px; }
+    .warehouse-grid { 
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); 
+      gap: 22px; margin-bottom: 20px; max-width: 1200px; margin-left: auto; margin-right: auto;
     }
-
-    .lang-en {
-      font-size: 11px;
-      color: #8b949e;
-      margin-top: 2px;
-      direction: ltr;
-      text-align: left;
+    .warehouse-card { 
+      background: var(--card-bg); border-radius: 15px; border: 1px solid var(--border); padding: 18px; 
+      cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 330px; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
     }
+    .warehouse-card:hover { transform: translateY(-5px); background: var(--card-hover); }
+    .warehouse-card.wood { border-top: 5px solid var(--wood-color); }
+    .warehouse-card.leather { border-top: 5px solid var(--leather-color); }
+    .warehouse-card.paint { border-top: 5px solid var(--paint-color); }
+    .warehouse-card.wood-item { border-top: 5px solid var(--wood-color); }
 
-    /* الجدول الرئيسي */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      overflow: hidden;
+    .warehouse-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+    .warehouse-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+    .section-view { display: none; margin-top: 5px; }
+    .sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+
+    .back-btn { 
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--accent); 
+      padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.88rem;
+      backdrop-filter: blur(8px); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px;
     }
+    .back-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); transform: translateX(3px); }
 
-    .data-table th, .data-table td {
-      padding: 12px 15px;
-      text-align: center;
-      border-bottom: 1px solid #30363d;
+    .add-btn { background: var(--success); color: #fff; border: none; padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+    .print-btn { background: var(--accent); color: #0b0f19; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s ease; }
+    .print-btn:hover { background: #0284c7; color: #fff; }
+
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; text-align: right; }
+    th, td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.88rem; white-space: nowrap; }
+    th { background: #111827; color: var(--accent); font-size: 0.92rem; }
+    
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; display: inline-block; }
+    .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .badge-info { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
+
+    .action-btn { border: none; padding: 6px 12px; border-radius: 7px; cursor: pointer; font-weight: bold; font-size: 0.82rem; margin-left: 3px; }
+    .btn-extract { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .btn-extract:disabled { opacity: 0.4; cursor: not-allowed; border-color: #475569; color: #94a3b8; }
+    .btn-edit { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+    .btn-delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 10000; }
+    .modal-card { background: var(--card-bg); width: 90%; max-width: 520px; padding: 25px; border-radius: 14px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
+    .modal-card h3 { color: var(--accent); margin-bottom: 16px; font-size: 1.15rem; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
+    .form-group input[readonly] { background: #0b1329; border-color: var(--accent); color: var(--accent); font-weight: bold; }
+    .required-star { color: var(--danger); font-weight: bold; }
+
+    #toast-notification {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: var(--card-bg); border: 1px solid var(--accent); color: #fff;
+      padding: 12px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99999; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); cursor: pointer; text-align: center;
     }
+    #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast-notification.success { border-color: var(--success); color: var(--success); }
+    #toast-notification.error { border-color: var(--danger); color: var(--danger); }
 
-    .data-table th {
-      background-color: #21262d;
-      color: #58a6ff;
+    /* أنماط الطباعة وحفظ PDF */
+    @media print {
+      body { background-color: #fff !important; color: #000 !important; padding: 0 !important; }
+      #login-overlay, .sub-header button, .hub-footer-logout, .back-btn, .add-btn, .print-btn, .action-btn { display: none !important; }
+      #main-app, #daily-transactions-section, .table-container { display: block !important; border: none !important; box-shadow: none !important; }
+      .table-container { overflow: visible !important; }
+      table { width: 100% !important; border: 1px solid #333 !important; }
+      th, td { border: 1px solid #333 !important; color: #000 !important; padding: 8px !important; font-size: 0.8rem !important; }
+      th { background-color: #f2f2f2 !important; }
+      .badge { border: 1px solid #000 !important; color: #000 !important; background: none !important; }
+      .en-sub { color: #555 !important; }
+      .print-title { display: block !important; text-align: center; margin-bottom: 15px; }
     }
-
-    /* الحالات */
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .status-available { background-color: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid #238636; }
-    .status-low { background-color: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #9e6a03; }
-    .status-out { background-color: rgba(248, 81, 73, 0.2); color: #f85149; border: 1px solid #da3633; }
-
-    /* النوافذ المنبثقة */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      width: 480px;
-      max-width: 95%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      padding: 22px;
-      box-sizing: border-box;
-    }
-
-    .modal-header {
-      border: 1px solid #1f6feb;
-      background: rgba(31, 111, 235, 0.1);
-      color: #58a6ff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .required-asterisk {
-      color: #f85149;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 10px 12px;
-      background-color: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      color: #c9d1d9;
-      font-size: 13px;
-      box-sizing: border-box;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .form-control:focus {
-      border-color: #58a6ff;
-    }
-
-    select.form-control option {
-      background-color: #161b22;
-      color: #c9d1d9;
-      padding: 8px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 25px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-submit {
-      background-color: #238636;
-      color: #ffffff;
-    }
-
-    .btn-submit:hover {
-      background-color: #2ea043;
-    }
-
-    .btn-cancel {
-      background-color: #21262d;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-    }
-
-    .btn-cancel:hover {
-      background-color: #30363d;
-    }
+    .print-title { display: none; }
   </style>
 </head>
 <body>
 
-  <!-- جدول عرض الخشب الطبيعي -->
-  <h2>
-    <span class="lang-ar">🌲 الخشب الطبيعي</span>
-    <span class="lang-en">Solid Natural Wood</span>
-  </h2>
+  <div id="toast-notification" onclick="handleToastClick()"></div>
 
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">نوع الخشب</span>
-            <span class="lang-en">Wood Type</span>
-          </div>
-        </th>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">الكمية بالتكعيب (cm³)</span>
-            <span class="lang-en">Volume (cm³)</span>
-          </div>
-        </th>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">عدد الألواح</span>
-            <span class="lang-en">Boards Count</span>
-          </div>
-        </th>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">موقع التخزين</span>
-            <span class="lang-en">Storage Location</span>
-          </div>
-        </th>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">الحالة</span>
-            <span class="lang-en">Status</span>
-          </div>
-        </th>
-        <th>
-          <div class="bilingual-label">
-            <span class="lang-ar">الإجراءات</span>
-            <span class="lang-en">Actions</span>
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>خشب زان</td>
-        <td>150 cm³</td>
-        <td>4 لوح</td>
-        <td>مستودع A1</td>
-        <td>
-          <!-- تنبيه آلي: لأن عدد الألواح أقل من أو يساوي 5 -->
-          <span class="status-badge status-low">
-            <span>قارب على النفاد</span>
-            <span class="lang-en">Running Low</span>
-          </span>
-        </td>
-        <td>
-          <button class="btn btn-submit" style="padding: 4px 8px; font-size: 12px; display: inline-flex;">
-            <span>صرف</span>
-            <span class="lang-en">Dispatch</span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <br><hr><br>
-
-  <!-- نافذة صرف الخشب (مثال موحد للنماذج مع إيقاف الاقتراحات وإلزامية الحقول) -->
-  <div class="modal-overlay">
-    <div class="modal-card">
-      
-      <div class="modal-header">
-        <div class="bilingual-label" style="align-items: center;">
-          <span class="lang-ar">إذن صرف صنف</span>
-          <span class="lang-en">Dispatch Voucher</span>
-        </div>
+  <!-- شاشة الدخول -->
+  <div id="login-overlay">
+    <div class="login-box">
+      <h2>🔒 نظام تجلى | Tajalla System</h2>
+      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px; margin-top: 8px;">أدخل كلمة السر للوصول</p>
+      <div class="password-wrapper">
+        <input type="password" id="pin-input" onkeydown="if(event.key==='Enter') checkPin()">
+        <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
       </div>
-
-      <form id="dispatchForm" autocomplete="off">
-        
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">رقم أمر التشغيل / المشروع: <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Work Order / Project No.:</span>
-          </label>
-          <input type="text" class="form-control" name="work_order" autocomplete="off" required>
-        </div>
-
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">اسم المسؤول عن الصرف: <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Issuer Name:</span>
-          </label>
-          <input type="text" class="form-control" name="issuer_name" autocomplete="off" required>
-        </div>
-
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">اسم المستلم / القسم: <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Recipient Name / Dept:</span>
-          </label>
-          <input type="text" class="form-control" name="recipient_name" autocomplete="off" required>
-        </div>
-
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">عدد الألواح المراد صرفها: <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Boards Count To Dispatch:</span>
-          </label>
-          <input type="number" class="form-control" name="boards_count" autocomplete="off" required>
-        </div>
-
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">الكمية بالتكعيب (cm³): <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Volume To Dispatch (cm³):</span>
-          </label>
-          <input type="number" step="any" class="form-control" name="volume_cm3" autocomplete="off" required>
-        </div>
-
-        <div class="form-group">
-          <label class="bilingual-label">
-            <span class="lang-ar">سبب / الغرض من الصرف: <span class="required-asterisk">*</span></span>
-            <span class="lang-en">Dispatch Reason / Purpose:</span>
-          </label>
-          <select class="form-control" name="dispatch_reason" autocomplete="off" required>
-            <option value="" disabled selected>-- اختر السبب / Select Reason --</option>
-            <option value="تصنيع مشروع">🔨 تصنيع مشروع | Project Manufacturing</option>
-            <option value="تصنيع عينة">🧪 تصنيع عينة | Sample Fabrication</option>
-            <option value="إصلاح / صيانة">🛠️ إصلاح / صيانة | Repair / Maintenance</option>
-            <option value="خرجت لموقع عمل / مشروع">🚚 خرجت لموقع عمل | Dispatched to Worksite</option>
-            <option value="إعارة مؤقتة">🔄 إعارة مؤقتة | Temporary Loan</option>
-            <option value="حدث / Event">🎉 حدث | Event Use</option>
-            <option value="تالف أو هالك">⚠️ تالف أو هالك | Scrapped / Damaged</option>
-          </select>
-        </div>
-
-        <!-- أزرار التحكم -->
-        <div class="modal-actions">
-          <button type="submit" class="btn btn-submit">
-            <span class="lang-ar">تأكيد والصرف</span>
-            <span class="lang-en">Confirm & Dispatch</span>
-          </button>
-          <button type="button" class="btn btn-cancel">
-            <span class="lang-ar">إلغاء</span>
-            <span class="lang-en">Cancel</span>
-          </button>
-        </div>
-
-      </form>
-
+      <button onclick="checkPin()">دخول</button>
+      <p id="login-error" style="color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none;">كلمة السر خاطئة!</p>
     </div>
   </div>
 
+  <!-- التطبيق الرئيسي -->
+  <div id="main-app">
+
+    <!-- الواجهة الرئيسية -->
+    <div id="home-hub-view">
+      <div class="hub-title-section">
+        <h1>نظام تجلى | Tajalla System</h1>
+      </div>
+      
+      <div class="main-hub-grid">
+        <div class="main-hub-card" onclick="openRawMaterialsSection()">
+          <div>
+            <img src="https://i.postimg.cc/NMk0DhR8/mstwdʿat.jpg" alt="المستودعات والمواد الخام" class="card-img">
+            <h2 style="color: var(--accent);">إدارة مستودعات المواد الخام
+              <span class="en-sub">Raw Materials Inventory Management</span>
+            </h2>
+            <p>تتبع وإدارة مخزون الأخشاب والجلود والدهانات بأساليب الحوكمة والرقابة الرقمية.</p>
+          </div>
+          <div class="card-footer-link">استعراض أقسام المستودعات ⬅️</div>
+        </div>
+
+        <div class="main-hub-card" onclick="openWelcomeKitSection()">
+          <div>
+            <img src="https://i.postimg.cc/Dyj8RKRn/wylkm-kt.webp" alt="Welcome Kits والعينات" class="card-img">
+            <h2 style="color: var(--gold-color);">إدارة الـ Welcome Kit والمخزون وعينات الاعتماد
+              <span class="en-sub">Welcome Kits, Inventory & Sample Control</span>
+            </h2>
+            <p>تتبع حزم الترحيب والمخزون وعينات النماذج الأولية المعتمدة للمشاريع.</p>
+          </div>
+          <div class="card-footer-link">استعراض سجل العينات والمخزون ⬅️</div>
+        </div>
+
+        <div class="main-hub-card" onclick="openDailyTransactionsSection()">
+          <div>
+            <img src="https://i.postimg.cc/FHksqkjd/ʿmlyat.webp" alt="سجل العمليات اليومية" class="card-img">
+            <h2 style="color: var(--wood-color);">سجل الحركة اللوجستية وأذونات الصرف
+              <span class="en-sub">Daily Issuance Log & Operations Audit</span>
+            </h2>
+            <p>التوثيق الفوري لكافة أذونات التوريد والتصدير والصرف اليومي.</p>
+          </div>
+          <div class="card-footer-link">عرض سجل الحركة اليومية ⬅️</div>
+        </div>
+      </div>
+
+      <div class="hub-footer-logout">
+        <button class="static-logout-btn" onclick="logout()"><span>🔒</span> قفل النظام</button>
+      </div>
+    </div>
+
+    <!-- 1. قسم مواد خام المستودعات -->
+    <div id="raw-materials-section" class="section-view">
+      <div id="warehouse-selection-menu">
+        <div class="warehouse-header-container">
+          <button class="back-btn" onclick="showHomeHub()" style="position: absolute; left: 0; top: 0;">⬅️ الرئيسية</button>
+          <div class="warehouse-header-title">اختر المستودع</div>
+          <div class="en-sub" style="font-size: 1rem; color: var(--text-muted);">(Select Warehouse)</div>
+        </div>
+
+        <div class="warehouse-grid">
+          <div class="warehouse-card wood" onclick="openWoodCategories()">
+            <div>
+              <img src="https://i.postimg.cc/QCjFZNXC/akhshab.webp" class="sub-card-img" alt="مستودع الأخشاب">
+              <h3 style="color: var(--wood-color);">🪵 مستودع الأخشاب<span class="en-sub">Timber & Wood Warehouse</span></h3>
+              <p>سجل الأخشاب الطبيعية، المسطحات، الغراء، الحدايد والمعدات.</p>
+            </div>
+            <div class="card-footer-link" style="color: var(--wood-color);">دخول المستودع ⬅️</div>
+          </div>
+
+          <div class="warehouse-card leather" onclick="openSubWarehouse('leather', 'all', '🥾 مستودع الجلود والنسيج | Leather & Fabric Warehouse')">
+            <div>
+              <img src="https://i.postimg.cc/SN3mWQwy/jlwd-waqmsht.webp" class="sub-card-img" alt="مستودع الجلود">
+              <h3 style="color: var(--leather-color);">🥾 مستودع الجلود والنسيج<span class="en-sub">Leather & Textiles Warehouse</span></h3>
+              <p>إدارة مخزون الجلود الطبيعية والصناعية وأقمشة التبطين.</p>
+            </div>
+            <div class="card-footer-link" style="color: var(--leather-color);">دخول المستودع ⬅️</div>
+          </div>
+
+          <div class="warehouse-card paint" onclick="openSubWarehouse('paint', 'all', '🎨 مستودع الدهانات والأسطح | Paints & Chemicals Warehouse')">
+            <div>
+              <img src="https://i.postimg.cc/g2236sbj/bwyt.jpg" class="sub-card-img" alt="مستودع الدهانات">
+              <h3 style="color: var(--paint-color);">🎨 مستودع الدهانات والأسطح<span class="en-sub">Paints & Chemical Warehouse</span></h3>
+              <p>متابعة مواد الدهان، الأساسيات الكيميائية والمذيبات.</p>
+            </div>
+            <div class="card-footer-link" style="color: var(--paint-color);">دخول المستودع ⬅️</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- تصنيفات الخشب الفرعية -->
+      <div id="wood-categories-menu" style="display: none;">
+        <div class="sub-header">
+          <h2 style="color: var(--wood-color); font-size: 1.25rem;">🪵 تصنيفات مستودع الأخشاب <span class="en-inline">(Wood Categories)</span></h2>
+          <button class="back-btn" onclick="backToMainWarehouses()">⬅️ رجوع</button>
+        </div>
+
+        <div class="warehouse-grid">
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'natural_wood', '🌲 الخشب الطبيعي | Solid Natural Wood')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
+              <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي<span class="en-sub">Solid Natural Wood Logs</span></h3>
+              <p>سجل الأخشاب الصلبة، التكعيب بـ (m³) وعدد الألواح.</p>
+            </div>
+          </div>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'panels', '📐 المسطحات والألواح | Wood Panels & Sheets')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المسطحات والألواح">
+              <h3 style="color: var(--wood-color);">📐 المسطحات والألواح<span class="en-sub">Wood Panels & Composite Sheets</span></h3>
+              <p>ألواح MDF، الأبلكاش والميلامين بمقاسات ستاندر وجامبو.</p>
+            </div>
+          </div>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'adhesives', '🧪 المواد اللاصقة والغراء | Adhesives & Glues')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المواد اللاصقة">
+              <h3 style="color: var(--wood-color);">🧪 المواد اللاصقة والغراء<span class="en-sub">Industrial Adhesives & Glues</span></h3>
+              <p>غراء الخشب، الباتكس، السوبر قلو والسيليكون.</p>
+            </div>
+          </div>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'hardware', '🔩 الحدايد والإكسسوارات | Hardware & Accessories')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الحدايد">
+              <h3 style="color: var(--wood-color);">🔩 الحدايد والإكسسوارات<span class="en-sub">Hardware Fittings & Fasteners</span></h3>
+              <p>مسامير، مفصلات، مجاري أدراج، ودبابيس كافة الأنواع بالمقاس والألوان.</p>
+            </div>
+          </div>
+
+          <div class="warehouse-card wood-item" onclick="openSubWarehouse('wood', 'tools', '🛠️ المعدات وأدوات الورشة | Tools & Workshop Equipment')">
+            <div>
+              <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="المعدات">
+              <h3 style="color: var(--wood-color);">🛠️ المعدات وأدوات الورشة<span class="en-sub">Machinery, Power Tools & Hand Tools</span></h3>
+              <p>معدات التشغيل بالورشة ومخزون الآلات والدباسات والمناشير وصيانتها.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- الجدول الديناميكي -->
+      <div id="sub-warehouse-container" style="display: none;">
+        <div class="sub-header">
+          <h2 id="current-warehouse-title">المستودع</h2>
+          <div style="display: flex; gap: 10px;">
+            <button class="add-btn" onclick="openAddModal('materials')">+ إضافة صنف جديد</button>
+            <button class="back-btn" onclick="backFromTable()">⬅️ رجوع</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr id="table-headers-row"></tr>
+            </thead>
+            <tbody id="materials-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. قسم الـ Welcome Kit -->
+    <div id="general-inventory-section" class="section-view">
+      <div class="sub-header">
+        <h2 style="font-size: 1.2rem; color: var(--gold-color);">إدارة الـ Welcome Kit والمخزون وعينات الاعتماد <span class="en-inline">(Welcome Kits, Inventory & Samples)</span></h2>
+        <div style="display: flex; gap: 10px;">
+          <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة</button>
+          <button class="back-btn" onclick="showHomeHub()">⬅️ الرئيسية</button>
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>كود الصنف<br><span class="en-sub">SKU Code</span></th>
+              <th>المشروع / العميل<br><span class="en-sub">Project / Client</span></th>
+              <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
+              <th>التفاصيل وخامة الصنع<br><span class="en-sub">Details & Material</span></th>
+              <th>الكمية<br><span class="en-sub">Quantity</span></th>
+              <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+              <th>الحالة<br><span class="en-sub">Status</span></th>
+              <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="welcome-kit-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. قسم سجل العمليات اليومية -->
+    <div id="daily-transactions-section" class="section-view">
+      <div class="print-title">
+        <h2>نظام تجلى | Tajalla System</h2>
+        <h3>تقرير سجل حركة عمليات الصرف والتصدير اليومية</h3>
+        <hr style="margin: 10px 0;">
+      </div>
+      <div class="sub-header">
+        <h2 style="font-size: 1.2rem; color: var(--accent);">📋 سجل حركة عمليات الصرف والتصدير اليومية <span class="en-inline">(Daily Issuance Log)</span></h2>
+        <div style="display: flex; gap: 10px;">
+          <button class="print-btn" onclick="window.print()">🖨️ طباعة / تصدير PDF</button>
+          <button class="back-btn" onclick="fetchDailyLogs()">🔄 تحديث</button>
+          <button class="back-btn" onclick="showHomeHub()">⬅️ الرئيسية</button>
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ والوقت<br><span class="en-sub">Date & Time</span></th>
+              <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
+              <th>الكمية المستخرجة<br><span class="en-sub">Issued Qty</span></th>
+              <th>المسؤول عن الصرف<br><span class="en-sub">Issued By</span></th>
+              <th>المستلم / الجهة<br><span class="en-sub">Recipient</span></th>
+              <th>رقم الأمر / المشروع<br><span class="en-sub">WO / Project No.</span></th>
+              <th>الغرض والتفاصيل<br><span class="en-sub">Purpose & Details</span></th>
+            </tr>
+          </thead>
+          <tbody id="daily-logs-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ✏️ Modal التعديل -->
+  <div id="full-edit-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>✏️ تعديل بيانات الصنف <span class="en-sub">Edit Item Data</span></h3>
+      <input type="hidden" id="edit-item-id">
+      
+      <div class="form-group">
+        <label id="edit-title-label">اسم الصنف: <span class="required-star">*</span></label>
+        <input type="text" id="edit-item-title" required>
+      </div>
+
+      <!-- مدخلات مخصصة للمعدات والأدوات -->
+      <div id="edit-tools-fields" style="display: none;">
+        <div class="form-group">
+          <label>المواصفات والماركة (مثل: Makita 1200W, DeWalt 18V, Stanley):</label>
+          <input type="text" id="edit-tool-specs" placeholder="المواصفات الفنية أو الماركة">
+        </div>
+        <div class="form-group">
+          <label>الرقم التسلسلي / كود المعدة (Serial No. / Tag ID):</label>
+          <input type="text" id="edit-tool-sn" placeholder="مثل: SN-90821">
+        </div>
+        <div class="form-group">
+          <label>حالة التشغيل وصلاحية المعدة: <span class="required-star">*</span></label>
+          <select id="edit-tool-status">
+            <option value="شغالة / سليمة">🟢 شغالة / سليمة (Operational)</option>
+            <option value="تحتاج صيانة">🟡 تحتاج صيانة (Under Maintenance)</option>
+            <option value="تالفة / خارج الخدمة">🔴 تالفة / خارج الخدمة (Out of Service)</option>
+            <option value="مخزون جديد">🔵 مخزون جديد (New In Stock)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- مدخلات مخصصة للحدايد والإكسسوارات العالمية -->
+      <div id="edit-hardware-fields" style="display: none;">
+        <div class="form-group">
+          <label>المواصفات القياسية والمقاس (مثال: M4x30mm, 4 بوصة, 18Ga 15mm):</label>
+          <input type="text" id="edit-hw-size" placeholder="أدخل المقاس أو الكود العالمي">
+        </div>
+        <div class="form-group">
+          <label>اللون والتشطيب (Finish / Color):</label>
+          <input type="text" id="edit-hw-color" placeholder="مثال: ذهبي، فضي، أسود مطفي، استيل">
+        </div>
+        <div class="form-group">
+          <label>وحدة التعبئة القياسية:</label>
+          <select id="edit-hw-unit">
+            <option value="علبة">علبة (Box)</option>
+            <option value="حبة">حبة (Piece)</option>
+            <option value="كرتون">كرتون (Carton)</option>
+            <option value="باكت">باكت (Pack)</option>
+            <option value="طقم">طقم (Set)</option>
+            <option value="زوج">زوج (Pair)</option>
+            <option value="كجم">كجم (KG)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- مدخلات مخصصة للغراء واللاصق -->
+      <div id="edit-adhesives-fields" style="display: none;">
+        <div class="form-group">
+          <label>الوصف / الماركة / النوع:</label>
+          <input type="text" id="edit-item-desc" placeholder="مثال: باتكس أصفر، باتكس شفاف">
+        </div>
+        <div class="form-group">
+          <label>وحدة التعبئة:</label>
+          <select id="edit-item-unit">
+            <option value="علبة">علبة</option>
+            <option value="أنبوب">أنبوب</option>
+            <option value="حبة">حبة</option>
+            <option value="كجم">كجم</option>
+            <option value="لتر">لتر</option>
+            <option value="كرتون">كرتون</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" id="edit-size-group">
+        <label id="edit-size-label">المقاس: <span class="required-star">*</span></label>
+        <select id="edit-item-size-select" style="display: none;" required>
+          <option value="ستاندر / Standard (122x244)">ستاندر / Standard (122x244)</option>
+          <option value="جامبو / Jumbo (183x366)">جامبو / Jumbo (183x366)</option>
+        </select>
+        <input type="text" id="edit-item-size-input" required>
+      </div>
+
+      <div class="form-group" id="edit-extra-group" style="display: none;">
+        <label id="edit-extra-label">السماكة: <span class="required-star">*</span></label>
+        <input type="text" id="edit-item-extra" required>
+      </div>
+
+      <div class="form-group">
+        <label id="edit-qty-label">الكمية: <span class="required-star">*</span></label>
+        <input type="number" id="edit-item-qty" min="0" step="any" required>
+      </div>
+
+      <div class="form-group" id="edit-boards-group" style="display: none;">
+        <label>عدد الألواح: <span class="required-star">*</span></label>
+        <input type="number" id="edit-item-boards" min="0" required>
+      </div>
+
+      <div class="form-group">
+        <label>موقع التواجد / التخزين: <span class="required-star">*</span></label>
+        <input type="text" id="edit-item-location" placeholder="مثال: ورشة التشغيل، الرف A2..." required>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="add-btn" style="flex:1;" onclick="confirmFullEdit()">حفظ 💾</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('full-edit-modal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📥 Modal الإضافة -->
+  <div id="add-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 id="add-modal-title">➕ إضافة صنف جديد <span class="en-sub">Add New Item</span></h3>
+      <input type="hidden" id="add-target-type" value="materials">
+      
+      <div class="form-group">
+        <label id="add-title-label">اسم الصنف: <span class="required-star">*</span></label>
+        <input type="text" id="add-title" required>
+      </div>
+
+      <!-- حقول المعدات والأدوات المخصصة -->
+      <div id="tools-fields" style="display: none;">
+        <div class="form-group">
+          <label>المواصفات والماركة (Specs & Brand):</label>
+          <input type="text" id="add-tool-specs" placeholder="مثال: Makita 1200W, DeWalt 18V, Stanley">
+        </div>
+        <div class="form-group">
+          <label>الرقم التسلسلي / كود المعدة (Serial No. / Tag ID):</label>
+          <input type="text" id="add-tool-sn" placeholder="مثال: SN-90821">
+        </div>
+        <div class="form-group">
+          <label>حالة التشغيل وصلاحية المعدة: <span class="required-star">*</span></label>
+          <select id="add-tool-status">
+            <option value="شغالة / سليمة">🟢 شغالة / سليمة (Operational)</option>
+            <option value="تحتاج صيانة">🟡 تحتاج صيانة (Under Maintenance)</option>
+            <option value="تالفة / خارج الخدمة">🔴 تالفة / خارج الخدمة (Out of Service)</option>
+            <option value="مخزون جديد">🔵 مخزون جديد (New In Stock)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- حقول الحدايد والإكسسوارات المخصصة -->
+      <div id="hardware-fields" style="display: none;">
+        <div class="form-group">
+          <label>المواصفات القياسية والمقاس (Specifications & Size):</label>
+          <input type="text" id="add-hw-size" placeholder="مثال: M4x30mm, 18Ga 15mm, 4 بوصة">
+        </div>
+        <div class="form-group">
+          <label>اللون والتشطيب (Finish & Color):</label>
+          <input type="text" id="add-hw-color" placeholder="مثال: ذهبي، فضي، أسود مطفي، استيل">
+        </div>
+        <div class="form-group">
+          <label>وحدة التعبئة القياسية:</label>
+          <select id="add-hw-unit">
+            <option value="علبة">علبة (Box)</option>
+            <option value="حبة">حبة (Piece)</option>
+            <option value="كرتون">كرتون (Carton)</option>
+            <option value="باكت">باكت (Pack)</option>
+            <option value="طقم">طقم (Set)</option>
+            <option value="زوج">زوج (Pair)</option>
+            <option value="كجم">كجم (KG)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- حقول المواد اللاصقة والغراء المخصصة -->
+      <div id="adhesives-fields" style="display: none;">
+        <div class="form-group">
+          <label>الوصف / الماركة / التفاصيل:</label>
+          <input type="text" id="add-desc" placeholder="مثال: باتكس أصفر، باتكس شفاف">
+        </div>
+        <div class="form-group">
+          <label>وحدة التعبئة:</label>
+          <select id="add-unit">
+            <option value="علبة">علبة</option>
+            <option value="أنبوب">أنبوب</option>
+            <option value="حبة">حبة</option>
+            <option value="كجم">كجم</option>
+            <option value="لتر">لتر</option>
+            <option value="كرتون">كرتون</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- حقول الـ Welcome Kit المخصصة -->
+      <div id="welcome-kit-fields" style="display: none;">
+        <div class="form-group">
+          <label>كود الصنف (SKU):</label>
+          <input type="text" id="add-sku" placeholder="مثال: SK-101">
+        </div>
+        <div class="form-group">
+          <label>المشروع / العميل:</label>
+          <input type="text" id="add-project" placeholder="مثال: مشروع نيوم">
+        </div>
+        <div class="form-group">
+          <label>التفاصيل وخامة الصنع:</label>
+          <textarea id="add-details" rows="2" placeholder="أدخل مواصفات وخامة الصنف"></textarea>
+        </div>
+      </div>
+
+      <!-- حقول الأخشاب والعموم -->
+      <div id="materials-fields">
+        <div class="form-group" id="add-size-group">
+          <label id="add-size-label">المقاس: <span class="required-star">*</span></label>
+          <select id="add-size-select" style="display: none;">
+            <option value="ستاندر / Standard (122x244)">ستاندر / Standard (122x244)</option>
+            <option value="جامبو / Jumbo (183x366)">جامبو / Jumbo (183x366)</option>
+          </select>
+          <input type="text" id="add-size-input">
+        </div>
+
+        <div class="form-group" id="add-extra-group" style="display: none;">
+          <label id="add-extra-label">السماكة: <span class="required-star">*</span></label>
+          <input type="text" id="add-extra">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="add-qty-label">الكمية المتوفرة: <span class="required-star">*</span></label>
+        <input type="number" id="add-qty" min="0" step="any" required>
+      </div>
+
+      <div class="form-group" id="add-boards-group" style="display: none;">
+        <label>عدد الألواح: <span class="required-star">*</span></label>
+        <input type="number" id="add-boards" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>موقع التواجد / التخزين: <span class="required-star">*</span></label>
+        <input type="text" id="add-location" placeholder="مثال: ورشة التشغيل، الرف A1..." required>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="add-btn" style="flex:1;" onclick="confirmAddItem()">إضافة ✨</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('add-modal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📤 Modal الصرف -->
+  <div id="extract-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>📤 إذن صرف صنف <span class="en-sub">Dispatch Voucher</span></h3>
+      <input type="hidden" id="ext-id">
+      <input type="hidden" id="ext-current-qty">
+      <input type="hidden" id="ext-current-boards">
+      
+      <div class="form-group">
+        <label>الصنف المطلوب صرفه:</label>
+        <input type="text" id="ext-title" readonly tabindex="-1">
+      </div>
+
+      <div class="form-group" id="ext-panel-details" style="display: none;">
+        <label>تفاصيل الصنف:</label>
+        <input type="text" id="ext-panel-info" readonly tabindex="-1">
+      </div>
+
+      <div class="form-group">
+        <label>رقم أمر التشغيل / المشروع: <span class="required-star">*</span></label>
+        <input type="text" id="ext-project" required>
+      </div>
+
+      <div class="form-group">
+        <label>اسم المسؤول عن الصرف: <span class="required-star">*</span></label>
+        <input type="text" id="ext-issuer" required>
+      </div>
+
+      <div class="form-group">
+        <label>اسم المستلم / القسم: <span class="required-star">*</span></label>
+        <input type="text" id="ext-recipient" required>
+      </div>
+
+      <div id="ext-natural-wood-inputs" style="display: none;">
+        <div style="background: rgba(56, 189, 248, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--accent); margin-bottom: 12px;">
+          <p style="font-size: 0.8rem; color: var(--accent); margin-bottom: 8px;">أدخل قيم الخصم المطلوبة بشكل مستقل:</p>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label>خصم بالتكعيب (m³):</label>
+            <input type="number" id="ext-cubic-qty" min="0" step="any" placeholder="0.00">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>خصم عدد الألواح:</label>
+            <input type="number" id="ext-boards-qty" min="0" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" id="ext-standard-input">
+        <label id="ext-qty-label">الكمية المراد صرفها: <span class="required-star">*</span></label>
+        <input type="number" id="ext-qty" min="0.01" step="any" required>
+      </div>
+
+      <div class="form-group">
+        <label>سبب / الغرض من الاستخراج: <span class="required-star">*</span></label>
+        <select id="ext-reason" required>
+          <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع</option>
+          <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة</option>
+
+          <option value="حدث / Event">🎉 حدث / Event</option>
+          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button id="ext-submit-btn" class="add-btn" style="flex:1;" onclick="confirmExtraction()">تأكيد والصرف 📤</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('extract-modal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🗑️ Modal الحذف -->
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal-card" style="border-color: var(--danger);">
+      <h3 style="color: var(--danger);">🗑️ تأكيد حذف الصنف</h3>
+      <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.88rem;">هل أنت متأكد من حذف هذا الصنف نهائياً؟</p>
+      <input type="hidden" id="delete-id">
+      <div style="display: flex; gap: 10px;">
+        <button class="action-btn btn-delete" style="flex:1; padding: 10px; justify-content: center;" onclick="confirmDelete()">نعم، احذف 🗑️</button>
+        <button class="back-btn" style="flex:1; justify-content: center;" onclick="closeModal('delete-modal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://fwqigsujabyoqmduoelx.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const SECRET_PIN = "$Ark0820";
+    const SESSION_KEY = "app_login_session";
+
+    let currentCategory = 'wood';
+    let currentSubUnit = 'natural_wood';
+    let currentView = 'home';
+    let toastTimeout = null;
+
+    window.onload = function() { 
+      checkExistingSession(); 
+      setupGlobalKeyBindings();
+      setupModalFormNavigation();
+    };
+
+    function setupModalFormNavigation() {
+      document.addEventListener('keydown', function(event) {
+        const activeElem = document.activeElement;
+        if (!activeElem) return;
+
+        const tag = activeElem.tagName.toLowerCase();
+        const isInputField = (tag === 'input' || tag === 'select' || tag === 'textarea');
+
+        if (!isInputField) return;
+
+        const openModal = document.querySelector('.modal-overlay[style*="display: flex"]');
+        if (!openModal) return;
+
+        const focusables = Array.from(openModal.querySelectorAll('input:not([readonly]):not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'))
+                                .filter(el => el.offsetWidth > 0 && el.offsetHeight > 0 && getComputedStyle(el).visibility !== 'hidden');
+
+        const currentIndex = focusables.indexOf(activeElem);
+
+        if (currentIndex !== -1) {
+          if (event.key === 'Enter' || event.key === 'ArrowDown') {
+            if (event.shiftKey || currentIndex === focusables.length - 1) {
+              if (openModal.id === 'extract-modal') {
+                event.preventDefault();
+                confirmExtraction();
+              } else if (openModal.id === 'add-modal') {
+                event.preventDefault();
+                confirmAddItem();
+              } else if (openModal.id === 'full-edit-modal') {
+                event.preventDefault();
+                confirmFullEdit();
+              }
+            } else {
+              event.preventDefault();
+              focusables[currentIndex + 1].focus();
+            }
+          } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (currentIndex > 0) {
+              focusables[currentIndex - 1].focus();
+            }
+          }
+        }
+      });
+    }
+
+    function setupGlobalKeyBindings() {
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Backspace') {
+          const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+          const isEditable = document.activeElement ? document.activeElement.isContentEditable : false;
+
+          if (activeTag !== 'input' && activeTag !== 'textarea' && activeTag !== 'select' && !isEditable) {
+            const openModals = document.querySelectorAll('.modal-overlay');
+            let modalClosed = false;
+            openModals.forEach(modal => {
+              if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+                modalClosed = true;
+              }
+            });
+
+            if (!modalClosed) {
+              handleGlobalBack();
+            }
+          }
+        }
+      });
+    }
+
+    function handleGlobalBack() {
+      if (currentView === 'home') return;
+
+      if (currentView === 'welcome_kit' || currentView === 'daily_logs') {
+        showHomeHub();
+      } else if (currentView === 'raw_materials') {
+        const subWarehouseContainer = document.getElementById('sub-warehouse-container');
+        const woodMenu = document.getElementById('wood-categories-menu');
+        const warehouseMenu = document.getElementById('warehouse-selection-menu');
+
+        if (subWarehouseContainer.style.display === 'block') {
+          backFromTable();
+        } else if (woodMenu.style.display === 'block') {
+          backToMainWarehouses();
+        } else if (warehouseMenu.style.display === 'block') {
+          showHomeHub();
+        }
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast-notification');
+      toast.innerHTML = message;
+      toast.className = `show ${type}`;
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => { toast.className = ''; }, 6000);
+    }
+
+    function handleToastClick() {
+      const toast = document.getElementById('toast-notification');
+      toast.className = '';
+      openDailyTransactionsSection();
+    }
+
+    function checkPin() {
+      if (document.getElementById('pin-input').value === SECRET_PIN) {
+        localStorage.setItem(SESSION_KEY, Date.now().toString());
+        grantAccess();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    function checkExistingSession() {
+      if (localStorage.getItem(SESSION_KEY)) grantAccess();
+    }
+
+    function grantAccess() {
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+      showHomeHub();
+    }
+
+    function logout() {
+      localStorage.removeItem(SESSION_KEY);
+      location.reload();
+    }
+
+    function togglePasswordVisibility() {
+      const pin = document.getElementById('pin-input');
+      pin.type = pin.type === 'password' ? 'text' : 'password';
+    }
+
+    function hideAllSections() {
+      document.getElementById('home-hub-view').style.display = 'none';
+      document.getElementById('raw-materials-section').style.display = 'none';
+      document.getElementById('general-inventory-section').style.display = 'none';
+      document.getElementById('daily-transactions-section').style.display = 'none';
+    }
+
+    function showHomeHub() {
+      hideAllSections();
+      currentView = 'home';
+      document.getElementById('home-hub-view').style.display = 'block';
+    }
+
+    function openRawMaterialsSection() {
+      hideAllSections();
+      currentView = 'raw_materials';
+      document.getElementById('raw-materials-section').style.display = 'block';
+      document.getElementById('warehouse-selection-menu').style.display = 'block';
+      document.getElementById('wood-categories-menu').style.display = 'none';
+      document.getElementById('sub-warehouse-container').style.display = 'none';
+    }
+
+    function openWelcomeKitSection() {
+      hideAllSections();
+      currentView = 'welcome_kit';
+      document.getElementById('general-inventory-section').style.display = 'block';
+      fetchWelcomeKits();
+    }
+
+    function openDailyTransactionsSection() {
+      hideAllSections();
+      currentView = 'daily_logs';
+      document.getElementById('daily-transactions-section').style.display = 'block';
+      fetchDailyLogs();
+    }
+
+    function openWoodCategories() {
+      document.getElementById('warehouse-selection-menu').style.display = 'none';
+      document.getElementById('wood-categories-menu').style.display = 'block';
+    }
+
+    function backToMainWarehouses() {
+      document.getElementById('wood-categories-menu').style.display = 'none';
+      document.getElementById('warehouse-selection-menu').style.display = 'block';
+    }
+
+    function backFromTable() {
+      document.getElementById('sub-warehouse-container').style.display = 'none';
+      if (currentCategory === 'wood') {
+        document.getElementById('wood-categories-menu').style.display = 'block';
+      } else {
+        document.getElementById('warehouse-selection-menu').style.display = 'block';
+      }
+    }
+
+    async function openSubWarehouse(category, subUnit = 'all', title = '') {
+      currentCategory = category;
+      currentSubUnit = subUnit;
+      document.getElementById('warehouse-selection-menu').style.display = 'none';
+      document.getElementById('wood-categories-menu').style.display = 'none';
+      document.getElementById('sub-warehouse-container').style.display = 'block';
+      document.getElementById('current-warehouse-title').innerText = title || 'المستودع';
+
+      setupTableHeaders();
+      await fetchMaterialsFromDatabase();
+    }
+
+    function setupTableHeaders() {
+      const tr = document.getElementById('table-headers-row');
+
+      if (currentCategory === 'wood') {
+        if (currentSubUnit === 'natural_wood') {
+          tr.innerHTML = `
+            <th>نوع الخشب<br><span class="en-sub">Wood Type</span></th>
+            <th>الكمية بالتكعيب (m³)<br><span class="en-sub">Volume (m³)</span></th>
+            <th>عدد الألواح<br><span class="en-sub">Boards Count</span></th>
+            <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+            <th>الحالة<br><span class="en-sub">Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        } else if (currentSubUnit === 'panels') {
+          tr.innerHTML = `
+            <th>اسم الصنف<br><span class="en-sub">Panel Name</span></th>
+            <th>المقاس<br><span class="en-sub">Size</span></th>
+            <th>السماكة<br><span class="en-sub">Thickness</span></th>
+            <th>الكمية المتوفرة<br><span class="en-sub">Available Qty</span></th>
+            <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+            <th>الحالة<br><span class="en-sub">Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        } else if (currentSubUnit === 'adhesives') {
+          tr.innerHTML = `
+            <th>اسم الصنف (اللاصق/الغراء)<br><span class="en-sub">Glue / Adhesive Name</span></th>
+            <th>الوصف / الماركة<br><span class="en-sub">Description / Brand</span></th>
+            <th>الكمية المتوفرة<br><span class="en-sub">Available Qty</span></th>
+            <th>الوحدة<br><span class="en-sub">Packaging Unit</span></th>
+            <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+            <th>الحالة<br><span class="en-sub">Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        } else if (currentSubUnit === 'hardware') {
+          tr.innerHTML = `
+            <th>نوع / اسم الإكسسوار<br><span class="en-sub">Item Category / Name</span></th>
+            <th>المواصفات والمقاس<br><span class="en-sub">Specs & Size</span></th>
+            <th>اللون والتشطيب<br><span class="en-sub">Finish & Color</span></th>
+            <th>الكمية المتوفرة<br><span class="en-sub">Available Qty</span></th>
+            <th>الوحدة<br><span class="en-sub">Packaging Unit</span></th>
+            <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+            <th>الحالة<br><span class="en-sub">Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        } else if (currentSubUnit === 'tools') {
+          tr.innerHTML = `
+            <th>اسم / نوع المعدة<br><span class="en-sub">Machine / Tool Name</span></th>
+            <th>المواصفات والماركة<br><span class="en-sub">Specs & Brand</span></th>
+            <th>الكود / Serial No.<br><span class="en-sub">Tag / Serial ID</span></th>
+            <th>الكمية<br><span class="en-sub">Qty</span></th>
+            <th>موقع التواجد<br><span class="en-sub">Location</span></th>
+            <th>حالة المعدة<br><span class="en-sub">Operating Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        } else {
+          tr.innerHTML = `
+            <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
+            <th>المواصفات والترتيب<br><span class="en-sub">Specifications</span></th>
+            <th>الكمية المتوفرة<br><span class="en-sub">Available Qty</span></th>
+            <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+            <th>الحالة<br><span class="en-sub">Status</span></th>
+            <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+        }
+      } else {
+        tr.innerHTML = `
+          <th>اسم الصنف<br><span class="en-sub">Item Name</span></th>
+          <th>التفاصيل<br><span class="en-sub">Details</span></th>
+          <th>الكمية المتوفرة<br><span class="en-sub">Available Qty</span></th>
+          <th>موقع التخزين<br><span class="en-sub">Location</span></th>
+          <th>الحالة<br><span class="en-sub">Status</span></th>
+          <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+      }
+    }
+
+    async function fetchMaterialsFromDatabase() {
+      const tbody = document.getElementById('materials-table-body');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري التحميل أونلاين...</td></tr>';
+
+      let query = supabaseClient.from('materials').select('*').eq('category', currentCategory);
+      if (currentSubUnit !== 'all') {
+        query = query.eq('unit', currentSubUnit);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️ حدث خطأ أثناء تحميل البيانات: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً. اضغط "+ إضافة صنف جديد"</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        const qty = parseFloat(item.quantity) || 0;
+        const boards = parseInt(item.boards_count) || 0;
+        
+        const isAvailable = (qty > 0 || boards > 0);
+        let badgeHtml = isAvailable ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 غير متوفر</span>';
+        const extractDisabled = !isAvailable ? 'disabled' : '';
+
+        const titleName = item.title || item.wood_type || item.name || '-';
+        const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
+
+        if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty} m³</strong></td>
+            <td><strong style="color:${boards > 0 ? 'var(--wood-color)' : 'var(--danger)'};">${boards} لوح</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+          const panelSize = item.size || 'ستاندر / Standard (122x244)';
+          const thickness = item.thickness || '-';
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${panelSize}</td>
+            <td>${thickness}</td>
+            <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${item.description || '-'}</td>
+            <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
+            <td><span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">${item.thickness || 'حبة'}</span></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${item.size || '-'}</td>
+            <td><span style="color: var(--wood-color); font-weight: bold;">${item.description || '-'}</span></td>
+            <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
+            <td><span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">${item.thickness || 'حبة'}</span></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+          let toolStatusBadge = '<span class="badge badge-success">🟢 شغالة / سليمة</span>';
+          if (item.thickness === 'تحتاج صيانة') {
+            toolStatusBadge = '<span class="badge badge-warning">🟡 تحتاج صيانة</span>';
+          } else if (item.thickness === 'تالفة / خارج الخدمة') {
+            toolStatusBadge = '<span class="badge badge-danger">🔴 خارج الخدمة</span>';
+          } else if (item.thickness === 'مخزون جديد') {
+            toolStatusBadge = '<span class="badge badge-info">🔵 مخزون جديد</span>';
+          }
+
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${item.size || '-'}</td>
+            <td><code>${item.description || '-'}</code></td>
+            <td><strong style="color:var(--accent); font-size:1.05rem;">${qty}</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${toolStatusBadge}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 تسليم/صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        } else {
+          const specInfo = item.size || item.thickness || '-';
+          tr.innerHTML = `
+            <td><strong>${titleName}</strong></td>
+            <td>${specInfo}</td>
+            <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
+            <td>${item.location || '-'}</td>
+            <td>${badgeHtml}</td>
+            <td style="text-align: center;">
+              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف</button>
+              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل</button>
+              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+            </td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function fetchWelcomeKits() {
+      const tbody = document.getElementById('welcome-kit-table-body');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري جلب البيانات...</td></tr>';
+
+      let { data, error } = await supabaseClient.from('welcome_kits').select('*');
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--danger);">⚠️حدث خطأ: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد عينات مسجلة.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        const qty = parseFloat(item.quantity) || 0;
+        const isAvailable = qty > 0;
+        let badgeHtml = isAvailable ? '<span class="badge badge-success">🟢 متوفر</span>' : '<span class="badge badge-danger">🔴 غير متوفر</span>';
+
+        tr.innerHTML = `
+          <td>${item.sku || '-'}</td>
+          <td>${item.project || '-'}</td>
+          <td><strong>${item.title || '-'}</strong></td>
+          <td>${item.details || '-'}</td>
+          <td><strong style="color:${isAvailable ? 'var(--accent)' : 'var(--danger)'};">${qty}</strong></td>
+          <td>${item.location || '-'}</td>
+          <td>${badgeHtml}</td>
+          <td style="text-align: center;">
+            <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function fetchDailyLogs() {
+      const tbody = document.getElementById('daily-logs-table-body');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ جاري جلب سجل العمليات...</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('daily_transactions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--danger);">⚠️ حدث خطأ: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">لا توجد عمليات صرف مسجلة.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(log => {
+        const tr = document.createElement('tr');
+        const formattedDate = log.created_at ? new Date(log.created_at).toLocaleString('ar-SA') : '-';
+
+        tr.innerHTML = `
+          <td>${formattedDate}</td>
+          <td><strong>${log.item_title || log.title || '-'}</strong></td>
+          <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
+          <td>${log.issuer_name || '-'}</td>
+          <td>${log.recipient_name || '-'}</td>
+          <td>${log.project_code || '-'}</td>
+          <td><span class="badge badge-success">${log.reason || 'تصنيع'}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+    function openAddModal(target = 'materials') {
+      document.getElementById('add-target-type').value = target;
+      document.getElementById('add-title').value = '';
+      document.getElementById('add-desc').value = '';
+      document.getElementById('add-size-input').value = '';
+      document.getElementById('add-extra').value = '';
+      document.getElementById('add-qty').value = '';
+      document.getElementById('add-boards').value = '';
+      document.getElementById('add-location').value = '';
+      document.getElementById('add-hw-size').value = '';
+      document.getElementById('add-hw-color').value = '';
+      document.getElementById('add-tool-specs').value = '';
+      document.getElementById('add-tool-sn').value = '';
+
+      const welcomeKitFields = document.getElementById('welcome-kit-fields');
+      const materialsFields = document.getElementById('materials-fields');
+      const adhesivesFields = document.getElementById('adhesives-fields');
+      const hardwareFields = document.getElementById('hardware-fields');
+      const toolsFields = document.getElementById('tools-fields');
+      const addSizeGroup = document.getElementById('add-size-group');
+      const addSizeSelect = document.getElementById('add-size-select');
+      const addSizeInput = document.getElementById('add-size-input');
+      const addExtraGroup = document.getElementById('add-extra-group');
+      const addBoardsGroup = document.getElementById('add-boards-group');
+
+      if (target === 'welcome_kit') {
+        document.getElementById('add-modal-title').innerHTML = '➕ إضافة عينة / Welcome Kit <span class="en-sub">Add Welcome Kit Item</span>';
+        welcomeKitFields.style.display = 'block';
+        materialsFields.style.display = 'none';
+        adhesivesFields.style.display = 'none';
+        hardwareFields.style.display = 'none';
+        toolsFields.style.display = 'none';
+        addBoardsGroup.style.display = 'none';
+        document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
+        document.getElementById('add-qty-label').innerHTML = 'الكمية: <span class="required-star">*</span>';
+      } else {
+        document.getElementById('add-modal-title').innerHTML = '➕ إضافة صنف جديد <span class="en-sub">Add New Item</span>';
+        welcomeKitFields.style.display = 'none';
+
+        if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+          materialsFields.style.display = 'block';
+          adhesivesFields.style.display = 'none';
+          hardwareFields.style.display = 'none';
+          toolsFields.style.display = 'none';
+          document.getElementById('add-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية بالتكعيب (m³): <span class="required-star">*</span>';
+          addSizeGroup.style.display = 'none';
+          addExtraGroup.style.display = 'none';
+          addBoardsGroup.style.display = 'block';
+        } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+          materialsFields.style.display = 'block';
+          adhesivesFields.style.display = 'none';
+          hardwareFields.style.display = 'none';
+          toolsFields.style.display = 'none';
+          document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
+          document.getElementById('add-size-label').innerHTML = 'المقاس: <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+          addSizeGroup.style.display = 'block';
+          addSizeSelect.style.display = 'block';
+          addSizeInput.style.display = 'none';
+          addExtraGroup.style.display = 'block';
+          document.getElementById('add-extra-label').innerHTML = 'السماكة: <span class="required-star">*</span>';
+          addBoardsGroup.style.display = 'none';
+        } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+          materialsFields.style.display = 'none';
+          hardwareFields.style.display = 'none';
+          toolsFields.style.display = 'none';
+          adhesivesFields.style.display = 'block';
+          document.getElementById('add-title-label').innerHTML = 'اسم مادة الغراء/اللاصق: <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+          addBoardsGroup.style.display = 'none';
+        } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+          materialsFields.style.display = 'none';
+          adhesivesFields.style.display = 'none';
+          toolsFields.style.display = 'none';
+          hardwareFields.style.display = 'block';
+          document.getElementById('add-title-label').innerHTML = 'اسم الصنف / النوع (مثل: مسامير، مفصلات، دباسة T): <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+          addBoardsGroup.style.display = 'none';
+        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+          materialsFields.style.display = 'none';
+          adhesivesFields.style.display = 'none';
+          hardwareFields.style.display = 'none';
+          toolsFields.style.display = 'block';
+          document.getElementById('add-title-label').innerHTML = 'اسم / نوع المعدة (مثل: راوتر، فارة خشب، منشار ديسك، مفكات...): <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+          addBoardsGroup.style.display = 'none';
+        } else {
+          materialsFields.style.display = 'block';
+          adhesivesFields.style.display = 'none';
+          hardwareFields.style.display = 'none';
+          toolsFields.style.display = 'none';
+          document.getElementById('add-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
+          document.getElementById('add-size-label').innerHTML = 'المواصفات والترتيب: <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+          addSizeGroup.style.display = 'block';
+          addSizeSelect.style.display = 'none';
+          addSizeInput.style.display = 'block';
+          addExtraGroup.style.display = 'none';
+          addBoardsGroup.style.display = 'none';
+        }
+      }
+
+      document.getElementById('add-modal').style.display = 'flex';
+      setTimeout(() => { document.getElementById('add-title').focus(); }, 100);
+    }
+
+    async function confirmAddItem() {
+      const targetType = document.getElementById('add-target-type').value;
+      const title = document.getElementById('add-title').value.trim();
+      const location = document.getElementById('add-location').value.trim();
+      const qtyStr = document.getElementById('add-qty').value;
+
+      if (!title || !location || qtyStr === '') {
+        showToast('⚠️ يرجى تعبئة كافة الحقول الإجبارية (*)!', 'error');
+        return;
+      }
+
+      const qty = parseFloat(qtyStr) || 0;
+
+      if (targetType === 'welcome_kit') {
+        const sku = document.getElementById('add-sku').value.trim();
+        const project = document.getElementById('add-project').value.trim();
+        const details = document.getElementById('add-details').value.trim();
+
+        const payload = {
+          sku: sku,
+          project: project,
+          title: title,
+          details: details,
+          quantity: qty,
+          location: location
+        };
+
+        const { error } = await supabaseClient.from('welcome_kits').insert([payload]);
+        if (error) {
+          showToast('❌ حدث خطأ في إضافة العينة: ' + error.message, 'error');
+          return;
+        }
+
+        closeModal('add-modal');
+        showToast('✨ تم إضافة العينة بنجاح', 'success');
+        fetchWelcomeKits();
+      } else {
+        const payload = {
+          title: title,
+          wood_type: title,
+          category: currentCategory,
+          unit: currentSubUnit,
+          quantity: qty,
+          location: location
+        };
+
+        if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+          const boardsStr = document.getElementById('add-boards').value;
+          if (boardsStr === '') {
+            showToast('⚠️ يرجى إدخال عدد الألواح!', 'error');
+            return;
+          }
+          payload.boards_count = parseInt(boardsStr) || 0;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+          payload.size = document.getElementById('add-size-select').value;
+          payload.thickness = document.getElementById('add-extra').value.trim();
+        } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+          payload.description = document.getElementById('add-desc').value.trim();
+          payload.thickness = document.getElementById('add-unit').value; 
+        } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+          payload.size = document.getElementById('add-hw-size').value.trim();
+          payload.description = document.getElementById('add-hw-color').value.trim();
+          payload.thickness = document.getElementById('add-hw-unit').value;
+        } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+          payload.size = document.getElementById('add-tool-specs').value.trim();
+          payload.description = document.getElementById('add-tool-sn').value.trim();
+          payload.thickness = document.getElementById('add-tool-status').value;
+        } else {
+          payload.size = document.getElementById('add-size-input').value.trim();
+        }
+
+        const { error } = await supabaseClient.from('materials').insert([payload]);
+
+        if (error) {
+          showToast('❌ حدث خطأ في الإضافة: ' + error.message, 'error');
+          return;
+        }
+
+        closeModal('add-modal');
+        showToast('✨ تم إدراج الصنف بنجاح', 'success');
+        fetchMaterialsFromDatabase();
+      }
+    }
+
+    function openFullEditModal(item) {
+      document.getElementById('edit-item-id').value = item.id;
+      document.getElementById('edit-item-title').value = item.title || item.wood_type || '';
+      document.getElementById('edit-item-qty').value = item.quantity !== undefined ? item.quantity : '';
+      document.getElementById('edit-item-boards').value = item.boards_count !== undefined ? item.boards_count : '';
+      document.getElementById('edit-item-location').value = item.location || '';
+
+      const editSizeGroup = document.getElementById('edit-size-group');
+      const editSizeSelect = document.getElementById('edit-item-size-select');
+      const editSizeInput = document.getElementById('edit-item-size-input');
+      const editExtraGroup = document.getElementById('edit-extra-group');
+      const editBoardsGroup = document.getElementById('edit-boards-group');
+      const editAdhesivesFields = document.getElementById('edit-adhesives-fields');
+      const editHardwareFields = document.getElementById('edit-hardware-fields');
+      const editToolsFields = document.getElementById('edit-tools-fields');
+
+      if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+        document.getElementById('edit-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية بالتكعيب (m³): <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'none';
+        editExtraGroup.style.display = 'none';
+        editAdhesivesFields.style.display = 'none';
+        editHardwareFields.style.display = 'none';
+        editToolsFields.style.display = 'none';
+        editBoardsGroup.style.display = 'block';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+        document.getElementById('edit-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
+        document.getElementById('edit-size-label').innerHTML = 'المقاس: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'block';
+        editSizeSelect.style.display = 'block';
+        editSizeSelect.value = item.size || 'ستاندر / Standard (122x244)';
+        editSizeInput.style.display = 'none';
+        editExtraGroup.style.display = 'block';
+        editAdhesivesFields.style.display = 'none';
+        editHardwareFields.style.display = 'none';
+        editToolsFields.style.display = 'none';
+        document.getElementById('edit-item-extra').value = item.thickness || '';
+        editBoardsGroup.style.display = 'none';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+        document.getElementById('edit-title-label').innerHTML = 'اسم المادة: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'none';
+        editExtraGroup.style.display = 'none';
+        editBoardsGroup.style.display = 'none';
+        editHardwareFields.style.display = 'none';
+        editToolsFields.style.display = 'none';
+        editAdhesivesFields.style.display = 'block';
+        document.getElementById('edit-item-desc').value = item.description || '';
+        document.getElementById('edit-item-unit').value = item.thickness || 'علبة';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+        document.getElementById('edit-title-label').innerHTML = 'اسم / نوع الصنف: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'none';
+        editExtraGroup.style.display = 'none';
+        editBoardsGroup.style.display = 'none';
+        editAdhesivesFields.style.display = 'none';
+        editToolsFields.style.display = 'none';
+        editHardwareFields.style.display = 'block';
+        document.getElementById('edit-hw-size').value = item.size || '';
+        document.getElementById('edit-hw-color').value = item.description || '';
+        document.getElementById('edit-hw-unit').value = item.thickness || 'علبة';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+        document.getElementById('edit-title-label').innerHTML = 'اسم / نوع المعدة: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية: <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'none';
+        editExtraGroup.style.display = 'none';
+        editBoardsGroup.style.display = 'none';
+        editAdhesivesFields.style.display = 'none';
+        editHardwareFields.style.display = 'none';
+        editToolsFields.style.display = 'block';
+        document.getElementById('edit-tool-specs').value = item.size || '';
+        document.getElementById('edit-tool-sn').value = item.description || '';
+        document.getElementById('edit-tool-status').value = item.thickness || 'شغالة / سليمة';
+      } else {
+        document.getElementById('edit-title-label').innerHTML = 'اسم الصنف: <span class="required-star">*</span>';
+        document.getElementById('edit-size-label').innerHTML = 'المواصفات والترتيب: <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية المتوفرة: <span class="required-star">*</span>';
+        editSizeGroup.style.display = 'block';
+        editSizeSelect.style.display = 'none';
+        editSizeInput.style.display = 'block';
+        editSizeInput.value = item.size || item.thickness || '';
+        editExtraGroup.style.display = 'none';
+        editBoardsGroup.style.display = 'none';
+        editAdhesivesFields.style.display = 'none';
+        editHardwareFields.style.display = 'none';
+        editToolsFields.style.display = 'none';
+      }
+
+      document.getElementById('full-edit-modal').style.display = 'flex';
+      setTimeout(() => { document.getElementById('edit-item-title').focus(); }, 100);
+    }
+
+    async function confirmFullEdit() {
+      const id = document.getElementById('edit-item-id').value;
+      const title = document.getElementById('edit-item-title').value.trim();
+      const location = document.getElementById('edit-item-location').value.trim();
+      const qtyStr = document.getElementById('edit-item-qty').value;
+
+      if (!title || !location || qtyStr === '') {
+        showToast('⚠️ يرجى تعبئة كافة الحقول الإجبارية (*)!', 'error');
+        return;
+      }
+
+      const qty = parseFloat(qtyStr) || 0;
+
+      const payload = {
+        title: title,
+        wood_type: title,
+        quantity: qty,
+        location: location
+      };
+
+      if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+        payload.boards_count = parseInt(document.getElementById('edit-item-boards').value) || 0;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+        payload.size = document.getElementById('edit-item-size-select').value;
+        payload.thickness = document.getElementById('edit-item-extra').value.trim();
+      } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+        payload.description = document.getElementById('edit-item-desc').value.trim();
+        payload.thickness = document.getElementById('edit-item-unit').value;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+        payload.size = document.getElementById('edit-hw-size').value.trim();
+        payload.description = document.getElementById('edit-hw-color').value.trim();
+        payload.thickness = document.getElementById('edit-hw-unit').value;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+        payload.size = document.getElementById('edit-tool-specs').value.trim();
+        payload.description = document.getElementById('edit-tool-sn').value.trim();
+        payload.thickness = document.getElementById('edit-tool-status').value;
+      } else {
+        payload.size = document.getElementById('edit-item-size-input').value.trim();
+      }
+
+      const { error } = await supabaseClient.from('materials').update(payload).eq('id', id);
+
+      if (error) {
+        showToast('❌ حدث خطأ في التعديل: ' + error.message, 'error');
+        return;
+      }
+
+      closeModal('full-edit-modal');
+      showToast('✅ تم التعديل بنجاح', 'success');
+      fetchMaterialsFromDatabase();
+    }
+
+    function openExtractModal(item) {
+      document.getElementById('ext-id').value = item.id;
+      document.getElementById('ext-title').value = item.title || item.wood_type || '';
+      document.getElementById('ext-current-qty').value = item.quantity || 0;
+      document.getElementById('ext-current-boards').value = item.boards_count || 0;
+      
+      document.getElementById('ext-project').value = '';
+      document.getElementById('ext-issuer').value = '';
+      document.getElementById('ext-recipient').value = '';
+      document.getElementById('ext-cubic-qty').value = '';
+      document.getElementById('ext-boards-qty').value = '';
+      document.getElementById('ext-qty').value = '1';
+
+      const panelDetailsDiv = document.getElementById('ext-panel-details');
+      const naturalWoodInputs = document.getElementById('ext-natural-wood-inputs');
+      const standardInput = document.getElementById('ext-standard-input');
+
+      if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+        panelDetailsDiv.style.display = 'none';
+        naturalWoodInputs.style.display = 'block';
+        standardInput.style.display = 'none';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+        panelDetailsDiv.style.display = 'block';
+        document.getElementById('ext-panel-info').value = `المقاس: ${item.size || 'ستاندر'} | السماكة: ${item.thickness || '-'}`;
+        naturalWoodInputs.style.display = 'none';
+        standardInput.style.display = 'block';
+        document.getElementById('ext-qty-label').innerHTML = 'الكمية المراد صرفها (عدد الألواح): <span class="required-star">*</span>';
+      } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+        panelDetailsDiv.style.display = 'block';
+        document.getElementById('ext-panel-info').value = `الوصف: ${item.description || '-'} | الوحدة: ${item.thickness || 'حبة'}`;
+        naturalWoodInputs.style.display = 'none';
+        standardInput.style.display = 'block';
+        document.getElementById('ext-qty-label').innerHTML = `الكمية المراد صرفها (بـ ${item.thickness || 'حبة'}): <span class="required-star">*</span>`;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+        panelDetailsDiv.style.display = 'block';
+        document.getElementById('ext-panel-info').value = `المقاس: ${item.size || '-'} | اللون/التشطيب: ${item.description || '-'}`;
+        naturalWoodInputs.style.display = 'none';
+        standardInput.style.display = 'block';
+        document.getElementById('ext-qty-label').innerHTML = `الكمية المراد صرفها (بـ ${item.thickness || 'حبة'}): <span class="required-star">*</span>`;
+      } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+        panelDetailsDiv.style.display = 'block';
+        document.getElementById('ext-panel-info').value = `المواصفات: ${item.size || '-'} | الحالة: ${item.thickness || 'شغالة / سليمة'}`;
+        naturalWoodInputs.style.display = 'none';
+        standardInput.style.display = 'block';
+        document.getElementById('ext-qty-label').innerHTML = 'الكمية المراد تسليمها/صرفها: <span class="required-star">*</span>';
+      } else {
+        panelDetailsDiv.style.display = 'none';
+        naturalWoodInputs.style.display = 'none';
+        standardInput.style.display = 'block';
+        document.getElementById('ext-qty-label').innerHTML = 'الكمية المراد صرفها: <span class="required-star">*</span>';
+      }
+
+      document.getElementById('extract-modal').style.display = 'flex';
+      setTimeout(() => { document.getElementById('ext-project').focus(); }, 100);
+    }
+
+    async function confirmExtraction() {
+      const id = document.getElementById('ext-id').value;
+      const itemTitle = document.getElementById('ext-title').value;
+      const curQty = parseFloat(document.getElementById('ext-current-qty').value) || 0;
+      const curBoards = parseInt(document.getElementById('ext-current-boards').value) || 0;
+      
+      const projectCode = document.getElementById('ext-project').value.trim();
+      const issuerName = document.getElementById('ext-issuer').value.trim();
+      const recipientName = document.getElementById('ext-recipient').value.trim();
+      let baseReason = document.getElementById('ext-reason').value;
+
+      if (!projectCode || !issuerName || !recipientName) {
+        showToast('⚠️ يرجى تعبئة كافة الحقول الإجبارية (*)!', 'error');
+        return;
+      }
+
+      let newQty = curQty;
+      let newBoards = curBoards;
+      let numericIssuedQty = 0;
+      let detailsNotes = [];
+
+      const updateData = {};
+
+      if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+        const cubicVal = parseFloat(document.getElementById('ext-cubic-qty').value) || 0;
+        const boardsVal = parseInt(document.getElementById('ext-boards-qty').value) || 0;
+
+        if (cubicVal <= 0 && boardsVal <= 0) {
+          showToast('⚠️ يرجى إدخال قيمة الخصم بالتكعيب أو عدد الألواح!', 'error');
+          return;
+        }
+
+        if (cubicVal > 0) {
+          if (cubicVal > curQty) {
+            showToast('❌ قيمة التكعيب المخصومة أكبر من المتوفر بالمخزون!', 'error');
+            return;
+          }
+          newQty = Math.max(0, parseFloat((curQty - cubicVal).toFixed(4)));
+          detailsNotes.push(`خصم ${cubicVal} m³`);
+        }
+
+        if (boardsVal > 0) {
+          if (boardsVal > curBoards) {
+            showToast('❌ عدد الألواح المخصومة أكبر من المتوفر بالمخزون!', 'error');
+            return;
+          }
+          newBoards = Math.max(0, curBoards - boardsVal);
+          detailsNotes.push(`خصم ${boardsVal} لوح`);
+        }
+
+        updateData.quantity = newQty;
+        updateData.boards_count = newBoards;
+        numericIssuedQty = cubicVal > 0 ? cubicVal : boardsVal;
+      } else {
+        const extInputQty = parseFloat(document.getElementById('ext-qty').value) || 0;
+        if (extInputQty <= 0) {
+          showToast('⚠️ أدخل كمية صالحة للصرف!', 'error');
+          return;
+        }
+        if (extInputQty > curQty) {
+          showToast('❌ الكمية المطلوبة أكبر من المتوفر بالمخزون!', 'error');
+          return;
+        }
+        newQty = Math.max(0, parseFloat((curQty - extInputQty).toFixed(4)));
+        numericIssuedQty = extInputQty;
+        updateData.quantity = newQty;
+      }
+
+      const { error: updateErr } = await supabaseClient.from('materials').update(updateData).eq('id', id);
+
+      if (updateErr) {
+        showToast('❌ خطأ أثناء التحديث: ' + updateErr.message, 'error');
+        return;
+      }
+
+      const extraNoteText = detailsNotes.length > 0 ? ` (${detailsNotes.join(' و ')})` : '';
+      const finalReason = baseReason + extraNoteText;
+
+      const { error: insertErr } = await supabaseClient.from('daily_transactions').insert([{
+        item_id: parseInt(id) || null,
+        item_title: itemTitle,
+        quantity: numericIssuedQty,
+        project_code: projectCode,
+        issuer_name: issuerName,
+        recipient_name: recipientName,
+        reason: finalReason
+      }]);
+
+      if (insertErr) {
+        showToast('⚠️ تم الخصم ولكن فشل تسجيل السجل: ' + insertErr.message, 'error');
+        return;
+      }
+
+      closeModal('extract-modal');
+      showToast(`📦 تم الصرف بنجاح! اضغط هنا للانتقال إلى جدول الحركة اليومية ⬅️`, 'success');
+      fetchMaterialsFromDatabase();
+    }
+
+    function openDeleteModal(id) {
+      document.getElementById('delete-id').value = id;
+      document.getElementById('delete-modal').style.display = 'flex';
+    }
+
+    async function confirmDelete() {
+      const id = document.getElementById('delete-id').value;
+      let error = null;
+
+      if (currentView === 'welcome_kit') {
+        const res = await supabaseClient.from('welcome_kits').delete().eq('id', id);
+        error = res.error;
+      } else {
+        const res = await supabaseClient.from('materials').delete().eq('id', id);
+        error = res.error;
+      }
+
+      if (error) {
+        showToast('❌ حدث خطأ أثناء الحذف: ' + error.message, 'error');
+        return;
+      }
+
+      closeModal('delete-modal');
+      showToast('🗑️ تم الحذف بنجاح', 'success');
+
+      if (currentView === 'welcome_kit') {
+        fetchWelcomeKits();
+      } else {
+        fetchMaterialsFromDatabase();
+      }
+    }
+  </script>
 </body>
 </html>
