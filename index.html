@@ -268,7 +268,7 @@
             <div>
               <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" class="sub-card-img" alt="الخشب الطبيعي">
               <h3 style="color: var(--wood-color);">🌲 الخشب الطبيعي<span class="en-sub">Solid Natural Wood Logs</span></h3>
-              <p>سجل الأخشاب الصلبة، التكعيب بـ (m³) وعدد الألواح.</p>
+              <p>سجل الأخشاب الصلبة، التكعيب بـ (cm³) وعدد الألواح.</p>
             </div>
           </div>
 
@@ -410,7 +410,7 @@
       </div>
 
       <div class="form-group">
-        <label id="edit-qty-label">الكمية بالتكعيب (m³): <span class="required-star">*</span></label>
+        <label id="edit-qty-label">الكمية بالسنتيمتر المكعب (cm³): <span class="required-star">*</span></label>
         <input type="number" id="edit-item-qty" min="0" step="any" required>
       </div>
 
@@ -476,7 +476,7 @@
       </div>
 
       <div class="form-group">
-        <label id="add-qty-label">الكمية بالتكعيب (m³): <span class="required-star">*</span></label>
+        <label id="add-qty-label">الكمية بالسنتيمتر المكعب (cm³): <span class="required-star">*</span></label>
         <input type="number" id="add-qty" min="0" step="any" required>
       </div>
 
@@ -539,7 +539,7 @@
         <div style="background: rgba(56, 189, 248, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--accent); margin-bottom: 12px;">
           <p style="font-size: 0.8rem; color: var(--accent); margin-bottom: 8px;">أدخل قيم الخصم المطلوبة بشكل مستقل:</p>
           <div class="form-group" style="margin-bottom: 8px;">
-            <label>خصم التكعيب (m³):</label>
+            <label>خصم بالسنتيمتر المكعب (cm³):</label>
             <input type="number" id="ext-cubic-qty" min="0" step="any" placeholder="0.00 (اكتب التكعيب المراد خصمه)">
           </div>
           <div class="form-group" style="margin-bottom: 0;">
@@ -764,7 +764,7 @@
         if (currentSubUnit === 'natural_wood') {
           tr.innerHTML = `
             <th>نوع الخشب<br><span class="en-sub">Wood Type</span></th>
-            <th>الكمية بالتكعيب (m³)<br><span class="en-sub">Volume (m³)</span></th>
+            <th>الكمية بالسنتيمتر المكعب (cm³)<br><span class="en-sub">Volume (cm³)</span></th>
             <th>عدد الألواح<br><span class="en-sub">Boards Count</span></th>
             <th>موقع التخزين<br><span class="en-sub">Location</span></th>
             <th>الحالة<br><span class="en-sub">Status</span></th>
@@ -832,7 +832,7 @@
         if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
-            <td><strong style="color:var(--accent); font-size:1.05rem;">${qty} m³</strong></td>
+            <td><strong style="color:var(--accent); font-size:1.05rem;">${qty} cm³</strong></td>
             <td><strong style="color:var(--wood-color);">${boards} لوح</strong></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
@@ -982,7 +982,7 @@
 
         if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
           document.getElementById('add-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
-          document.getElementById('add-qty-label').innerHTML = 'الكمية بالتكعيب (m³): <span class="required-star">*</span>';
+          document.getElementById('add-qty-label').innerHTML = 'الكمية بالسنتيمتر المكعب (cm³): <span class="required-star">*</span>';
           addSizeGroup.style.display = 'none';
           addExtraGroup.style.display = 'none';
           addBoardsGroup.style.display = 'block';
@@ -1116,7 +1116,7 @@
 
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         document.getElementById('edit-title-label').innerHTML = 'نوع الخشب: <span class="required-star">*</span>';
-        document.getElementById('edit-qty-label').innerHTML = 'الكمية بالتكعيب (m³): <span class="required-star">*</span>';
+        document.getElementById('edit-qty-label').innerHTML = 'الكمية بالسنتيمتر المكعب (cm³): <span class="required-star">*</span>';
         editSizeGroup.style.display = 'none';
         editExtraGroup.style.display = 'none';
         editBoardsGroup.style.display = 'block';
@@ -1284,7 +1284,7 @@
             return;
           }
           newQty = curQty - cubicVal;
-          detailsNotes.push(`خصم ${cubicVal} m³`);
+          detailsNotes.push(`خصم ${cubicVal} cm³`);
         }
 
         // 2. الخصم المستقل للألواح
