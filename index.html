@@ -1244,7 +1244,6 @@
       document.getElementById('extract-modal').style.display = 'flex';
     }
 
-    // ✨ الخصم المباشر والمستقل تماماً لعدد الألواح والتكعيب
     async function confirmExtraction() {
       const id = document.getElementById('ext-id').value;
       const itemTitle = document.getElementById('ext-title').value;
@@ -1277,7 +1276,6 @@
           return;
         }
 
-        // 1. الخصم المستقل للتكعيب
         if (cubicVal > 0) {
           if (cubicVal > curQty) {
             showToast('❌ التكعيب المخصوم أكبر من المتوفر بالمخزون!', 'error');
@@ -1287,7 +1285,6 @@
           detailsNotes.push(`خصم ${cubicVal} cm³`);
         }
 
-        // 2. الخصم المستقل للألواح
         if (boardsVal > 0) {
           if (boardsVal > curBoards) {
             showToast('❌ عدد الألواح المخصومة أكبر من المتوفر بالمخزون!', 'error');
@@ -1297,7 +1294,7 @@
           detailsNotes.push(`خصم ${boardsVal} لوح`);
         }
 
-        updateData.quantity = newQty;
+        updateData.quantity = parseFloat(newQty);
         updateData.boards_count = newBoards;
         numericIssuedQty = cubicVal > 0 ? cubicVal : boardsVal;
       } else {
@@ -1312,10 +1309,9 @@
         }
         newQty = curQty - extInputQty;
         numericIssuedQty = extInputQty;
-        updateData.quantity = newQty;
+        updateData.quantity = parseFloat(newQty);
       }
 
-      // تحديث قاعدة البيانات بالطرح المستقل
       const { error: updateErr } = await supabaseClient.from('materials').update(updateData).eq('id', id);
 
       if (updateErr) {
@@ -1323,14 +1319,13 @@
         return;
       }
 
-      // توثيق عملية الصرف في سجل الحركة اليومية
       const extraNoteText = detailsNotes.length > 0 ? ` (${detailsNotes.join(' و ')})` : '';
       const finalReason = baseReason + extraNoteText;
 
       const { error: insertErr } = await supabaseClient.from('daily_transactions').insert([{
         item_id: parseInt(id) || null,
         item_title: itemTitle,
-        quantity: numericIssuedQty,
+        quantity: parseFloat(numericIssuedQty),
         project_code: projectCode,
         issuer_name: issuerName,
         recipient_name: recipientName,
