@@ -666,7 +666,6 @@
 
       <div class="form-group">
         <label>اسم المسؤول عن الصرف (الموظف الحركي):<span class="en-sub">Issued By</span> <span class="required-star">*</span></label>
-        <!-- يظهر اسم الموظف تلقائياً بشكل مقفول مو الإيميل -->
         <input type="text" id="ext-issuer" readonly tabindex="-1">
       </div>
 
@@ -730,10 +729,7 @@
     const SESSION_ROLE_KEY = "app_user_role";
     const SESSION_NAME_KEY = "app_user_name";
 
-    // إعداد الأدوار والمستويات:
-    // admin: يسوي كل شيء (إضافة، تعديل، حذف، صرف، مشاهدة)
-    // issuer: يقدر يصرف فقط ومشاهدة (لا يضيف أو يعدل أو يحذف)
-    // viewer: مشاهدة فقط (بدون أزرار إطلاقاً)
+    // إعداد الأدوار والمستويات
     const ADMIN_EMAILS = ["admin@tajalla.com", "manager@tajalla.com"]; 
     const ISSUER_EMAILS = ["issuer@tajalla.com", "store@tajalla.com"]; 
 
@@ -859,11 +855,9 @@
         return;
       }
 
-      // استخراج الاسم من البريد الإلكتروني (مثال: ali.ahmed@domain.com -> Ali Ahmed)
       const rawName = emailInput.split('@')[0].replace(/[._-]/g, ' ');
       const employeeName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
-      // تحديد المستوى والصلاحيات
       let userRole = 'viewer';
       if (ADMIN_EMAILS.includes(emailInput) || emailInput.startsWith('admin')) {
         userRole = 'admin';
@@ -893,7 +887,6 @@
       document.getElementById('login-overlay').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
 
-      // تحديث شريط بيانات الموظف
       document.getElementById('user-display-name').innerText = name;
       const roleBadge = document.getElementById('user-role-badge');
       if (role === 'admin') {
@@ -912,7 +905,6 @@
     }
 
     function applyPermissions() {
-      // إخفاء أو إظهار زر إضافة صنف
       const adminBtns = document.querySelectorAll('.admin-only');
       adminBtns.forEach(btn => {
         btn.style.display = (currentUser.role === 'admin') ? 'inline-block' : 'none';
@@ -1085,18 +1077,17 @@
       }
     }
 
-    function renderActionButtons(itemJson, extractDisabled) {
+    function renderActionButtons(item, extractDisabled) {
       let html = '';
+      const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
       
-      // أزرار الصرف لمن يملك صلاحية admin أو issuer
       if (currentUser.role === 'admin' || currentUser.role === 'issuer') {
         html += `<button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>`;
       }
       
-      // أزرار التعديل والحذف للـ admin فقط
       if (currentUser.role === 'admin') {
         html += `<button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>`;
-        html += `<button class="action-btn btn-delete" onclick="openDeleteModal(${itemJson.id})">🗑️ حذف<span class="en-sub">Delete</span></button>`;
+        html += `<button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>`;
       }
 
       if (currentUser.role === 'viewer') {
@@ -1137,7 +1128,6 @@
         const extractDisabled = !isAvailable ? 'disabled' : '';
 
         const titleName = item.title || item.wood_type || item.name || '-';
-        const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
         const actionsCellHtml = renderActionButtons(item, extractDisabled);
 
         if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
@@ -1667,10 +1657,7 @@
       document.getElementById('ext-current-boards').value = item.boards_count || 0;
       
       document.getElementById('ext-project').value = '';
-      
-      // وضع اسم الموظف تلقائياً بدلاً من الإيميل
       document.getElementById('ext-issuer').value = currentUser.name;
-      
       document.getElementById('ext-recipient').value = '';
       document.getElementById('ext-cubic-qty').value = '';
       document.getElementById('ext-boards-qty').value = '';
@@ -1745,8 +1732,6 @@
       const curBoards = parseInt(document.getElementById('ext-current-boards').value) || 0;
       
       const projectCode = document.getElementById('ext-project').value.trim();
-      
-      // التوثيق باسم الموظف المسجل
       const issuerName = currentUser.name;
       const recipientName = document.getElementById('ext-recipient').value.trim();
       let baseReason = document.getElementById('ext-reason').value;
