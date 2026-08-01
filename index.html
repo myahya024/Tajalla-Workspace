@@ -26,7 +26,6 @@
     body { background-color: var(--bg); color: var(--text); padding: 25px; direction: rtl; min-height: 100vh; position: relative; }
     
     .en-sub { display: block; font-size: 0.8em; font-weight: normal; opacity: 0.85; direction: ltr; margin-top: 3px; }
-    .en-inline { font-weight: normal; opacity: 0.85; font-size: 0.85em; }
 
     #login-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -418,7 +417,7 @@
         </div>
       </div>
 
-      <!-- مدخلات مخصصة للحدايد والإكسسوارات العالمية -->
+      <!-- مدخلات مخصصة للحدايد والإكسسوارات -->
       <div id="edit-hardware-fields" style="display: none;">
         <div class="form-group">
           <label>المواصفات القياسية والمقاس:<span class="en-sub">Specifications & Size</span></label>
@@ -682,12 +681,7 @@
       <div class="form-group">
         <label>سبب / الغرض من الاستخراج:<span class="en-sub">Reason / Purpose</span> <span class="required-star">*</span></label>
         <select id="ext-reason" required>
-          <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع (Project Manufacturing)</option>
-          <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة (Sample Production)</option>
-          <option value="إصلاح / Maintenance">🛠️ إصلاح (Maintenance)</option>
-          <option value="إعارة لموقع عمل / Field Deputation">🚚 إعارة لموقع عمل (Field Deputation)</option>
-          <option value="حدث / Event">🎉 حدث (Event)</option>
-          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك (Damaged & Scrap)</option>
+          <!-- الخيارات القابلة للتغيير ديناميكياً بحسب الصنف -->
         </select>
       </div>
 
@@ -975,7 +969,7 @@
             <th>المواصفات والماركة<br><span class="en-sub">Specs & Brand</span></th>
             <th>الكود / Serial No.<br><span class="en-sub">Tag / Serial ID</span></th>
             <th>الكمية<br><span class="en-sub">Qty</span></th>
-            <th>موقع التخزين<br><span class="en-sub">Storage Location</span></th>
+            <th>موقع التخزين / العهدة<br><span class="en-sub">Storage Location / Custody</span></th>
             <th>حالة المعدة<br><span class="en-sub">Operating Status</span></th>
             <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
         } else {
@@ -995,6 +989,30 @@
           <th>موقع التخزين<br><span class="en-sub">Storage Location</span></th>
           <th>الحالة<br><span class="en-sub">Status</span></th>
           <th style="text-align: center;">الإجراءات<br><span class="en-sub">Actions</span></th>`;
+      }
+    }
+
+    // دالة مساعدة لتوليد حالة التوفر (تنبيه وشك النفاذ عند الوصول لـ 5 أو أقل)
+    function getStockBadge(qty, boardsCount = null) {
+      const q = parseFloat(qty) || 0;
+      const b = boardsCount !== null ? parseInt(boardsCount) : null;
+
+      if (b !== null) {
+        if (q <= 0 && b <= 0) {
+          return '<span class="badge badge-danger">🔴 غير متوفر<span class="en-sub">Out of Stock</span></span>';
+        } else if ((q > 0 && q <= 5) || (b > 0 && b <= 5)) {
+          return '<span class="badge badge-warning">⚠️ وشك النفاذ<span class="en-sub">Low Stock</span></span>';
+        } else {
+          return '<span class="badge badge-success">🟢 متوفر<span class="en-sub">Available</span></span>';
+        }
+      } else {
+        if (q <= 0) {
+          return '<span class="badge badge-danger">🔴 غير متوفر<span class="en-sub">Out of Stock</span></span>';
+        } else if (q <= 5) {
+          return '<span class="badge badge-warning">⚠️ وشك النفاذ<span class="en-sub">Low Stock</span></span>';
+        } else {
+          return '<span class="badge badge-success">🟢 متوفر<span class="en-sub">Available</span></span>';
+        }
       }
     }
 
@@ -1026,21 +1044,13 @@
         const boards = parseInt(item.boards_count) || 0;
         
         const isAvailable = (qty > 0 || boards > 0);
-        let badgeHtml = '<span class="badge badge-danger">🔴 غير متوفر<span class="en-sub">Out of Stock</span></span>';
-        
-        if (isAvailable) {
-          if (qty <= 5 || boards <= 5) {
-            badgeHtml = '<span class="badge badge-warning">⚠️ قربت تنفذ<span class="en-sub">Low Stock</span></span>';
-          } else {
-            badgeHtml = '<span class="badge badge-success">🟢 متوفر<span class="en-sub">Available</span></span>';
-          }
-        }
         const extractDisabled = !isAvailable ? 'disabled' : '';
 
         const titleName = item.title || item.wood_type || item.name || '-';
         const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
 
         if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
+          const badgeHtml = getStockBadge(qty, boards);
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
             <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty} cm³</strong></td>
@@ -1054,6 +1064,7 @@
             </td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
+          const badgeHtml = getStockBadge(qty);
           const panelSize = item.size || 'ستاندر / Standard (122x244)';
           const thickness = item.thickness || '-';
           tr.innerHTML = `
@@ -1070,6 +1081,7 @@
             </td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
+          const badgeHtml = getStockBadge(qty);
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
             <td>${item.description || '-'}</td>
@@ -1084,6 +1096,7 @@
             </td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
+          const badgeHtml = getStockBadge(qty);
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
             <td>${item.size || '-'}</td>
@@ -1108,12 +1121,16 @@
             toolStatusBadge = '<span class="badge badge-info">🔵 مخزون<span class="en-sub">Stock</span></span>';
           }
 
+          const locDisplay = item.location && item.location.includes('بحوزة') 
+            ? `<span style="color: var(--warning); font-weight: bold;">👤 ${item.location}</span>` 
+            : (item.location || '-');
+
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
             <td>${item.size || '-'}</td>
             <td><code>${item.description || '-'}</code></td>
             <td><strong style="color:var(--accent); font-size:1.05rem;">${qty}</strong></td>
-            <td>${item.location || '-'}</td>
+            <td>${locDisplay}</td>
             <td>${toolStatusBadge}</td>
             <td style="text-align: center;">
               <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 تسليم/صرف<span class="en-sub">Issue/Checkout</span></button>
@@ -1122,6 +1139,7 @@
             </td>
           `;
         } else {
+          const badgeHtml = getStockBadge(qty);
           const specInfo = item.size || item.thickness || '-';
           tr.innerHTML = `
             <td><strong>${titleName}</strong></td>
@@ -1160,23 +1178,14 @@
       data.forEach(item => {
         const tr = document.createElement('tr');
         const qty = parseFloat(item.quantity) || 0;
-        const isAvailable = qty > 0;
-        let badgeHtml = '<span class="badge badge-danger">🔴 غير متوفر<span class="en-sub">Out of Stock</span></span>';
-        
-        if (isAvailable) {
-          if (qty <= 5) {
-            badgeHtml = '<span class="badge badge-warning">⚠️ قربت تنفذ<span class="en-sub">Low Stock</span></span>';
-          } else {
-            badgeHtml = '<span class="badge badge-success">🟢 متوفر<span class="en-sub">Available</span></span>';
-          }
-        }
+        const badgeHtml = getStockBadge(qty);
 
         tr.innerHTML = `
           <td>${item.sku || '-'}</td>
           <td>${item.project || '-'}</td>
           <td><strong>${item.title || '-'}</strong></td>
           <td>${item.details || '-'}</td>
-          <td><strong style="color:${isAvailable ? 'var(--accent)' : 'var(--danger)'};">${qty}</strong></td>
+          <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'};">${qty}</strong></td>
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
           <td style="text-align: center;">
@@ -1583,6 +1592,26 @@
       const panelDetailsDiv = document.getElementById('ext-panel-details');
       const naturalWoodInputs = document.getElementById('ext-natural-wood-inputs');
       const standardInput = document.getElementById('ext-standard-input');
+      const reasonSelect = document.getElementById('ext-reason');
+
+      // تخصيص أسباب الصرف بحسب نوع الصنف (معدة أم مواد خامات)
+      if (currentCategory === 'wood' && currentSubUnit === 'tools') {
+        reasonSelect.innerHTML = `
+          <option value="عهدة عامل / Worker Custody">🧰 عهدة عامل (Worker Custody)</option>
+          <option value="إصلاح / Maintenance">🛠️ إصلاح / صيانة (Maintenance)</option>
+          <option value="إعارة لموقع عمل / Field Deputation">🚚 إعارة لموقع عمل (Field Deputation)</option>
+          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك (Damaged & Scrap)</option>
+        `;
+      } else {
+        reasonSelect.innerHTML = `
+          <option value="تصنيع مشروع / Project Manufacturing">🔨 تصنيع مشروع (Project Manufacturing)</option>
+          <option value="تصنيع عينة / Sample Production">🧪 تصنيع عينة (Sample Production)</option>
+          <option value="إصلاح / Maintenance">🛠️ إصلاح (Maintenance)</option>
+          <option value="إعارة لموقع عمل / Field Deputation">🚚 إعارة لموقع عمل (Field Deputation)</option>
+          <option value="حدث / Event">🎉 حدث (Event)</option>
+          <option value="تالف أو هالك / Damaged & Scrap">⚠️ تالف أو هالك (Damaged & Scrap)</option>
+        `;
+      }
 
       if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
         panelDetailsDiv.style.display = 'none';
@@ -1682,13 +1711,20 @@
           showToast('⚠️ أدخل كمية صالحة للصرف!', 'error');
           return;
         }
-        if (extInputQty > curQty) {
-          showToast('❌ الكمية المطلوبة أكبر من المتوفر بالمخزون!', 'error');
-          return;
+
+        // إثبات عهدة العامل للمعدات
+        if (currentCategory === 'wood' && currentSubUnit === 'tools' && baseReason.includes('عهدة عامل')) {
+          updateData.location = `بحوزة: ${recipientName}`;
+          numericIssuedQty = extInputQty;
+        } else {
+          if (extInputQty > curQty) {
+            showToast('❌ الكمية المطلوبة أكبر من المتوفر بالمخزون!', 'error');
+            return;
+          }
+          newQty = Math.max(0, parseFloat((curQty - extInputQty).toFixed(4)));
+          numericIssuedQty = extInputQty;
+          updateData.quantity = newQty;
         }
-        newQty = Math.max(0, parseFloat((curQty - extInputQty).toFixed(4)));
-        numericIssuedQty = extInputQty;
-        updateData.quantity = newQty;
       }
 
       const { error: updateErr } = await supabaseClient.from('materials').update(updateData).eq('id', id);
@@ -1717,7 +1753,7 @@
       }
 
       closeModal('extract-modal');
-      showToast(`📦 تم الصرف بنجاح! اضغط هنا للانتقال إلى جدول الحركة اليومية ⬅️`, 'success');
+      showToast(`📦 تم الصرف والتسجيل بنجاح! اضغط هنا للانتقال إلى جدول الحركة اليومية ⬅️`, 'success');
       fetchMaterialsFromDatabase();
     }
 
