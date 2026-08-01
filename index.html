@@ -33,18 +33,25 @@
     }
     .login-box {
       background: var(--card-bg); padding: 30px; border-radius: 14px; border: 1px solid var(--border);
-      text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      text-align: center; max-width: 420px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
     .login-box h2 { margin-bottom: 10px; color: var(--accent); font-size: 1.3rem; }
-    .password-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
-    .password-wrapper input {
-      width: 100%; padding: 11px 40px 11px 11px; background: #0f172a; border: 1px solid var(--border);
+    .email-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
+    .email-wrapper input {
+      width: 100%; padding: 11px 15px; background: #0f172a; border: 1px solid var(--border);
       border-radius: 8px; color: #fff; text-align: center; font-size: 1rem; outline: none; direction: ltr;
     }
-    .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none; opacity: 0.7; }
     .login-box button { width: 100%; padding: 11px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
 
     #main-app { display: none; padding-bottom: 20px; position: relative; min-height: calc(100vh - 40px); }
+    
+    .user-profile-bar {
+      display: flex; justify-content: space-between; align-items: center; background: var(--card-bg);
+      padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;
+    }
+    .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+    .user-role-badge { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+
     .hub-footer-logout { margin-top: 35px; display: flex; justify-content: center; }
 
     .static-logout-btn { 
@@ -155,22 +162,30 @@
 
   <div id="toast-notification" onclick="handleToastClick()"></div>
 
-  <!-- شاشة الدخول -->
+  <!-- شاشة الدخول بالايميل بدون كلمة سر -->
   <div id="login-overlay">
     <div class="login-box">
       <h2>🔒 نظام تجلى<span class="en-sub">Tajalla System</span></h2>
-      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px; margin-top: 8px;">أدخل كلمة السر للوصول<span class="en-sub">Enter password to access</span></p>
-      <div class="password-wrapper">
-        <input type="password" id="pin-input" autocomplete="off" onkeydown="if(event.key==='Enter') checkPin()">
-        <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px; margin-top: 8px;">أدخل البريد الإلكتروني للدخول مباشر<span class="en-sub">Enter email to login directly</span></p>
+      <div class="email-wrapper">
+        <input type="email" id="email-input" placeholder="name@domain.com" autocomplete="off" onkeydown="if(event.key==='Enter') loginWithEmail()">
       </div>
-      <button onclick="checkPin()">دخول<span class="en-sub">Login</span></button>
-      <p id="login-error" style="color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none;">كلمة السر خاطئة!<span class="en-sub">Incorrect Password!</span></p>
+      <button onclick="loginWithEmail()">دخول النظام<span class="en-sub">Enter System</span></button>
+      <p id="login-error" style="color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none;">يرجى إدخال بريد إلكتروني صحيح!<span class="en-sub">Please enter a valid email!</span></p>
     </div>
   </div>
 
   <!-- التطبيق الرئيسي -->
   <div id="main-app">
+
+    <!-- شريط بيانات المستخدم الحالي -->
+    <div class="user-profile-bar">
+      <div class="user-info">
+        <span>👤 الموظف: <strong id="user-display-name" style="color: var(--accent);"></strong></span>
+        <span id="user-role-badge" class="user-role-badge"></span>
+      </div>
+      <button class="static-logout-btn" style="padding: 4px 12px; font-size: 0.78rem;" onclick="logout()">خروج<span class="en-sub">Exit</span></button>
+    </div>
 
     <!-- الواجهة الرئيسية -->
     <div id="home-hub-view">
@@ -214,7 +229,7 @@
       </div>
 
       <div class="hub-footer-logout">
-        <button class="static-logout-btn" onclick="logout()"><span>🔒</span> قفل النظام<span class="en-sub">Lock System</span></button>
+        <button class="static-logout-btn" onclick="logout()"><span>🔒</span> تبديل الحساب / تسجيل الخروج<span class="en-sub">Switch Account / Logout</span></button>
       </div>
     </div>
 
@@ -312,7 +327,7 @@
         <div class="sub-header">
           <h2 id="current-warehouse-title">المستودع<span class="en-sub">Warehouse</span></h2>
           <div style="display: flex; gap: 10px;">
-            <button class="add-btn" onclick="openAddModal('materials')">+ إضافة صنف جديد<span class="en-sub">Add New Item</span></button>
+            <button id="add-item-btn" class="add-btn admin-only" onclick="openAddModal('materials')">+ إضافة صنف جديد<span class="en-sub">Add New Item</span></button>
             <button class="back-btn" onclick="backFromTable()">⬅️ رجوع<span class="en-sub">Back</span></button>
           </div>
         </div>
@@ -333,7 +348,7 @@
       <div class="sub-header">
         <h2 style="font-size: 1.2rem; color: var(--gold-color);">إدارة الـ Welcome Kit والمخزون وعينات الاعتماد <span class="en-sub">Welcome Kits, Inventory & Samples</span></h2>
         <div style="display: flex; gap: 10px;">
-          <button class="add-btn" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة<span class="en-sub">Add New Sample</span></button>
+          <button class="add-btn admin-only" onclick="openAddModal('welcome_kit')">+ إضافة عينة جديدة<span class="en-sub">Add New Sample</span></button>
           <button class="back-btn" onclick="showHomeHub()">⬅️ الرئيسية<span class="en-sub">Home</span></button>
         </div>
       </div>
@@ -650,8 +665,9 @@
       </div>
 
       <div class="form-group">
-        <label>اسم المسؤول عن الصرف:<span class="en-sub">Issued By</span> <span class="required-star">*</span></label>
-        <input type="text" id="ext-issuer" autocomplete="off" required>
+        <label>اسم المسؤول عن الصرف (الموظف الحركي):<span class="en-sub">Issued By</span> <span class="required-star">*</span></label>
+        <!-- يظهر اسم الموظف تلقائياً بشكل مقفول مو الإيميل -->
+        <input type="text" id="ext-issuer" readonly tabindex="-1">
       </div>
 
       <div class="form-group">
@@ -710,9 +726,18 @@
     const SUPABASE_KEY = "sb_publishable_G_rP3z1tvsndCP2GrF5AOA_V1UVAS3f"; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const SECRET_PIN = "$Ark0820";
-    const SESSION_KEY = "app_login_session";
+    const SESSION_USER_KEY = "app_user_email";
+    const SESSION_ROLE_KEY = "app_user_role";
+    const SESSION_NAME_KEY = "app_user_name";
 
+    // إعداد الأدوار والمستويات:
+    // admin: يسوي كل شيء (إضافة، تعديل، حذف، صرف، مشاهدة)
+    // issuer: يقدر يصرف فقط ومشاهدة (لا يضيف أو يعدل أو يحذف)
+    // viewer: مشاهدة فقط (بدون أزرار إطلاقاً)
+    const ADMIN_EMAILS = ["admin@tajalla.com", "manager@tajalla.com"]; 
+    const ISSUER_EMAILS = ["issuer@tajalla.com", "store@tajalla.com"]; 
+
+    let currentUser = { email: '', name: '', role: 'viewer' };
     let currentCategory = 'wood';
     let currentSubUnit = 'natural_wood';
     let currentView = 'home';
@@ -827,33 +852,78 @@
       openDailyTransactionsSection();
     }
 
-    function checkPin() {
-      if (document.getElementById('pin-input').value === SECRET_PIN) {
-        localStorage.setItem(SESSION_KEY, Date.now().toString());
-        grantAccess();
-      } else {
+    function loginWithEmail() {
+      const emailInput = document.getElementById('email-input').value.trim().toLowerCase();
+      if (!emailInput || !emailInput.includes('@')) {
         document.getElementById('login-error').style.display = 'block';
+        return;
       }
+
+      // استخراج الاسم من البريد الإلكتروني (مثال: ali.ahmed@domain.com -> Ali Ahmed)
+      const rawName = emailInput.split('@')[0].replace(/[._-]/g, ' ');
+      const employeeName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+      // تحديد المستوى والصلاحيات
+      let userRole = 'viewer';
+      if (ADMIN_EMAILS.includes(emailInput) || emailInput.startsWith('admin')) {
+        userRole = 'admin';
+      } else if (ISSUER_EMAILS.includes(emailInput) || emailInput.startsWith('issuer') || emailInput.startsWith('store')) {
+        userRole = 'issuer';
+      }
+
+      localStorage.setItem(SESSION_USER_KEY, emailInput);
+      localStorage.setItem(SESSION_ROLE_KEY, userRole);
+      localStorage.setItem(SESSION_NAME_KEY, employeeName);
+
+      grantAccess(emailInput, employeeName, userRole);
     }
 
     function checkExistingSession() {
-      if (localStorage.getItem(SESSION_KEY)) grantAccess();
+      const savedEmail = localStorage.getItem(SESSION_USER_KEY);
+      const savedRole = localStorage.getItem(SESSION_ROLE_KEY);
+      const savedName = localStorage.getItem(SESSION_NAME_KEY);
+
+      if (savedEmail && savedRole && savedName) {
+        grantAccess(savedEmail, savedName, savedRole);
+      }
     }
 
-    function grantAccess() {
+    function grantAccess(email, name, role) {
+      currentUser = { email, name, role };
       document.getElementById('login-overlay').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
+
+      // تحديث شريط بيانات الموظف
+      document.getElementById('user-display-name').innerText = name;
+      const roleBadge = document.getElementById('user-role-badge');
+      if (role === 'admin') {
+        roleBadge.innerText = 'مدير نظام (Admin)';
+        roleBadge.className = 'user-role-badge badge-danger';
+      } else if (role === 'issuer') {
+        roleBadge.innerText = 'مسؤول صرف (Issuer)';
+        roleBadge.className = 'user-role-badge badge-warning';
+      } else {
+        roleBadge.innerText = 'مشاهد فقط (Viewer)';
+        roleBadge.className = 'user-role-badge badge-info';
+      }
+
+      applyPermissions();
       showHomeHub();
     }
 
-    function logout() {
-      localStorage.removeItem(SESSION_KEY);
-      location.reload();
+    function applyPermissions() {
+      // إخفاء أو إظهار زر إضافة صنف
+      const adminBtns = document.querySelectorAll('.admin-only');
+      adminBtns.forEach(btn => {
+        btn.style.display = (currentUser.role === 'admin') ? 'inline-block' : 'none';
+      });
     }
 
-    function togglePasswordVisibility() {
-      const pin = document.getElementById('pin-input');
-      pin.type = pin.type === 'password' ? 'text' : 'password';
+    function logout() {
+      localStorage.removeItem(SESSION_USER_KEY);
+      localStorage.removeItem(SESSION_ROLE_KEY);
+      localStorage.removeItem(SESSION_NAME_KEY);
+      location.reload();
     }
 
     function hideAllSections() {
@@ -992,7 +1062,6 @@
       }
     }
 
-    // دالة مساعدة لتوليد حالة التوفر (تنبيه وشك النفاذ عند الوصول لـ 5 أو أقل)
     function getStockBadge(qty, boardsCount = null) {
       const q = parseFloat(qty) || 0;
       const b = boardsCount !== null ? parseInt(boardsCount) : null;
@@ -1016,6 +1085,27 @@
       }
     }
 
+    function renderActionButtons(itemJson, extractDisabled) {
+      let html = '';
+      
+      // أزرار الصرف لمن يملك صلاحية admin أو issuer
+      if (currentUser.role === 'admin' || currentUser.role === 'issuer') {
+        html += `<button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>`;
+      }
+      
+      // أزرار التعديل والحذف للـ admin فقط
+      if (currentUser.role === 'admin') {
+        html += `<button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>`;
+        html += `<button class="action-btn btn-delete" onclick="openDeleteModal(${itemJson.id})">🗑️ حذف<span class="en-sub">Delete</span></button>`;
+      }
+
+      if (currentUser.role === 'viewer') {
+        html = '<span style="color: var(--text-muted); font-size: 0.8rem;">مشاهدة فقط</span>';
+      }
+
+      return html;
+    }
+
     async function fetchMaterialsFromDatabase() {
       const tbody = document.getElementById('materials-table-body');
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">⏳ جاري التحميل أونلاين...<span class="en-sub">Loading Online...</span></td></tr>';
@@ -1033,7 +1123,7 @@
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً. اضغط "+ إضافة صنف جديد"<span class="en-sub">No materials found. Click "+ Add New Item"</span></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">لا توجد مواد مسجلة حالياً.<span class="en-sub">No materials found.</span></td></tr>';
         return;
       }
 
@@ -1048,6 +1138,7 @@
 
         const titleName = item.title || item.wood_type || item.name || '-';
         const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
+        const actionsCellHtml = renderActionButtons(item, extractDisabled);
 
         if (currentCategory === 'wood' && currentSubUnit === 'natural_wood') {
           const badgeHtml = getStockBadge(qty, boards);
@@ -1057,11 +1148,7 @@
             <td><strong style="color:${boards > 0 ? 'var(--wood-color)' : 'var(--danger)'};">${boards} لوح</strong></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'panels') {
           const badgeHtml = getStockBadge(qty);
@@ -1074,11 +1161,7 @@
             <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'adhesives') {
           const badgeHtml = getStockBadge(qty);
@@ -1089,11 +1172,7 @@
             <td><span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">${item.thickness || 'حبة'}</span></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'hardware') {
           const badgeHtml = getStockBadge(qty);
@@ -1105,11 +1184,7 @@
             <td><span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">${item.thickness || 'حبة'}</span></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         } else if (currentCategory === 'wood' && currentSubUnit === 'tools') {
           let toolStatusBadge = '<span class="badge badge-success">🟢 شغالة / سليمة<span class="en-sub">Operational</span></span>';
@@ -1132,11 +1207,7 @@
             <td><strong style="color:var(--accent); font-size:1.05rem;">${qty}</strong></td>
             <td>${locDisplay}</td>
             <td>${toolStatusBadge}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 تسليم/صرف<span class="en-sub">Issue/Checkout</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         } else {
           const badgeHtml = getStockBadge(qty);
@@ -1147,11 +1218,7 @@
             <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'}; font-size:1.05rem;">${qty}</strong></td>
             <td>${item.location || '-'}</td>
             <td>${badgeHtml}</td>
-            <td style="text-align: center;">
-              <button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>
-              <button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>
-              <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-            </td>
+            <td style="text-align: center;">${actionsCellHtml}</td>
           `;
         }
         tbody.appendChild(tr);
@@ -1180,6 +1247,10 @@
         const qty = parseFloat(item.quantity) || 0;
         const badgeHtml = getStockBadge(qty);
 
+        let deleteBtnHtml = currentUser.role === 'admin' 
+          ? `<button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>` 
+          : '-';
+
         tr.innerHTML = `
           <td>${item.sku || '-'}</td>
           <td>${item.project || '-'}</td>
@@ -1188,9 +1259,7 @@
           <td><strong style="color:${qty > 0 ? 'var(--accent)' : 'var(--danger)'};">${qty}</strong></td>
           <td>${item.location || '-'}</td>
           <td>${badgeHtml}</td>
-          <td style="text-align: center;">
-            <button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>
-          </td>
+          <td style="text-align: center;">${deleteBtnHtml}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1224,7 +1293,7 @@
           <td>${formattedDate}</td>
           <td><strong>${log.item_title || log.title || '-'}</strong></td>
           <td><span style="color:var(--warning); font-weight:bold;">${log.quantity || 0}</span></td>
-          <td>${log.issuer_name || '-'}</td>
+          <td><strong>${log.issuer_name || '-'}</strong></td>
           <td>${log.recipient_name || '-'}</td>
           <td>${log.project_code || '-'}</td>
           <td><span class="badge badge-success">${log.reason || 'تصنيع'}</span></td>
@@ -1236,6 +1305,11 @@
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
     function openAddModal(target = 'materials') {
+      if (currentUser.role !== 'admin') {
+        showToast('⚠️ لا تملك صلاحية الإضافة! (خاص بمدير النظام فقط)', 'error');
+        return;
+      }
+
       document.getElementById('add-target-type').value = target;
       document.getElementById('add-title').value = '';
       document.getElementById('add-desc').value = '';
@@ -1427,6 +1501,11 @@
     }
 
     function openFullEditModal(item) {
+      if (currentUser.role !== 'admin') {
+        showToast('⚠️ لا تملك صلاحية التعديل! (خاص بمدير النظام فقط)', 'error');
+        return;
+      }
+
       document.getElementById('edit-item-id').value = item.id;
       document.getElementById('edit-item-title').value = item.title || item.wood_type || '';
       document.getElementById('edit-item-qty').value = item.quantity !== undefined ? item.quantity : '';
@@ -1577,13 +1656,21 @@
     }
 
     function openExtractModal(item) {
+      if (currentUser.role !== 'admin' && currentUser.role !== 'issuer') {
+        showToast('⚠️ لا تملك صلاحية الصرف!', 'error');
+        return;
+      }
+
       document.getElementById('ext-id').value = item.id;
       document.getElementById('ext-title').value = item.title || item.wood_type || '';
       document.getElementById('ext-current-qty').value = item.quantity || 0;
       document.getElementById('ext-current-boards').value = item.boards_count || 0;
       
       document.getElementById('ext-project').value = '';
-      document.getElementById('ext-issuer').value = '';
+      
+      // وضع اسم الموظف تلقائياً بدلاً من الإيميل
+      document.getElementById('ext-issuer').value = currentUser.name;
+      
       document.getElementById('ext-recipient').value = '';
       document.getElementById('ext-cubic-qty').value = '';
       document.getElementById('ext-boards-qty').value = '';
@@ -1594,7 +1681,6 @@
       const standardInput = document.getElementById('ext-standard-input');
       const reasonSelect = document.getElementById('ext-reason');
 
-      // تخصيص أسباب الصرف بحسب نوع الصنف (معدة أم مواد خامات)
       if (currentCategory === 'wood' && currentSubUnit === 'tools') {
         reasonSelect.innerHTML = `
           <option value="عهدة عامل / Worker Custody">🧰 عهدة عامل (Worker Custody)</option>
@@ -1659,7 +1745,9 @@
       const curBoards = parseInt(document.getElementById('ext-current-boards').value) || 0;
       
       const projectCode = document.getElementById('ext-project').value.trim();
-      const issuerName = document.getElementById('ext-issuer').value.trim();
+      
+      // التوثيق باسم الموظف المسجل
+      const issuerName = currentUser.name;
       const recipientName = document.getElementById('ext-recipient').value.trim();
       let baseReason = document.getElementById('ext-reason').value;
 
@@ -1712,7 +1800,6 @@
           return;
         }
 
-        // إثبات عهدة العامل للمعدات
         if (currentCategory === 'wood' && currentSubUnit === 'tools' && baseReason.includes('عهدة عامل')) {
           updateData.location = `بحوزة: ${recipientName}`;
           numericIssuedQty = extInputQty;
@@ -1753,11 +1840,15 @@
       }
 
       closeModal('extract-modal');
-      showToast(`📦 تم الصرف والتسجيل بنجاح! اضغط هنا للانتقال إلى جدول الحركة اليومية ⬅️`, 'success');
+      showToast(`📦 تم الصرف والتسجيل بنجاح بواسطة (${issuerName})!`, 'success');
       fetchMaterialsFromDatabase();
     }
 
     function openDeleteModal(id) {
+      if (currentUser.role !== 'admin') {
+        showToast('⚠️ لا تملك صلاحية الحذف! (خاص بمدير النظام فقط)', 'error');
+        return;
+      }
       document.getElementById('delete-id').value = id;
       document.getElementById('delete-modal').style.display = 'flex';
     }
