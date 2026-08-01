@@ -696,7 +696,6 @@
       <div class="form-group">
         <label>سبب / الغرض من الاستخراج:<span class="en-sub">Reason / Purpose</span> <span class="required-star">*</span></label>
         <select id="ext-reason" required>
-          <!-- الخيارات القابلة للتغيير ديناميكياً بحسب الصنف -->
         </select>
       </div>
 
@@ -729,7 +728,6 @@
     const SESSION_ROLE_KEY = "app_user_role";
     const SESSION_NAME_KEY = "app_user_name";
 
-    // إعداد الأدوار والمستويات
     const ADMIN_EMAILS = ["admin@tajalla.com", "manager@tajalla.com"]; 
     const ISSUER_EMAILS = ["issuer@tajalla.com", "store@tajalla.com"]; 
 
@@ -1077,16 +1075,26 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function renderActionButtons(item, extractDisabled) {
       let html = '';
-      const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
-      
+      const itemJson = escapeHtml(JSON.stringify(item));
+
       if (currentUser.role === 'admin' || currentUser.role === 'issuer') {
-        html += `<button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(${itemJson})">📤 صرف<span class="en-sub">Issue</span></button>`;
+        html += `<button class="action-btn btn-extract" ${extractDisabled} onclick="openExtractModal(JSON.parse(this.getAttribute('data-item')))" data-item="${itemJson}">📤 صرف<span class="en-sub">Issue</span></button>`;
       }
       
       if (currentUser.role === 'admin') {
-        html += `<button class="action-btn btn-edit" onclick="openFullEditModal(${itemJson})">✏️ تعديل<span class="en-sub">Edit</span></button>`;
+        html += `<button class="action-btn btn-edit" onclick="openFullEditModal(JSON.parse(this.getAttribute('data-item')))" data-item="${itemJson}">✏️ تعديل<span class="en-sub">Edit</span></button>`;
         html += `<button class="action-btn btn-delete" onclick="openDeleteModal(${item.id})">🗑️ حذف<span class="en-sub">Delete</span></button>`;
       }
 
